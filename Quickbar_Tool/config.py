@@ -1,4 +1,4 @@
-DISPLAY_VERSION = 'v1.0.0'
+DISPLAY_VERSION = 'v1.0.1'
 UPDATE_URL = 'https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Quick_Access'
 PANEL_CATEGORY = 'Witch Quickbar'
 

@@ -1,7 +1,7 @@
 bl_info = {
-    'name': 'Witch Quickbar v1.0.0',
+    'name': 'Witch Quickbar v1.0.1',
     'author': 'Knight Witch',
-    'version': (1, 0, 0),
+    'version': (1, 0, 1),
     'blender': (4, 5, 0),
     'location': '3D View > Floating Quickbar; 3D View > Sidebar > Witch Quickbar',
     'description': 'A compact floating quick-access bar for mode switching, rotate, mirror, origin, cursor, and snapping actions.',
@@ -9,15 +9,17 @@ bl_info = {
 }
 
 import bpy
+from bpy.app.handlers import persistent
 from bpy.props import StringProperty
 
 from .preferences import WQBAR_Preferences
-from .overlay import CLASSES as OVERLAY_CLASSES, stop_overlay
+from .overlay import CLASSES as OVERLAY_CLASSES, runtime, stop_overlay
+from .input_gizmos import CLASSES as GIZMO_CLASSES
 from .panels import CLASSES as PANEL_CLASSES
 from .keymaps import CLASSES as KEYMAP_CLASSES, register_keymaps, unregister_keymaps
 from .actions import WM_DEFAULTS
 
-CLASSES = (WQBAR_Preferences,) + OVERLAY_CLASSES + KEYMAP_CLASSES + PANEL_CLASSES
+CLASSES = (WQBAR_Preferences,) + OVERLAY_CLASSES + GIZMO_CLASSES + KEYMAP_CLASSES + PANEL_CLASSES
 
 
 def _auto_start():
@@ -44,6 +46,73 @@ def _auto_start():
     return None
 
 
+def _schedule_auto_start(delay=0.5):
+    try:
+        if hasattr(bpy.app.timers, 'is_registered') and bpy.app.timers.is_registered(_auto_start):
+            return
+    except Exception:
+        pass
+    try:
+        bpy.app.timers.register(_auto_start, first_interval=delay)
+    except Exception:
+        pass
+
+
+def _should_restart_after_file_change():
+    try:
+        addon = bpy.context.preferences.addons.get(__package__)
+        prefs = addon.preferences if addon else None
+        return bool(runtime.running or (prefs and prefs.auto_start))
+    except Exception:
+        return bool(runtime.running)
+
+
+@persistent
+def _wqbar_file_change_post(_dummy):
+    should_restart = _should_restart_after_file_change()
+    stop_overlay()
+    if should_restart:
+        _schedule_auto_start(0.6)
+
+@persistent
+def _wqbar_undo_redo_post(_dummy):
+    try:
+        from .utils import tag_redraw_all
+        tag_redraw_all()
+    except Exception:
+        pass
+
+
+def _append_handler(handler_name, callback):
+    handlers = getattr(bpy.app.handlers, handler_name, None)
+    if handlers is None:
+        return
+    if callback not in handlers:
+        handlers.append(callback)
+
+
+def _remove_handler(handler_name, callback):
+    handlers = getattr(bpy.app.handlers, handler_name, None)
+    if handlers is None:
+        return
+    while callback in handlers:
+        handlers.remove(callback)
+
+
+def _register_file_handlers():
+    _append_handler('load_post', _wqbar_file_change_post)
+    _append_handler('load_factory_startup_post', _wqbar_file_change_post)
+    _append_handler('undo_post', _wqbar_undo_redo_post)
+    _append_handler('redo_post', _wqbar_undo_redo_post)
+
+
+def _unregister_file_handlers():
+    _remove_handler('load_post', _wqbar_file_change_post)
+    _remove_handler('load_factory_startup_post', _wqbar_file_change_post)
+    _remove_handler('undo_post', _wqbar_undo_redo_post)
+    _remove_handler('redo_post', _wqbar_undo_redo_post)
+
+
 def _migrate_preferences():
     try:
         addon = bpy.context.preferences.addons.get(__package__)
@@ -67,13 +136,12 @@ def register():
         register_keymaps()
     except Exception:
         pass
-    try:
-        bpy.app.timers.register(_auto_start, first_interval=0.5)
-    except Exception:
-        pass
+    _register_file_handlers()
+    _schedule_auto_start(0.5)
 
 
 def unregister():
+    _unregister_file_handlers()
     stop_overlay()
     try:
         unregister_keymaps()

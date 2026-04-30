@@ -258,6 +258,8 @@ def draw_drag_handle(layout, context):
 def draw_tooltip(context, button, runtime):
     if not button or runtime.dragging or runtime.resizing or runtime.section_dragging or runtime.mode_dragging:
         return
+    if button.get('group') == 'mode':
+        return
     label = button.get('tooltip', '')
     if not label:
         return

@@ -2,7 +2,7 @@ import math
 
 import bpy
 
-from .config import MODE_SEQUENCE, cycle_mode_order
+from .config import MODE_SEQUENCE, cycle_mode_order, mode_order
 from .utils import (
     addon_preferences,
     current_mode,
@@ -77,15 +77,41 @@ def last_switcher_choice(context):
     return target if target in MODE_SEQUENCE else 'OBJECT'
 
 
+def cycle_mode_candidates(context):
+    prefs = addon_preferences(context)
+    enabled_order = cycle_mode_order(prefs)
+    if not enabled_order:
+        return []
+
+    all_order = [key for key in mode_order(prefs) if key in MODE_SEQUENCE]
+    if not all_order:
+        return enabled_order
+
+    last_target = last_switcher_choice(context)
+    current_target = current_mode(context)
+    if current_target == 'EDIT' and last_target == 'UV_DATA':
+        current_target = 'UV_DATA'
+
+    if last_target in all_order:
+        start_key = last_target
+    elif current_target in all_order:
+        start_key = current_target
+    else:
+        start_key = ''
+
+    if start_key in all_order:
+        start_index = all_order.index(start_key)
+        search_order = all_order[start_index + 1:] + all_order[:start_index + 1]
+    else:
+        search_order = all_order
+
+    enabled = set(enabled_order)
+    return [key for key in search_order if key in enabled]
+
+
 def next_switcher_mode(context):
-    order = cycle_mode_order(addon_preferences(context))
-    if not order:
-        return ''
-    base = last_switcher_choice(context)
-    if base not in order:
-        return order[0]
-    idx = order.index(base)
-    return order[(idx + 1) % len(order)]
+    candidates = cycle_mode_candidates(context)
+    return candidates[0] if candidates else ''
 
 
 def set_vertex_select_mode(context, mesh):
@@ -147,9 +173,18 @@ def restore_previous_mode(context):
 def switch_mode(context, target_mode):
     ensure_wm_state(context.window_manager)
     if target_mode == 'CYCLE':
-        target_mode = next_switcher_mode(context)
-        if not target_mode:
+        candidates = cycle_mode_candidates(context)
+        if not candidates:
             return False, 'No modes are enabled for cycling'
+        failures = []
+        for candidate in candidates:
+            ok, msg = switch_mode(context, candidate)
+            if ok:
+                return True, ''
+            if msg:
+                failures.append(f'{candidate}: {msg}')
+        detail = f" ({'; '.join(failures)})" if failures else ''
+        return False, f'Could not cycle to any enabled mode{detail}'
     if target_mode == 'RETURN':
         return restore_previous_mode(context)
     if target_mode not in MODE_SEQUENCE:
