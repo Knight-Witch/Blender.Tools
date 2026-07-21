@@ -41,14 +41,15 @@ Last updated: 2026-07-21
 - Intended Blender target in source metadata: 4.5.0
 - Archive SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
 - Static Python/package audit: passed for 45 Python files; no generated cache files shipped
-- Runtime environment actually tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 runtime verification: not performed; user test pending
-- Operating environment: Linux container for automated checks
-- Features tested: registration/unregistration, actual 26-chain collar Curvature Sync, missing-vertex injection, curvature movement, detection and replacement of 96 misaligned existing column edges, canonical column reconstruction, exact coordinate regression, topology-degeneracy and duplicate checks, boundary-count comparison, special-data preflight rejection, save/reopen
-- Result: 520 vertices injected, 1,324 moved, 96 misaligned edges replaced, 975 canonical column edges created, and zero unresolved column positions in the tested collar file
+- Automated runtime actually tested: Blender Python `5.2.0 LTS` in a Linux container
+- Blender 4.5 production workflow: user-reported passed on the supplied pre-curvature collar file
+- User-tested behavior in Blender 4.5: add-on installed, Curvature Sync panel/workflow was usable, saved anchors/selection were available, Analyze/Apply completed, and the corrected curvature/column result was visually confirmed as successful
+- User operating system: not formally recorded for this test
+- Automated features tested: registration/unregistration, actual 26-chain collar Curvature Sync, missing-vertex injection, curvature movement, detection and replacement of 96 misaligned existing column edges, canonical column reconstruction, exact coordinate regression, topology-degeneracy and duplicate checks, boundary-count comparison, special-data preflight rejection, save/reopen
+- Automated result: 520 vertices injected, 1,324 moved, 96 misaligned edges replaced, 975 canonical column edges created, and zero unresolved column positions
 - Regression result: resulting vertex-coordinate multisets exactly matched the successful Dev_v2.5.1 curvature result; the patch changed topology correspondence rather than the intended curve coordinates
-- Known compatibility limitations: normal Blender 4.5 UI interaction, installed-package behavior, and interactive undo/redo remain unverified; only safe two-face interior misaligned edges are replaced
-- Tester: OpenAI container test harness using the user-supplied Dev package and pre/post `.blend` files
+- Remaining compatibility/test limitations: interactive undo/redo, formal normals/manifold checks, print-fit/slicer validation, update behavior, and public-release installation/upgrade testing remain unverified
+- Tester: automated OpenAI container harness plus user confirmation in Blender 4.5
 
 ### Development Dev_v2.5.1 — superseded Vertex Inject + Curvature Sync build
 
@@ -56,8 +57,8 @@ Last updated: 2026-07-21
 - Package folder: `Witch_Tools_Dev`
 - Archive SHA-256: `fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
 - Runtime environment actually tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 runtime verification: not performed
-- Status: superseded by Dev_v2.5.2 after the production collar exposed retained misaligned existing column edges
+- Blender 4.5 runtime verification: partial production use occurred before supersession; retained misaligned existing column edges required Dev_v2.5.2
+- Status: superseded by Dev_v2.5.2
 
 ### Development Dev_v2.5.0 — superseded Curvature Sync MVP
 
@@ -67,7 +68,6 @@ Last updated: 2026-07-21
 - Archive SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
 - Static Python/package audit: passed
 - Runtime environment actually tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 runtime verification: not performed
 - Result: first circular Curvature Sync MVP; superseded by Dev_v2.5.1 and Dev_v2.5.2
 
 ### Development Dev_v2.4.0 — superseded candidate baseline
