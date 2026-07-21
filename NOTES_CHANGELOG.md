@@ -2,25 +2,21 @@
 
 Date: 2026-07-20
 
-## Update: development architecture and non-breaking repository organization
+## Update: supplied development baseline audit
 
-- Created `Blender_Dev` from the tracked Quickbar public branch without modifying public branches.
-- Replaced the development-branch root README with the Blender.Tools umbrella overview.
-- Added root agent, project, contribution, compatibility, and packaging rules.
-- Added documentation index, parent architecture, add-on boundaries, UI/operator/version contracts, and staged migration plan.
-- Added branch/release audit, project state, build registry, and Blender compatibility registry.
-- Added Witch Tools local rules, state, roadmap, and notes changelogs.
-- Added Witch Quickbar local rules, state, roadmap, overlay/input/asset/integration contracts, and notes changelogs.
-- Added Witch Core local rules, state, roadmap, and notes changelogs.
-- Added the full Curvature Sync feature packet and BG3, general modeling, and 3D-printing use-case notes.
-- Added ADRs for the monorepo/development branch and public compatibility preservation.
-- Added shared, prototype, test, and build-system scaffolding without moving runtime code.
-- Added repository ignore rules for caches, generated archives, Blender backups, and temporary files.
+- Audited and recorded Witch Tools `Dev_v2.4.0`, Witch Quickbar `Dev_v1.3.18`, and Witch's Dev Modules `Dev_v0.0.9` as the best available candidate current baselines.
+- Added archive and per-file SHA-256 manifests for all three supplied ZIP files.
+- Confirmed ZIP integrity, safe paths, package metadata, Blender 4.5 targets, and static Python syntax parsing.
+- Located the Witch Tools footer GitHub destination and the exact Quickbar Check for Updates destination.
+- Confirmed Quickbar's update control only opens the public `Witch_Quick_Access` branch and performs no version comparison.
+- Added Witch Dev Modules local rules, project state, roadmap, and notes tracking.
+- Recorded that the Dev Modules archive contains 34 prohibited `.pyc` files in `__pycache__` directories and has package-documentation version inconsistencies.
+- Updated the documentation index, project state, branch/release audit, build registry, compatibility registry, and Witch Tools/Quickbar state and notes.
 
 ## Public compatibility
 
-No public branch, update URL, package identity, external release link, asset path, or runtime source was changed.
+No public branch, update URL, package identity, operator namespace, external release link, asset path, or runtime source was changed.
 
 ## Testing
 
-Documentation/repository writes and branch comparison only. Blender runtime, package installation, and installed-update testing were not performed.
+Static ZIP, hash, metadata, safe-path, and Python syntax audits were performed. Blender runtime, package installation, side-by-side installation, upgrade, UI, operator, undo/redo, and update-button browser-launch testing were not performed.
