@@ -107,9 +107,11 @@ The uploaded files are now the best available candidate baselines:
 
 They should be treated as candidate current baselines until installed and smoke-tested in Blender 4.5.
 
-The per-file SHA-256 manifest is stored in:
+Per-file SHA-256 manifests are stored in:
 
-`docs/project_state/baseline_manifests/DEVELOPMENT_BASELINE_MANIFEST_2026-07-20.json`
+- `docs/project_state/baseline_manifests/WITCH_TOOLS_DEV_2_4_0.json`
+- `docs/project_state/baseline_manifests/WITCH_QUICKBAR_DEV_1_3_18.json`
+- `docs/project_state/baseline_manifests/WITCH_DEV_MODULES_0_0_9.json`
 
 ## Required next steps
 
