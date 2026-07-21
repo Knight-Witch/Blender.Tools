@@ -1,5 +1,22 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-21 — Selection Slots development builds
+
+- Implemented Witch Tools `Dev_v2.6.0` with persistent **Selection Slots** below Curvature Sync.
+- Added vertex, edge, face, combined-domain, and multi-object Edit Mode save/reselect using scene records and per-mesh custom element markers.
+- Added rename, save/overwrite, reselect, clear, Clear All, add, remove, and reorder controls plus a stable `mesh.wt_selection_slot_*` operator contract.
+- Implemented Witch Quickbar `Dev_v1.4.0` with a populated **Select** tab using thin optional invocation of the canonical Witch Tools backend.
+- Added responsive slot names, full-name tooltips, rename dialog, all slot actions, grip drag reorder, and a safe unavailable-backend state.
+- Converted the five supplied LONGDISPLAY, FILE_TICK, TRASH, REMOVE, and ADD SVGs into packaged transparent 64x64 PNG assets.
+- Produced `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`, SHA-256 `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`.
+- Produced `witch_quickbar_dev_Dev_v1_4_0_Select_Tab_Blender_4_5.zip`, SHA-256 `be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea`.
+- Witch Tools static checks passed for 46 Python files; Quickbar static checks passed for 13 Python files and 36 PNG assets.
+- Both archives passed ZIP integrity, safe paths, duplicate operator-ID, and package-hygiene checks; no cache or SVG source files were shipped.
+- Quickbar synthetic multi-slot layout construction and asset-reference checks passed.
+- Blender 4.5 Selection Slots persistence, multi-object, topology-change, undo/redo, and Quickbar overlay/input testing remain pending.
+- Created the Selection Slots feature packet and updated Witch Tools/Quickbar state, roadmaps, notes, Quickbar architecture/input/assets/integration, build registry, compatibility, docs index, and umbrella state.
+- Preserved all public branches, update URLs, package identities, existing operator namespaces, inherited asset paths, and public release locations.
+
 ## 2026-07-21 — Dev_v2.5.2 production collar validation in Blender 4.5
 
 - The user installed Witch Tools `Dev_v2.5.2` in Blender 4.5 and reopened the supplied pre-curvature production collar file.
