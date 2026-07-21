@@ -4,109 +4,92 @@ Last updated: 2026-07-21
 
 ## Identity
 
-- Feature: Curvature Sync
+- Feature family: Curvature Sync and Edge / Vertex Inject
 - Canonical owner: Witch Tools
-- Current implementation status: MVP development build produced
-- Current feature build: Witch Tools `Dev_v2.5.0`
+- Current implementation status: urgent MVP development build produced
+- Current build: Witch Tools `Dev_v2.5.1`
 - Target Blender version: `4.5`
 - Development branch: `Blender_Dev`
 
-## Current implementation
+## Current build
 
-The first functional circular Curvature Sync MVP has been implemented against the user-supplied Witch Tools `Dev_v2.4.0` baseline and packaged as:
+Artifact:
 
-`Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
+`Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`
 
-Implemented behavior:
+SHA-256:
+
+`fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
+
+Package identity remains `Witch_Tools_Dev`.
+
+## Implemented: Auto-Aligned Vertex Inject
+
+- explicit ordered A, B, C vertex selection using Blender selection history
+- requirement that A-B and B-C are existing edges
+- ideal relation `D = C + (A - B)`
+- target-chain inference from A in the B-to-C row direction
+- straightest-continuation traversal with ambiguous-fork rejection
+- projection of the ideal D relation onto an actual target-chain edge
+- configurable projection tolerance
+- existing-vertex reuse tolerance to prevent near-duplicates
+- target-edge split when D is missing
+- default optional C-D connect and shared-face split
+- copied-BMesh preflight before real mutation
+- shape-key rejection
+- zero-area-face rejection
+- Vertex Lock, Protected Edit Zone, and Curvature Sync anchor-index remapping after topology changes
+- C and D left selected for inspection
+
+## Implemented: Curvature Sync MVP
 
 - explicit A / Middle / Z capture per selected chain
-- automatic selection clearing after anchor capture
-- open non-branching selected-chain validation
-- XY, XZ, and YZ circular fitting
-- exact middle-axis normalization using the captured Middle point to select the apex side
-- equal segment counts from A to Middle and Middle to Z
-- Match Selected Maximum and Custom Per Side count modes
-- missing-vertex injection by selected-edge splitting
-- optional missing cross-column edge construction through shared faces
-- multiple parallel chains
-- multiple aligned objects in multi-object Edit Mode
-- copied-BMesh preflight before real mutation
-- Vertex Lock and Protected Edit Zone integration
-- stored lock, edit-zone, and anchor-index remapping after injection
-- shape-key injection rejection
-- unresolved-column reporting instead of forced unsafe connections
-- local normal update and destructive edit-mesh update where topology changes
+- open non-branching chain validation
+- circular XY, XZ, and YZ fitting
+- exact middle-axis normalization
+- equal segment counts on both sides of Middle
+- missing vertex injection and optional cross-column face construction
+- multiple parallel chains and aligned objects
+- copied-BMesh preflight
+- Vertex Lock / Protected Edit Zone integration
+- unresolved-column reporting instead of unsafe forced connections
 
 ## Validation completed
 
-### Static
-
-- Complete package Python syntax parse: passed
-- Package root and install folder preserved as `Witch_Tools_Dev`
-- Cache/generated Python files excluded from distribution
-
-### Synthetic runtime test
-
 Using Blender Python `5.2.0 LTS`:
 
-- two concentric chains with mismatched segment counts
-- two missing vertices injected
-- two missing column edges created
-- original two n-gon faces split into four valid faces
-- no zero-length edges
-- no zero-area faces
-- expected mathematical inner-arc positions confirmed
-- invalid branched selection rejected without geometry-count changes
-
-### Vertex Lock / Protected Zone runtime test
-
-- locked A/Z anchors accepted
-- already-correct locked Middle anchors accepted
-- lock data and captured anchor indices preserved after injection
-- locked non-anchor interior vertex rejected before mutation
-
-### Actual collar runtime test
-
-Input: `Collar_Blender_DEV.blend`
-
-- objects processed: 2
-- selected chains processed by the test harness: 21
-- target segments per side: 27
-- vertices injected: 480
-- vertices moved: 1,113
-- column edges created: 747
-- unresolved column positions: 41, reported and not forced
-- lower object remained fully manifold
-- no zero-length edges, duplicate edges, zero-area faces, or invalid faces were introduced
-- no new 3D interior edge intersections were introduced
-- pre-existing upper-object non-manifold/intersection conditions remained unchanged
-- matching upper/lower outer interface curves aligned within floating-point tolerance after the same run
-- save and reopen succeeded
+- complete package syntax parse passed for 45 Python files
+- registration and unregistration passed
+- synthetic Auto-Aligned Vertex Inject split the target edge at the exact calculated position
+- synthetic C-D connection split one quad into two valid faces
+- no zero-area faces were produced
+- full Curvature Sync synthetic regression test passed after the Vertex Inject addition
+- previous actual collar Curvature Sync test remains valid for Dev_v2.5.0 behavior
 
 ## Testing limitation
 
-The test container provides Blender Python `5.2.0 LTS`, not Blender `4.5`. Exact Blender 4.5 installation, interactive UI, and normal interactive undo/redo testing remain required before this build is treated as verified for release.
+The available automated runtime is Blender Python `5.2.0 LTS`, not Blender `4.5`. Blender 4.5 installation, panel rendering, interactive selection behavior, and undo/redo remain pending user validation.
 
-## Current MVP limitations
+## Current limitations
 
-- circular planar arcs only
-- one existing A, Middle, and Z reference required per chain
+- Auto-Aligned Vertex Inject currently operates on the active mesh object
+- the user must select A, then B, then C individually; C must be active last
+- A-B and B-C must be real mesh edges
+- target-chain traversal aborts on ambiguous forks
+- bulk standalone injection is not yet exposed
+- Curvature Sync remains circular-planar and requires explicit A/M/Z anchors
 - no surplus-vertex dissolution
-- column construction only where corresponding vertices can safely connect through a shared face
-- unresolved positions require manual review
-- automatic chain discovery and automatic missing-Middle creation are not implemented
-- generalized spline/non-circular fitting is deferred
 
 ## Next exact step
 
-User-test the `Dev_v2.5.0` package in Blender 4.5 on a backup copy of the collar file. Record:
+User-test Dev_v2.5.1 in Blender 4.5 on a backup collar file:
 
-- installation and registration result
-- panel rendering
-- Analyze result from explicit manual selections
-- Apply result
-- interactive undo/redo
-- whether the intended upper/lower interface chains align
-- unresolved positions or topology failures requiring the next patch
+1. install and enable the package;
+2. open Edit Tools > Edge / Vertex Inject;
+3. select A, B, and C individually in that order;
+4. run Inject Auto-Aligned Vertex with Connect & Split Face enabled;
+5. inspect C-D, face winding, normals, and surrounding topology;
+6. test interactive undo/redo;
+7. report any chain-inference or projection error before proceeding to Curvature Sync.
 
-After user validation, import the full `Dev_v2.5.0` source tree into the canonical Witch Tools development location on `Blender_Dev` and continue the automatic correspondence / missing-middle workflow.
+After urgent user validation, import the complete source tree into the canonical Witch Tools development location and continue bulk correspondence and missing-middle work.
