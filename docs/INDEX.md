@@ -12,7 +12,8 @@ This file maps the authoritative documentation for the repository.
 6. the relevant add-on's `docs/PROJECT_STATE.md`
 7. the relevant feature packet
 8. `/docs/project_state/BUILD_REGISTRY.md`
-9. current code and version metadata
+9. `/Blender_Version_Compatability.md`
+10. current code and version metadata
 
 ## Root architecture
 
@@ -28,6 +29,7 @@ This file maps the authoritative documentation for the repository.
 - `project_state/PROJECT_STATE.md` — umbrella development handoff
 - `project_state/BUILD_REGISTRY.md` — authoritative known build baselines
 - `project_state/BRANCH_AND_RELEASE_AUDIT.md` — branch, release, URL, and migration audit
+- `/Blender_Version_Compatability.md` — intended and actually tested Blender versions
 
 ## Decisions
 
@@ -47,6 +49,7 @@ Repository-wide accepted decisions live in `decisions/` as ADR files. Feature-lo
 
 - `/addons/witch_quickbar/AGENTS.md`
 - `/addons/witch_quickbar/docs/PROJECT_STATE.md`
+- `/addons/witch_quickbar/docs/ROADMAP.md`
 - `/addons/witch_quickbar/docs/OVERLAY_ARCHITECTURE.md`
 - `/addons/witch_quickbar/docs/INPUT_EVENT_CONTRACT.md`
 - `/addons/witch_quickbar/docs/ASSET_MANIFEST.md`
@@ -56,7 +59,11 @@ Repository-wide accepted decisions live in `decisions/` as ADR files. Feature-lo
 
 ### Witch Core
 
-Witch Core documentation will be added when the current baseline is imported and audited.
+- `/addons/witch_core/AGENTS.md`
+- `/addons/witch_core/docs/PROJECT_STATE.md`
+- `/addons/witch_core/docs/ROADMAP.md`
+- `/addons/witch_core/docs/NOTES_CHANGELOG.md`
+- `/addons/witch_core/docs/NOTES_CHANGELOG_FULL.md`
 
 ## Feature packets
 
@@ -73,6 +80,11 @@ Each substantial feature uses a self-contained packet:
 Current packets:
 
 - `features/curvature_sync/`
+
+## Root changelogs
+
+- `/NOTES_CHANGELOG.md` — latest repository documentation update
+- `/NOTES_CHANGELOG_FULL.md` — cumulative repository documentation history
 
 ## Document roles
 
