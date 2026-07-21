@@ -1,5 +1,16 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-21 — Dev_v2.5.2 production collar validation in Blender 4.5
+
+- The user installed Witch Tools `Dev_v2.5.2` in Blender 4.5 and reopened the supplied pre-curvature production collar file.
+- The saved A/M/Z anchors and curvature-chain selection were available.
+- Curvature Sync Analyze/Apply completed with **Replace Misaligned Column Edges** enabled.
+- The user reported that the result worked beautifully, confirming the intended curvature and visible same-slot column topology in the actual Blender 4.5 workflow.
+- This closes the primary installed Blender 4.5 production-workflow validation that remained pending after automated Blender Python 5.2.0 LTS testing.
+- Interactive undo/redo, formal normals/manifold inspection, and final print-fit/slicer validation remain unreported and pending.
+- Updated Curvature Sync state, Witch Tools state, umbrella project state, build registry, compatibility record, and latest/full notes.
+- No public branch, Quickbar update destination, package identity, external release link, operator namespace, or asset path changed.
+
 ## 2026-07-21 — Witch Tools Dev_v2.5.2 Curvature Sync column repair
 
 - Compared the user-supplied pre/post Curvature Sync collar files and confirmed that the intended curve coordinates and spacing were successful.
@@ -15,7 +26,7 @@
 - Exact vertex-coordinate multiset regression against the successful Dev_v2.5.1 post-curvature file passed.
 - No zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes were introduced.
 - A special-data edge test aborted during copied-BMesh preflight without changing real-mesh topology counts; save/reopen passed.
-- Exact Blender 4.5 UI and interactive undo/redo testing remain pending.
+- Exact Blender 4.5 UI and interactive undo/redo testing remained pending until the production user validation recorded above.
 - No public branch, Quickbar update destination, package identity, external release link, or asset path was changed.
 
 ## 2026-07-21 — Witch Tools Dev_v2.5.1 Auto-Aligned Vertex Inject
