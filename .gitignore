@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Blender autosaves and backups
+*.blend1
+*.blend2
+*.blend@
+*.blend~
+
+# Generated builds and archives
+dist/
+build/output/
+*.zip
+
+# Test output and local fixtures
+tests/output/
+tests/tmp/
+*.log
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment
+.env
+.venv/
+venv/
+
+# Temporary files
+*.tmp
+*.temp
+*~
