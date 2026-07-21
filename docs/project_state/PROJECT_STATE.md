@@ -14,22 +14,24 @@ Last updated: 2026-07-21
 
 ### Witch Tools
 
-- Current urgent build: `Dev_v2.5.2`
-- Artifact: `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`
+- Current build: `Dev_v2.6.0`
+- Artifact: `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
-- SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
+- SHA-256: `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`
 - Based on supplied baseline: `Dev_v2.4.0`
-- Supersedes: `Dev_v2.5.1`
+- Supersedes: `Dev_v2.5.2`
 - Target: Blender `4.5.0`
-- Automated runtime tested in: Blender Python `5.2.0 LTS`
-- Blender 4.5 production workflow: user-reported passed on the supplied collar
+- Selection Slots runtime: pending
+- Retained Curvature Sync production workflow: user-reported passed in Blender 4.5 under Dev_v2.5.2
 
 ### Witch Quickbar
 
-- Version: `Dev_v1.3.18`
-- Artifact: `witch_quickbar_dev_Dev_v1_3_18_package.zip`
+- Current build: `Dev_v1.4.0`
+- Artifact: `witch_quickbar_dev_Dev_v1_4_0_Select_Tab_Blender_4_5.zip`
 - Package: `witch_quickbar_dev`
-- SHA-256: `01fc12ee366c6484e209d1ee71519bd1f1ca711d4fc3c2710fec5e20b2ba2a1b`
+- SHA-256: `be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea`
+- Supersedes: `Dev_v1.3.18`
+- Target: Blender `4.5.0`
 - Update destination: `Witch_Quick_Access` public branch
 - Runtime test: pending
 
@@ -46,72 +48,82 @@ Last updated: 2026-07-21
 
 - Established repository rules, architecture, documentation tracking, and non-breaking branch safeguards on `Blender_Dev`.
 - Audited supplied Witch Tools, Quickbar, and Dev Modules baselines.
-- Implemented Curvature Sync MVP as Dev_v2.5.0 and Auto-Aligned Vertex Inject as Dev_v2.5.1.
-- Compared the user-supplied pre/post Curvature Sync collar files.
-- Confirmed the successful curvature coordinates and diagnosed retained pre-existing cross-edges mapped to different canonical slots.
-- Implemented **Replace Misaligned Column Edges** and produced Dev_v2.5.2.
-- User installed Dev_v2.5.2 in Blender 4.5, ran the corrected production collar workflow, and reported that it worked beautifully.
-- Updated feature state, Witch Tools state, build registry, compatibility, project state, and latest/full notes.
-- Preserved all public branches, Quickbar URLs, package identities, operator namespaces, assets, and external release locations.
+- Implemented and user-validated the primary Curvature Sync production collar workflow through Dev_v2.5.2.
+- Implemented Witch Tools Dev_v2.6.0 **Selection Slots**:
+  - persistent vertex/edge/face/mixed selection slots;
+  - multi-object Edit Mode;
+  - save/reselect/overwrite/clear/Clear All/add/remove/rename/reorder;
+  - scene records plus mesh custom-data markers;
+  - N-panel UI below Curvature Sync;
+  - stable operator contract.
+- Implemented Quickbar Dev_v1.4.0:
+  - populated Select tab;
+  - thin optional invocation of Witch Tools Selection Slots;
+  - responsive names, tooltips, rename, actions, and grip reorder;
+  - five supplied icons converted to packaged PNGs;
+  - safe unavailable-backend state.
+- Produced and statically audited both versioned ZIPs.
+- Created the Selection Slots feature packet and updated Witch Tools, Quickbar, build, compatibility, asset, integration, and state documentation.
+- Preserved all public branches, update URLs, package identities, existing operator namespaces, inherited asset paths, and external release locations.
 
 ## Current known-working state
 
-For automated Dev_v2.5.2 tests under Blender Python 5.2.0 LTS:
+Witch Tools Dev_v2.6.0 static validation:
 
-- add-on registration/unregistration passed;
-- static package parsing passed for 45 Python files;
-- actual collar processing completed across 26 selected chains;
-- 520 vertices were injected and 1,324 moved;
-- 96 misaligned existing column edges were replaced;
-- 975 canonical column edges were created;
-- zero column positions remained unresolved;
-- resulting vertex coordinates exactly matched the successful Dev_v2.5.1 curvature result;
-- no zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes were introduced;
-- special-data rejection occurred during copied-BMesh preflight without real-mesh topology-count changes;
-- save and reopen passed.
+- 46 Python files parse/compile;
+- no duplicate operator IDs;
+- ZIP integrity/safe paths/package hygiene passed;
+- package identity and footer URL preserved.
 
-For the user's Blender 4.5 production run:
+Quickbar Dev_v1.4.0 static validation:
 
-- installation and panel access were sufficient to run the workflow;
-- saved A/M/Z anchors and selected chains were available from the supplied pre-curvature file;
-- Analyze/Apply completed with misaligned-column replacement enabled;
-- the user visually confirmed the corrected curvature and column topology as successful.
+- 13 Python files parse/compile;
+- 36 packaged PNG assets and all icon mappings verified;
+- no duplicate operator IDs;
+- synthetic multi-slot layout construction passed;
+- package identity and public update URL preserved.
 
-No public compatibility surface was modified.
+Previously user-validated runtime state:
+
+- Witch Tools Dev_v2.5.2 installed in Blender 4.5;
+- saved Curvature Sync anchors/chains loaded;
+- Analyze/Apply completed on the production collar;
+- user reported the curvature and corrected column topology worked beautifully.
+
+No Blender runtime claim is made yet for the new Selection Slots or Quickbar Select tab.
 
 ## Active problems
 
-1. Interactive undo/redo has not yet been reported.
-2. Final production topology, normals, face winding, manifold state, and print-fit require inspection before slicing.
-3. Only safe two-face interior misaligned edges are replaced; ambiguous or special-data cases abort.
-4. Surplus chain vertices, automatic missing-Middle creation, and fully automatic chain discovery remain incomplete.
-5. Vertex Inject remains active-object based and aborts on ambiguous forks.
-6. Full canonical source import and source-derived UI/operator registries are pending.
+1. Witch Tools Dev_v2.6.0 Selection Slots require Blender 4.5 registration, UI, selection-domain, multi-object, save/reopen, topology-change, and undo/redo tests.
+2. Quickbar Dev_v1.4.0 requires Blender 4.5 overlay, dependency, drag/reorder, resize, tooltip, pass-through, file-load recovery, and undo tests.
+3. Public/dev side-by-side installation and update-button launch remain untested.
+4. Selection markers are persistent custom element data rather than immutable topology IDs; delete/split/duplicate behavior must be recorded.
+5. Final collar normals/manifold/print-fit inspection remains pending independently of Selection Slots.
+6. Full canonical source imports and source-derived UI/operator/asset registries remain pending.
 7. Public Witch Tools distribution/update strategy remains unresolved.
-8. Quickbar runtime/update-link testing and Witch Core source import remain pending.
+8. Witch Core source import remains pending.
 
 ## Next exact implementation step
 
-1. Save the successful corrected collar under a new versioned filename.
-2. Test interactive undo/redo in Blender 4.5.
-3. Inspect normals, face winding, non-manifold selections, and print-critical surfaces before slicing.
-4. Record any remaining unrelated topology defects separately.
-5. Import the complete Dev_v2.5.2 source into the canonical Witch Tools repository tree and generate UI/operator registries.
+1. Install Witch Tools Dev_v2.6.0 in Blender 4.5 and test Selection Slots thoroughly.
+2. Install Quickbar Dev_v1.4.0 after Witch Tools and test the Select tab plus the full overlay regression matrix.
+3. Test Quickbar with Witch Tools disabled.
+4. Patch only failures found in these runtime tests.
+5. Complete final collar inspection before slicing.
+6. Import both successful development source trees canonically and generate registries/manifests.
 
 ## Test status
 
-- Static ZIP/package checks: passed
-- Blender Python 5.2.0 LTS runtime checks: passed for tested operations
-- Actual collar correspondence repair: passed in automated runtime
-- Geometry-coordinate regression: passed
-- Degeneracy/duplicate/boundary-count checks: passed
-- Blender 4.5 installed production run: user-reported passed
-- Blender 4.5 visual curvature/column result: user-reported passed
-- Interactive UI undo/redo: not yet reported
-- Formal normals/manifold/print-fit validation: pending
+- Dev_v2.5.2 Blender 4.5 production Curvature Sync: user-reported passed
+- Dev_v2.6.0 static ZIP/package checks: passed
+- Dev_v1.4.0 static ZIP/package/asset/layout checks: passed
+- Selection Slots Blender 4.5 runtime: not performed
+- Quickbar Select tab Blender 4.5 runtime: not performed
+- Interactive undo/redo for new features: not verified
+- Save/reopen for Selection Slots: not performed
 - Public branches modified: no
-- Quickbar URLs or public compatibility surfaces modified: no
+- Public Quickbar update URL modified: no
 
 ## Known remaining issues
 
-Dev_v2.5.2 is still a development build, not a public release. The primary production collar workflow is now user-validated in Blender 4.5, but final print preparation requires topology and surface inspection.
+Dev_v2.6.0 and Quickbar Dev_v1.4.0 are development builds, not public releases. Their new Selection Slots workflow is statically validated but requires installed Blender 4.5 testing before release or reliance on long-term saved selections.
