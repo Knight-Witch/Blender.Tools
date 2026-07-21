@@ -1,5 +1,25 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-21 — Witch Tools Dev_v2.5.0 Curvature Sync MVP
+
+- Inspected the supplied Witch Tools Dev_v2.4.0 source and existing Vertex Lock / Protected Edit Zone implementation.
+- Implemented Curvature Sync MVP directly in Witch Tools while preserving package identity, operator namespaces, assets, and footer URL behavior.
+- Added A/M/Z capture with automatic selection clearing.
+- Added circular XY/XZ/YZ fitting, exact middle-axis normalization, equal segment counts per side, multi-chain/multi-object synchronization, missing-vertex injection, and optional shared-face column construction.
+- Added copied-BMesh dry-run validation, strict branched/ambiguous selection rejection, shape-key injection protection, unresolved-column reporting, and lock/edit-zone/anchor index remapping.
+- Fixed a pre-existing Vertex Locks unregister failure caused by a missing safe RNA-property deletion helper.
+- Produced `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`, SHA-256 `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`.
+- Added package README instructions, a collar-specific quick-start guide, user-visible changelog, latest/full notes, and compatibility records.
+- Static syntax/package validation passed for 44 Python files and six PNG assets; no cache files were shipped.
+- Blender Python 5.2.0 LTS registration/unregistration testing passed.
+- Synthetic mismatch repair injected two vertices, created two column edges, split two n-gons into four valid faces, and produced no degenerate geometry.
+- Protected-anchor tests passed; locked interior vertices aborted without mutation.
+- Actual collar test processed 21 chains across two objects, used 27 segments per side, injected 480 vertices, moved 1,113 vertices, created 747 column edges, and reported 41 unresolved positions instead of forcing them.
+- Lower collar manifold state was preserved; no zero-length edges, duplicate edges, zero-area faces, invalid faces, or new 3D interior edge intersections were introduced.
+- Matching upper/lower outer interface curve positions aligned within floating-point tolerance in the same run.
+- Exact Blender 4.5 UI, installed-package, and interactive undo/redo testing remain pending.
+- No public branch, Quickbar update destination, package identity, external release link, or asset path was changed.
+
 ## 2026-07-20 — Supplied development baseline audit
 
 - Audited user-supplied Witch Tools `Dev_v2.4.0`, Witch Quickbar `Dev_v1.3.18`, and Witch's Dev Modules `Dev_v0.0.9` archives.
