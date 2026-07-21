@@ -1,78 +1,40 @@
-# Witch Quickbar v1.0.1
+# Blender.Tools
 
-**Witch Quickbar** is a compact floating quick-access toolbar for Blender. It provides fast viewport controls for mode switching, rotation shortcuts, origin/cursor tools, snapping, and X-axis object mirroring workflows.
+Blender.Tools is the central development repository for Knight Witch Blender add-ons and shared Blender infrastructure.
 
-This public patch release includes the repaired input/overlay layer from the internal v1.1.2 repair build.
+## Add-on family
 
-## Features
+- **Witch Tools** — primary general-purpose N-panel toolkit and canonical owner of shared modeling, topology, BG3, and 3D-print workflow operators.
+- **Witch Quickbar** — separate floating-overlay companion interface with its own drawing, input-routing, persistence, assets, and display-state architecture.
+- **Witch Core** — specialized 3D-printing and manufacturing workflow add-on.
+- **Witch Dev Modules** — isolated development modules used before stable tools are integrated into their owning add-on.
 
-- Floating draggable 3D View quickbar
-- Lock/unlock control in the title bar
-- Resizable dock width and footer space
-- Reorderable mode buttons
-- Reorderable More Tools sections
-- Custom mode cycling with preference-based mode inclusion
-- Last-used mode return
-- Object/Edit rotation shortcuts
-- Origin, cursor, selection, and grid tools
-- X-axis Mirror Selected workflow with Cursor or World pivot
-- Shortcut assignment for Cycle Modes and Last Mode Used
-- Check-for-updates button linking to the project repository
+## Development branch
 
-## Mode Switcher
+`Blender_Dev` is the integration branch for current development and repository organization. Existing public release branches and their paths are intentionally preserved until their update URLs, download paths, and external release links have been fully audited.
 
-The Mode section provides quick access to:
+Current public branches must not be reorganized merely to match this development tree. Migration into the monorepo structure will be staged and compatibility-preserving.
 
-- Edit Mode
-- Object Mode
-- Weight Paint
-- Pose Mode
-- Sculpt Mode
-- Texture Paint
-- Vertex Paint
-- UV Data / Edit target
-- Cycle Modes
-- Last Mode Used
+## Source of truth
 
-Mode buttons can be drag-reordered. The custom cycle order follows the visible mode-button order and skips any modes disabled in preferences.
+Repository code and documentation are authoritative. Chat history, generated ZIP files, previous assistant statements, and remembered project context are supporting evidence only.
 
-## More Tools
+Before modifying code, read:
 
-### Rotate
+1. `AGENTS.md`
+2. `PROJECT_RULES.md`
+3. `docs/architecture/ARCHITECTURE.md`
+4. the relevant add-on's local `AGENTS.md` and `PROJECT_STATE.md`
+5. the relevant feature specification and state documents
 
-Rotate selected objects or edit-mode geometry around X, Y, or Z using the selected 90° / 180° step.
+Start with `docs/INDEX.md` for the documentation map.
 
-### Origins & Cursor
+## Current baseline warning
 
-Includes quick-access tools for:
+At the creation of `Blender_Dev`:
 
-- Origin to Geometry
-- Origin to Cursor
-- Cursor to Selected
-- Cursor to Grid
-- Selection to Cursor
-- Selection to Grid
+- the tracked Quickbar public branch contains a public release lineage;
+- the default `Witch_Main_Tools` branch contains only minimal placeholder Witch Tools documentation;
+- the latest locally developed Witch Tools and Quickbar development builds have not yet been conclusively reconciled against GitHub.
 
-### Mirror Objects
-
-Duplicates selected mesh objects and mirrors the duplicates across the X axis using either the 3D Cursor or World Origin as the pivot. The tool applies the required transform/origin steps automatically and leaves the mirrored duplicates selected.
-
-## Installation
-
-1. Download the latest Witch Quickbar `.zip` release.
-2. Open Blender.
-3. Go to `Edit > Preferences > Add-ons`.
-4. Click `Install`.
-5. Select the downloaded `.zip`.
-6. Enable Witch Quickbar.
-
-## Troubleshooting
-
-If the tool freezes, stops responding, or prevents you from selecting things in Blender:
-
-1. Go to `Edit > Preferences > Add-ons`.
-2. Find Witch Quickbar.
-3. Disable the add-on.
-4. Enable it again.
-
-This resets the floating overlay and should restore normal behavior.
+No development build should be declared current until its files, version metadata, target Blender version, and ancestry are imported and recorded in the build registry.
