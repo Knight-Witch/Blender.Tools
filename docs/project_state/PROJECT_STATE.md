@@ -1,6 +1,6 @@
 # Blender.Tools Project State
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
 
 ## Current baseline
 
@@ -10,16 +10,18 @@ Last updated: 2026-07-20
 - Default repository branch: `Witch_Main_Tools`
 - Default Witch Tools target Blender version: `4.5`
 
-## Candidate development baselines
+## Current development builds
 
 ### Witch Tools
 
-- Version: `Dev_v2.4.0`
-- Artifact: `Witch_Tools_Dev_v2_4_0_Blender_4_5.zip`
+- Current urgent build: `Dev_v2.5.0`
+- Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
-- SHA-256: `e141774f307f2402f2d0151f1f69be9f8fb6257254d0a1db223b6c1f3d457e6e`
-- Static audit: passed
-- Blender runtime: not yet tested in this audit
+- SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
+- Based on supplied baseline: `Dev_v2.4.0`
+- Target: Blender `4.5.0`
+- Runtime tested in: Blender Python `5.2.0 LTS`
+- Exact Blender 4.5 runtime: pending user test
 
 ### Witch Quickbar
 
@@ -28,8 +30,7 @@ Last updated: 2026-07-20
 - Package: `witch_quickbar_dev`
 - SHA-256: `01fc12ee366c6484e209d1ee71519bd1f1ca711d4fc3c2710fec5e20b2ba2a1b`
 - Update destination: `Witch_Quick_Access` public branch
-- Static audit: passed
-- Blender runtime: not yet tested in this audit
+- Runtime test: pending
 
 ### Witch's Dev Modules
 
@@ -37,76 +38,64 @@ Last updated: 2026-07-20
 - Artifact: `witch_dev_modules.zip`
 - Package: `witch_dev_modules`
 - SHA-256: `e5306886a1e5edd1bb57fcf106f9a4ca51503060e0ecb5b4a0ed8a1bcead28f6`
-- Static audit: passed
-- Packaging hygiene: failed because the archive contains 34 `.pyc` files in `__pycache__`
-- Blender runtime: not yet tested in this audit
+- Packaging defect: original archive contains 34 `.pyc` files
+- Runtime test: pending
 
 ## Last completed work
 
-- Created the `Blender_Dev` branch without modifying public branches.
-- Established root repository rules and documentation hierarchy.
-- Defined parent add-on architecture and ownership boundaries.
-- Added a staged, non-breaking repository migration plan.
-- Created Witch Tools, Witch Quickbar, Witch Core, and Witch Dev Modules documentation systems.
-- Created Quickbar-specific overlay, input, asset, and integration contracts.
-- Created the complete Curvature Sync feature packet and domain use-case notes.
-- Audited the three user-supplied development archives.
-- Recorded archive and per-file SHA-256 manifests.
-- Confirmed Witch Tools and Quickbar packages contain no generated cache files.
-- Confirmed Quickbar Dev_v1.3.18 uses the separate dev package/operator namespace and opens the public `Witch_Quick_Access` branch for update checks.
-- Recorded Dev Modules cache-file and documentation defects.
+- Established root and add-on documentation/rules architecture on `Blender_Dev`.
+- Audited the supplied Witch Tools, Quickbar, and Dev Modules baselines.
+- Inspected Witch Tools Dev_v2.4.0 and the existing Vertex Lock / Protected Edit Zone implementation.
+- Implemented Curvature Sync MVP directly in Witch Tools and produced Dev_v2.5.0.
+- Added multi-object circular chain synchronization, exact middle normalization, missing-vertex injection, shared-face column creation, copied-BMesh preflight, and protected-zone/index-remapping behavior.
+- Fixed a pre-existing Vertex Locks unregister helper failure.
+- Updated the Curvature Sync packet, Witch Tools state, build registry, compatibility log, and packaged add-on documentation.
+- Tested the build against synthetic meshes and the supplied actual collar file in Blender Python 5.2.0 LTS.
 
 ## Current known-working state
 
-The source archives are now identified and statically validated, but they have not yet been installed or runtime-tested in Blender 4.5 during this audit.
+For the tested Dev_v2.5.0 operations in Blender Python 5.2.0 LTS:
 
-Public Quickbar source lineage remains tracked on `Witch_Quick_Access`. No public branch or compatibility surface has been modified.
+- add-on registration/unregistration passed
+- static package parsing passed
+- synthetic vertex injection and face splitting passed
+- invalid branched topology rejected without mutation
+- protected anchors accepted and locked interior vertices rejected
+- actual 21-chain / two-object collar test completed
+- lower collar manifold state preserved
+- no zero-length edges, duplicate edges, zero-area faces, invalid faces, or new 3D edge intersections introduced
+- matching upper/lower outer interface curve positions aligned within floating-point tolerance
+- save/reopen passed
+
+No public branch, public Quickbar update destination, package identity, or external release location was changed.
 
 ## Active problems
 
-1. Candidate source trees have not yet been imported into canonical repository locations.
-2. Blender 4.5 install/register/unregister smoke tests are pending for all three packages.
-3. Public Quickbar package path and installed-update behavior still require runtime verification.
-4. Dev Modules must be imported without generated cache files and its documents normalized to host Dev_v0.0.9.
-5. No automated build system exists yet.
-6. UI and operator registries have not yet been generated from the imported source.
-7. Witch Core source/project baseline has not yet been supplied or audited.
-8. Curvature Sync implementation must wait until the Witch Tools Vertex Lock/protected-zone architecture is inspected in the imported Dev_v2.4.0 source.
+1. Dev_v2.5.0 requires immediate user testing in Blender 4.5.
+2. Interactive undo/redo could not be validated in the background Python environment.
+3. The actual collar selection/result must be inspected manually before printing.
+4. The Curvature Sync MVP may report unresolved column positions where a safe shared-face connection is unavailable.
+5. Automatic chain discovery, missing-Middle creation, and surplus-vertex dissolution remain unimplemented.
+6. Full canonical source import and source-derived UI/operator registries are still pending.
+7. Public Witch Tools distribution/update strategy remains unresolved.
+8. Quickbar runtime/update-link testing remains pending.
+9. Witch Core source baseline remains pending.
 
 ## Next exact implementation step
 
-Import the candidate source archives into canonical development trees while preserving existing package folder names, operator IDs, asset paths, and update URLs. Strip only generated `__pycache__` and `.pyc` files from the Dev Modules canonical copy.
+The user should install Witch Tools Dev_v2.5.0 in Blender 4.5 and run Curvature Sync on a backup copy of the collar using explicit A/M/Z and curve-chain selections. Record the Analyze and Apply reports, inspect upper/lower interface alignment, and test interactive undo/redo.
 
-Then perform Blender 4.5 smoke tests and generate source-derived UI/operator inventories before beginning Vertex Inject or Curvature Sync implementation.
-
-## Outstanding decisions
-
-- Exact vendoring/build method for shared modules.
-- Whether legacy public branch files remain permanent mirrors or are generated from canonical source.
-- Final canonical source-tree package placement after installation testing.
-- Whether future public update checks should target releases, a manifest, or a stable compatibility file.
-- Whether the experimental Vertex Inject/Curvature Sync prototype starts in Witch Dev Modules or a feature-isolated Witch Tools dev package.
-
-## Files changed in this documentation pass
-
-- development baseline audit
-- per-file source/archive manifests
-- build registry
-- Witch Tools project state
-- Quickbar project state
-- Witch Dev Modules rules, state, roadmap, and notes
-- root and add-on changelog/state documentation
+Any resulting failure should be patched narrowly against Dev_v2.5.0. Once the urgent collar repair works, import the complete source into the canonical Witch Tools repository tree and generate UI/operator registries.
 
 ## Test status
 
-- ZIP integrity and safe-path checks: passed for all three artifacts.
-- Static Python syntax parse: passed for all source files.
-- Blender runtime tests: not performed.
-- Public update-button launch test: not performed.
-- Package installation/upgrade tests: not performed.
-- Public branches modified: no.
-- Runtime source moved or refactored: no.
+- Static ZIP/package checks: passed
+- Blender Python 5.2.0 LTS runtime checks: passed for tested operations
+- Blender 4.5 runtime: not performed
+- Interactive UI and undo/redo: not verified
+- Public branches modified: no
+- Quickbar URLs or public compatibility surfaces modified: no
 
 ## Known remaining issues
 
-The uploaded archives are the best available candidate baselines, but they are not yet canonical runtime-verified repository source. The next session must begin from this file and the baseline audit rather than chat memory.
+Dev_v2.5.0 is an urgent development MVP, not a public release. The original uploaded collar file remains untouched, and any use for print preparation requires visual/manual verification in Blender 4.5.
