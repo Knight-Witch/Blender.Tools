@@ -1,5 +1,17 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-07-21 — Collar embedded-edge / unsplit-face repair
+
+- Inspected `Collar_DESIGN_v6 - Copy.blend` after manual vertex and edge insertion.
+- Identified eight unambiguous stale-face cases represented by zero-face wire edges whose endpoints belonged to exactly one existing face: two on `COLLAR - UPPER.002` and six on `RIGHT EXTENSION`.
+- Produced a Blender 4.5 exact-file repair script that uses the existing edge to split the stale face, preserving the inserted vertices and edge network.
+- Added strict baseline object/count validation, transactional temporary-BMesh processing, material and smoothing preservation, normal update, safe output naming, and JSON reporting.
+- Added validation preventing new zero-length edges, zero-area faces, duplicate faces, boundary changes, or overlinked-edge-count changes.
+- Added optional Windows BAT execution and manual Blender Scripting instructions.
+- Added `WT-CLEAN-001 — Resolve Embedded Edges / Repair Unsplit Faces` to the roadmap for later generalized Witch Tools integration.
+- Script syntax and exact-file behavior passed under Blender Python 5.2.0 LTS; Blender 4.5 execution remains pending.
+- No Witch Tools package, public branch, operator namespace, asset path, or update URL changed.
+
 ## 2026-07-21 — Dev_v2.5.1 Auto-Aligned Vertex Inject
 
 - Added ordered A/B/C standalone vertex injection under Edit Tools.
