@@ -1,5 +1,20 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-20 — Supplied development baseline audit
+
+- Audited user-supplied Witch Tools `Dev_v2.4.0`, Witch Quickbar `Dev_v1.3.18`, and Witch's Dev Modules `Dev_v0.0.9` archives.
+- Recorded artifact names, package identities, Blender 4.5 metadata, archive SHA-256 hashes, and complete per-file manifests.
+- Confirmed ZIP integrity, safe archive paths, and Python syntax parsing for 43 Witch Tools files, 12 Quickbar files, and 17 Dev Modules source files.
+- Confirmed Witch Tools and Quickbar contain no generated cache files.
+- Recorded that the Dev Modules archive contains 34 `.pyc` files inside `__pycache__` directories and therefore requires a cleaned canonical source/package import.
+- Recorded Dev Modules documentation/version inconsistencies while preserving the original archive hash as the supplied baseline record.
+- Located Witch Tools' footer link to `Witch_Main_Tools`.
+- Located Quickbar's update destination at `Witch_Quick_Access` and confirmed its operator only opens the URL rather than fetching or comparing versions.
+- Added Witch Dev Modules local rules, project state, roadmap, and notes changelogs.
+- Updated the documentation index, umbrella and add-on project states, build registry, branch/release audit, compatibility registry, and latest/full notes changelogs.
+- Confirmed no runtime source, public branch, update URL, package identity, operator namespace, asset path, or external release location was changed.
+- Confirmed Blender runtime, installation, upgrade, UI, operator, and update-button launch tests were not performed.
+
 ## 2026-07-20 — Development architecture and non-breaking repository organization
 
 - Created `Blender_Dev` from `Witch_Quick_Access` without modifying public branches.
