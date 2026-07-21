@@ -1,5 +1,18 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-07-21 — Dev_v2.5.0 Curvature Sync MVP
+
+- Inspected the supplied Dev_v2.4.0 source and existing Vertex Lock / Protected Edit Zone implementation.
+- Implemented Curvature Sync under Edit Tools without changing the `Witch_Tools_Dev` package identity, existing operator namespaces, assets, or footer link.
+- Added explicit A/M/Z capture, automatic selection clearing, circular XY/XZ/YZ fitting, exact middle-axis normalization, equal segment counts per side, multi-chain/multi-object synchronization, missing-vertex injection, and optional shared-face column construction.
+- Added copied-BMesh preflight, strict ambiguous/branched selection rejection, shape-key injection protection, unresolved-column reporting, and stored lock/edit-zone/anchor index remapping.
+- Fixed the existing Vertex Locks unregister cleanup failure caused by a missing safe RNA-property deletion helper.
+- Produced `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`, SHA-256 `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`.
+- Added the package changelog entry, README workflow, collar quick-start guide, latest/full notes, and compatibility update.
+- Static parsing passed for all 44 Python files; no generated cache files were shipped.
+- Blender Python 5.2.0 LTS registration/unregistration, synthetic repair, protected-anchor, invalid-selection, actual collar, save/reopen, geometry-validity, manifold, and 3D intersection comparison tests were performed.
+- Exact Blender 4.5 UI and interactive undo/redo testing remain pending.
+
 ## 2026-07-20 — Development baseline audit
 
 - Recorded user-supplied `Witch Tools Dev_v2.4.0` as the best available candidate current baseline.
