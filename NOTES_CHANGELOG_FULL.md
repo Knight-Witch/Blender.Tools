@@ -1,5 +1,23 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-21 — Witch Tools Dev_v2.5.2 Curvature Sync column repair
+
+- Compared the user-supplied pre/post Curvature Sync collar files and confirmed that the intended curve coordinates and spacing were successful.
+- Diagnosed 96 retained pre-existing cross-edges whose endpoints mapped to different canonical slots: 81 on `RIGHT EXTENSION` and 15 on `COLLAR - UPPER.002`.
+- Added **Replace Misaligned Column Edges** to Curvature Sync.
+- Added strict copied-BMesh preflight for safe two-face interior edges and rejection of boundary, non-two-face, Seam, Sharp, Crease, bevel/custom-data, mixed-material, and mixed-smoothing cases.
+- Added native stale-edge dissolution followed by reconstruction of canonical same-slot column edges.
+- Preserved the exact Dev_v2.5.1 curvature-coordinate result while correcting correspondence topology.
+- Produced `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`, SHA-256 `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`.
+- Static parsing passed for 45 Python files; no generated cache files were shipped.
+- Registration/unregistration and actual collar processing passed under Blender Python 5.2.0 LTS.
+- The actual test processed 26 chains, injected 520 vertices, moved 1,324, replaced 96 misaligned edges, created 975 canonical columns, and left zero unresolved positions.
+- Exact vertex-coordinate multiset regression against the successful Dev_v2.5.1 post-curvature file passed.
+- No zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes were introduced.
+- A special-data edge test aborted during copied-BMesh preflight without changing real-mesh topology counts; save/reopen passed.
+- Exact Blender 4.5 UI and interactive undo/redo testing remain pending.
+- No public branch, Quickbar update destination, package identity, external release link, or asset path was changed.
+
 ## 2026-07-21 — Witch Tools Dev_v2.5.1 Auto-Aligned Vertex Inject
 
 - Extended the Curvature Sync MVP build with a standalone Edge / Vertex Inject tool.
@@ -14,7 +32,7 @@
 - Blender Python 5.2.0 LTS registration/unregistration passed.
 - Synthetic injection placed D at the exact expected target-edge location and split one quad into two valid faces.
 - Curvature Sync synthetic regression passed after the new operator was integrated.
-- Exact Blender 4.5 UI, real collar selection behavior, and interactive undo/redo remain pending.
+- Exact Blender 4.5 UI, real collar selection behavior, and interactive undo/redo remained pending.
 - No public branch, Quickbar update destination, package identity, external release link, or asset path was changed.
 
 ## 2026-07-21 — Witch Tools Dev_v2.5.0 Curvature Sync MVP
@@ -26,7 +44,7 @@
 - Added copied-BMesh dry-run validation, strict branched/ambiguous selection rejection, shape-key injection protection, unresolved-column reporting, and lock/edit-zone/anchor index remapping.
 - Fixed a pre-existing Vertex Locks unregister failure caused by a missing safe RNA-property deletion helper.
 - Produced `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`, SHA-256 `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`.
-- Tested registration/unregistration, synthetic mismatch repair, protected anchors, invalid selection, actual collar processing, save/reopen, geometry validity, manifold state, and 3D intersection comparison under Blender Python 5.2.0 LTS.
+- Tested registration/unregistration, synthetic mismatch repair, protected anchors, invalid selection, actual collar processing, save/reopen, geometry validity, manifold state, and 3D edge-intersection comparison under Blender Python 5.2.0 LTS.
 - Exact Blender 4.5 UI and interactive undo/redo remained pending.
 
 ## 2026-07-20 — Supplied development baseline audit
