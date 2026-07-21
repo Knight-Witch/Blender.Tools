@@ -34,7 +34,32 @@ Last updated: 2026-07-21
 
 ## Witch Tools
 
-### Development Dev_v2.5.0 — Curvature Sync MVP
+### Development Dev_v2.5.2 — Curvature Sync column repair
+
+- Artifact: `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`
+- Package folder: `Witch_Tools_Dev`
+- Intended Blender target in source metadata: 4.5.0
+- Archive SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
+- Static Python/package audit: passed for 45 Python files; no generated cache files shipped
+- Runtime environment actually tested: Blender Python `5.2.0 LTS`
+- Blender 4.5 runtime verification: not performed; user test pending
+- Operating environment: Linux container for automated checks
+- Features tested: registration/unregistration, actual 26-chain collar Curvature Sync, missing-vertex injection, curvature movement, detection and replacement of 96 misaligned existing column edges, canonical column reconstruction, exact coordinate regression, topology-degeneracy and duplicate checks, boundary-count comparison, special-data preflight rejection, save/reopen
+- Result: 520 vertices injected, 1,324 moved, 96 misaligned edges replaced, 975 canonical column edges created, and zero unresolved column positions in the tested collar file
+- Regression result: resulting vertex-coordinate multisets exactly matched the successful Dev_v2.5.1 curvature result; the patch changed topology correspondence rather than the intended curve coordinates
+- Known compatibility limitations: normal Blender 4.5 UI interaction, installed-package behavior, and interactive undo/redo remain unverified; only safe two-face interior misaligned edges are replaced
+- Tester: OpenAI container test harness using the user-supplied Dev package and pre/post `.blend` files
+
+### Development Dev_v2.5.1 — superseded Vertex Inject + Curvature Sync build
+
+- Artifact: `Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`
+- Package folder: `Witch_Tools_Dev`
+- Archive SHA-256: `fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
+- Runtime environment actually tested: Blender Python `5.2.0 LTS`
+- Blender 4.5 runtime verification: not performed
+- Status: superseded by Dev_v2.5.2 after the production collar exposed retained misaligned existing column edges
+
+### Development Dev_v2.5.0 — superseded Curvature Sync MVP
 
 - Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
 - Package folder: `Witch_Tools_Dev`
@@ -42,12 +67,8 @@ Last updated: 2026-07-21
 - Archive SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
 - Static Python/package audit: passed
 - Runtime environment actually tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 runtime verification: not performed; user test pending
-- Operating environment: Linux container for automated checks
-- Features tested: registration/unregistration, synthetic circular chain repair, vertex injection, shared-face splitting, exact middle normalization, locked-anchor behavior, locked-interior rejection, invalid-selection cancellation, actual two-object collar repair, save/reopen, geometry validity, manifold comparison, 3D edge-intersection comparison
-- Result: tested operations passed in Blender Python 5.2.0 LTS; the collar test reported 41 unresolved column positions rather than forcing them
-- Known compatibility limitations: normal Blender 4.5 UI interaction and interactive undo/redo remain unverified
-- Tester: OpenAI container test harness using the user-supplied source and `.blend` file
+- Blender 4.5 runtime verification: not performed
+- Result: first circular Curvature Sync MVP; superseded by Dev_v2.5.1 and Dev_v2.5.2
 
 ### Development Dev_v2.4.0 — superseded candidate baseline
 
@@ -57,7 +78,7 @@ Last updated: 2026-07-21
 - Archive SHA-256: `e141774f307f2402f2d0151f1f69be9f8fb6257254d0a1db223b6c1f3d457e6e`
 - Static Python syntax audit: passed
 - Blender 4.5 runtime verification in the baseline audit: not performed
-- Status: preserved source baseline used to produce Dev_v2.5.0
+- Status: preserved source baseline used to produce Dev_v2.5.x
 
 ## Witch's Dev Modules
 
