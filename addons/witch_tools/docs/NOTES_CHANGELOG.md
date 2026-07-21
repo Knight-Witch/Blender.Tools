@@ -2,24 +2,17 @@
 
 Date: 2026-07-20
 
-## Documentation update
+## Development baseline audit
 
-- Established Witch Tools as the canonical owner of general-purpose modeling and topology operators.
-- Added local development and mesh-safety rules.
-- Recorded that the current Dev_v2.x source baseline is not yet verified in GitHub.
-- Added baseline-recovery tasks before new code implementation.
-- Added initial roadmap entries for Vertex Inject, bulk correspondence repair, protected zones, and Curvature Sync.
-- Linked Curvature Sync to its dedicated feature packet.
-
-## Files updated
-
-- `addons/witch_tools/AGENTS.md`
-- `addons/witch_tools/docs/PROJECT_STATE.md`
-- `addons/witch_tools/docs/ROADMAP.md`
-- `addons/witch_tools/docs/NOTES_CHANGELOG.md`
-- `addons/witch_tools/docs/NOTES_CHANGELOG_FULL.md`
-- `docs/features/curvature_sync/*`
+- Recorded the user-supplied `Witch Tools Dev_v2.4.0` archive as the best available candidate current baseline.
+- Recorded package folder `Witch_Tools_Dev`, Blender target 4.5.0, archive SHA-256, and complete per-file manifest.
+- Confirmed ZIP safety and Python syntax parsing for all 43 Python files.
+- Confirmed the package contains 6 PNG assets and no `__pycache__` or `.pyc` files.
+- Recorded Object Snap as the current Dev_v2.4.0 addition.
+- Located the footer GitHub destination: `Witch_Main_Tools`.
+- Recorded that the footer control is a direct URL link, not a verified version-comparison system.
+- Updated project state, build registry, compatibility registry, and branch audit.
 
 ## Implementation status
 
-Documentation only. No Witch Tools source was modified or tested.
+No Witch Tools source was modified or runtime-tested. Dev_v2.4.0 remains a candidate baseline pending canonical source import and Blender 4.5 smoke testing.
