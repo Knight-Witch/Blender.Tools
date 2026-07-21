@@ -8,111 +8,114 @@ Last updated: 2026-07-21
 - Canonical role: primary general-purpose N-panel toolkit
 - Default target Blender version: 4.5
 - Development package identity: `Witch_Tools_Dev`
+- Development branch: `Blender_Dev`
 
 ## Current development build
 
-- Version: `Dev_v2.5.2`
-- Artifact: `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`
-- SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
+- Version: `Dev_v2.6.0`
+- Artifact: `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`
+- SHA-256: `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`
 - Package folder: `Witch_Tools_Dev`
 - Declared Blender target: `4.5.0`
-- Python source files: 45
+- Python source files: 46
 - PNG assets: 6
 - Generated cache files: none
-- Static Python syntax audit: passed
-- Automated runtime tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 installed production workflow: user-validated for Curvature Sync Apply on the supplied collar
+- Static syntax/package audit: passed
+- Blender runtime in this implementation pass: not available
 
-Dev_v2.5.2 was produced from Dev_v2.5.1 without changing package identity, existing operator identifiers, assets, or the Witch Tools footer URL.
+Dev_v2.6.0 was produced from the successful Dev_v2.5.2 collar build without changing package identity, prior operator identifiers, assets, or the Witch Tools footer URL.
 
 ## Current implementation
 
-Dev_v2.5.2 retains:
+Dev_v2.6.0 retains:
 
-- Auto-Aligned Vertex Inject with ordered A/B/C selection, target-edge projection, optional C-D face split, and copied-BMesh preflight;
+- Auto-Aligned Vertex Inject;
 - Curvature Sync circular A/M/Z multi-chain and multi-object repair;
-- Vertex Lock / Protected Edit Zone integration and reference remapping;
-- the exact curve-coordinate result produced by Dev_v2.5.1 on the supplied collar.
+- Replace Misaligned Column Edges;
+- Vertex Lock / Protected Edit Zone integration;
+- all existing Dev_v2.x panels and workflows.
 
-Dev_v2.5.2 adds Curvature Sync > **Replace Misaligned Column Edges**:
+It adds **Edit Tools > Selection Slots** immediately below Curvature Sync:
 
-- detects existing cross-edges whose endpoints map to different canonical slots;
-- accepts only safe two-face interior edges;
-- dissolves stale edges and rebuilds correct same-slot columns;
-- rejects boundary, non-two-face, Seam, Sharp, Crease, bevel/custom-data, mixed-material, or mixed-smoothing edges before mutation;
-- reports planned/replaced counts in Analyze and Apply.
+- persistent renameable slots for vertex, edge, face, and combined mesh selection modes;
+- one or multiple objects in multi-object Edit Mode;
+- save/overwrite, reselect, clear, Clear All, remove, add, and reorder;
+- automatic initial Slot 1 and a maximum of 20 slots;
+- scene slot records with stable UIDs and object references;
+- per-slot vertex/edge/face integer custom-data markers stored in mesh data;
+- `.blend` persistence design without transient BMesh-index storage;
+- stable `mesh.wt_selection_slot_*` operator family for Quickbar integration;
+- responsive N-panel name fields and native LONGDISPLAY, FILE_TICK, TRASH, REMOVE, and ADD icons.
 
 ## Last completed work
 
-- Compared `Collar_PRE-curvature_sync.blend` and `Collar_POST-curvature_sync.blend`.
-- Confirmed the curvature math and vertex positions were successful.
-- Diagnosed 96 retained pre-existing cross-edges mapped to different canonical slots: 81 on `RIGHT EXTENSION` and 15 on `COLLAR - UPPER.002`.
-- Implemented safe misaligned-column replacement and packaged Dev_v2.5.2.
-- User installed Dev_v2.5.2 in Blender 4.5, ran the corrected Curvature Sync workflow on the supplied pre-curvature collar file, and reported that the result worked beautifully.
-- Updated feature, build, compatibility, project-state, roadmap, and notes documentation.
-- Preserved the prior exact-file unsplit-face repair utility as separate work; no unrelated cleanup system was refactored.
+- Recorded user validation that Dev_v2.5.2 corrected the production collar curvature/column topology in Blender 4.5.
+- Implemented Selection Slots as the canonical Witch Tools backend and N-panel UI.
+- Added Quickbar-safe operator contracts for save, reselect, clear, Clear All, add, remove, rename, and move.
+- Added a Selection Slots quick-start and package README/changelog/notes/compatibility updates.
+- Produced and statically audited the Dev_v2.6.0 ZIP.
+- Created the repository Selection Slots specification, state, roadmap, test plan, decisions, and reference cases.
 
 ## Current known-working state
 
-Under Blender Python 5.2.0 LTS:
+Previously verified Dev_v2.5.2 state:
 
-- add-on registration/unregistration passed;
-- package syntax passed for all 45 Python files;
-- the actual pre-curvature collar processed 26 selected chains at 26 segments per side;
-- 520 vertices were injected;
-- 1,324 vertices were moved;
-- 96 misaligned existing column edges were replaced;
-- 975 canonical column edges were created;
-- zero column positions remained unresolved;
-- vertex-coordinate multisets exactly matched the successful Dev_v2.5.1 post-curvature file;
-- no zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes were introduced;
-- material index and face smoothing distributions remained consistent;
-- special-data edge rejection occurred during copied-BMesh preflight without real-mesh topology-count changes;
-- save and reopen passed.
+- the user installed it in Blender 4.5 and confirmed the production Curvature Sync result worked beautifully;
+- automated Blender Python 5.2 tests passed for the collar correspondence repair and save/reopen.
 
-Under the user's Blender 4.5 environment:
+Dev_v2.6.0 static validation:
 
-- the add-on installed and the Curvature Sync UI was usable;
-- the saved A/M/Z and chain selection workflow restored from the supplied file;
-- Analyze/Apply completed on the production collar;
-- the user visually confirmed that the corrected curvature and column topology worked beautifully.
+- all 46 Python files parse and compile;
+- no duplicate `bl_idname` values;
+- ZIP integrity and safe paths passed;
+- no `__pycache__`, `.pyc`, `.pyo`, or unrelated source assets shipped;
+- package root remains `Witch_Tools_Dev`;
+- footer URL remains `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`.
 
-Pre-existing wire, boundary, overlinked, and intersection conditions remain in the collar files. The patch corrects column correspondence and does not claim to clean unrelated pre-existing topology.
+Selection Slots itself has not yet been runtime-tested in Blender.
 
 ## Active problems
 
-1. Interactive undo/redo has not yet been reported by the user.
-2. Formal normals, face-winding, manifold, and print-fit inspection remain pending before slicing.
-3. Only safe two-face interior misaligned edges are replaced; special-data and ambiguous cases abort.
-4. Surplus chain vertices and automatic missing-Middle creation remain outside the current MVP.
-5. Standalone Vertex Inject remains active-object based and aborts on ambiguous forks.
-6. The full Dev_v2.5.2 source tree has not yet been imported into the final canonical repository source location.
-7. Source-derived UI and operator registries remain pending.
+1. Dev_v2.6.0 installation and registration require Blender 4.5 testing.
+2. Vertex, edge, face, mixed-domain, and multi-object save/reselect behavior require runtime validation.
+3. Save/reopen persistence and interactive undo/redo are unverified.
+4. Blender topology operations may delete or propagate custom marker data; actual Blender 4.5 behavior must be recorded.
+5. Hidden or unavailable saved objects are not forcibly unhidden.
+6. Linked objects sharing one Mesh datablock share underlying selection-marker layers.
+7. N-panel native tooltip behavior for clipped editable names requires visual validation.
+8. The full Dev_v2.6.0 source tree has not yet been imported into the final canonical repository source location.
+9. Source-derived UI and operator registries remain pending.
+10. Final collar normals/manifold/print-fit inspection remains pending independently of Selection Slots.
 
 ## Next exact implementation step
 
-1. Save the successful corrected collar under a new versioned filename.
-2. Test interactive undo/redo in Blender 4.5.
-3. Inspect normals, face winding, non-manifold selections, and print-critical surfaces before slicing.
-4. Record any remaining unrelated topology problems separately from Curvature Sync.
-5. Import the complete Dev_v2.5.2 source into the canonical Witch Tools repository tree and generate UI/operator registries.
+Install Dev_v2.6.0 in Blender 4.5 on a backup `.blend`. Test:
+
+1. vertex, edge, face, and combined-domain slots;
+2. multi-object Edit Mode;
+3. overwrite after adding a missed element;
+4. save/reopen persistence;
+5. clear versus remove and Clear All;
+6. add, rename, and reorder;
+7. deleted/subdivided/duplicated topology behavior;
+8. undo/redo;
+9. regression of Curvature Sync, Vertex Inject, Vertex Locks, Object Snap, panel collapse, and unregister/re-register.
+
+Patch only runtime failures found by those tests. After validation, import the complete Dev_v2.6.0 source tree canonically and generate UI/operator registries.
 
 ## Test status
 
-- ZIP integrity and package layout: passed
-- Python syntax: passed for all 45 source files
-- Blender Python 5.2 registration/unregistration: passed
-- actual collar correspondence repair: passed in automated runtime
-- geometry-coordinate regression against Dev_v2.5.1: passed
-- degeneracy/duplicate/boundary-count checks: passed
-- special-data cancellation without real-mesh mutation: passed
-- save/reopen: passed
-- Blender 4.5 installed Curvature Sync production run: user-reported passed
-- Blender 4.5 visual curvature/column result: user-reported passed
-- interactive undo/redo: not yet reported
-- formal normals/manifold/print-fit validation: pending
-- public release/update behavior: not modified or tested
+- Dev_v2.5.2 Blender 4.5 production Curvature Sync: user-reported passed
+- Dev_v2.6.0 ZIP integrity and safe paths: passed
+- Dev_v2.6.0 Python syntax/compile: passed for 46 files
+- Duplicate operator-ID scan: passed
+- Cache/package hygiene: passed
+- Blender 4.5 Selection Slots runtime: not performed
+- Save/reopen: not performed for Selection Slots
+- Multi-object selection restore: not performed
+- Interactive undo/redo: not verified
+- Public release/update behavior: not modified or tested
 
 ## Known remaining issues
 
-Dev_v2.5.2 remains a development build rather than a public release. The primary collar repair workflow is now user-validated in Blender 4.5, but final print preparation still requires topology and surface inspection.
+Dev_v2.6.0 is a development build, not a public release. Selection Slots uses persistent custom element markers rather than immutable topology UUIDs, so destructive topology changes can alter which elements survive or inherit a saved slot.
