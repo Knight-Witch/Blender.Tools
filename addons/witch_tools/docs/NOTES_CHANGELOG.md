@@ -1,18 +1,22 @@
 # Witch Tools Notes Changelog — Latest Update
 
-Date: 2026-07-20
+Date: 2026-07-21
 
-## Development baseline audit
+## Dev_v2.5.0 — Curvature Sync MVP
 
-- Recorded the user-supplied `Witch Tools Dev_v2.4.0` archive as the best available candidate current baseline.
-- Recorded package folder `Witch_Tools_Dev`, Blender target 4.5.0, archive SHA-256, and complete per-file manifest.
-- Confirmed ZIP safety and Python syntax parsing for all 43 Python files.
-- Confirmed the package contains 6 PNG assets and no `__pycache__` or `.pyc` files.
-- Recorded Object Snap as the current Dev_v2.4.0 addition.
-- Located the footer GitHub destination: `Witch_Main_Tools`.
-- Recorded that the footer control is a direct URL link, not a verified version-comparison system.
-- Updated project state, build registry, compatibility registry, and branch audit.
+- Implemented Curvature Sync under Edit Tools against the Dev_v2.4.0 baseline.
+- Added multi-chain and multi-object circular A/M/Z repair, exact middle-axis normalization, equal per-side segment counts, missing-vertex injection, and optional shared-face column construction.
+- Added copied-BMesh preflight and strict failure for branched, closed, ambiguous, shape-key-incompatible, or protected-interior selections.
+- Integrated Vertex Lock / Protected Edit Zone reference preservation and index remapping.
+- Fixed an existing Vertex Locks unregister cleanup failure.
+- Packaged `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`.
+- Updated Curvature Sync state, Witch Tools project state, build registry, compatibility records, and package documentation.
 
-## Implementation status
+## Testing
 
-No Witch Tools source was modified or runtime-tested. Dev_v2.4.0 remains a candidate baseline pending canonical source import and Blender 4.5 smoke testing.
+- Complete package syntax audit: passed.
+- Registration/unregistration in Blender Python 5.2.0 LTS: passed.
+- Synthetic topology repair and strict failure tests: passed.
+- Locked-anchor / locked-interior tests: passed.
+- Actual two-object collar test: completed with unresolved positions reported rather than forced.
+- Exact Blender 4.5 UI and interactive undo/redo: pending user test.
