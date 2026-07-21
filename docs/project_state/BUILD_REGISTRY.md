@@ -1,6 +1,6 @@
 # Blender.Tools Build Registry
 
-This registry records verified baselines. A build is not current merely because it was generated recently or discussed in chat.
+This registry records verified and candidate baselines. A build is not current merely because it was generated recently or discussed in chat.
 
 ## Witch Quickbar
 
@@ -13,15 +13,23 @@ This registry records verified baselines. A build is not current merely because 
 - Intended Blender target in metadata: `4.5.0`
 - Additional versions tested: not independently verified in this repository audit
 - Artifact filename: not yet recorded
-- Package folder: not yet recorded
-- Update URL: not yet recorded
+- Public package folder: not yet mapped from the branch tree
+- Update destination: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Quick_Access`
 - Status: public tracked baseline; compatibility branch must remain intact
 
-### Current development baseline
+### Current development candidate — user supplied and statically audited
 
-- Version: unknown pending artifact import
-- Branch: no dedicated historical dev branch confirmed
-- Status: unresolved
+- Version: `Dev_v1.3.18`
+- Artifact: `witch_quickbar_dev_Dev_v1_3_18_package.zip`
+- Package folder: `witch_quickbar_dev`
+- Operator namespace: `witch_quickbar_dev.*`
+- Target Blender version: `4.5.0`
+- SHA-256: `01fc12ee366c6484e209d1ee71519bd1f1ca711d4fc3c2710fec5e20b2ba2a1b`
+- Build date represented by archive timestamps: `2026-07-15`
+- Static audit: ZIP safety and Python syntax passed
+- Runtime test: not performed in this audit
+- Update behavior: opens the public `Witch_Quick_Access` branch; no version comparison is performed
+- Status: best available candidate development baseline pending Blender 4.5 smoke test and source import
 
 ## Witch Tools
 
@@ -31,20 +39,53 @@ This registry records verified baselines. A build is not current merely because 
 - Default branch head: `ed92ded9fde9c1ee812faf227b31383b3eaa674d`
 - Branch content state: placeholder documentation only
 
-### Current development baseline
+### Current development candidate — user supplied and statically audited
 
-- Expected historical context: a Dev_v2.x line has been developed outside the verified default-branch source
-- Exact version: unverified
-- Commit: unverified
-- Artifact filename: unverified
-- Target Blender version: expected `4.5`, must be confirmed from source metadata
-- Status: candidate files must be located and imported
+- Version: `Dev_v2.4.0`
+- Artifact: `Witch_Tools_Dev_v2_4_0_Blender_4_5.zip`
+- Package folder: `Witch_Tools_Dev`
+- Target Blender version: `4.5.0`
+- SHA-256: `e141774f307f2402f2d0151f1f69be9f8fb6257254d0a1db223b6c1f3d457e6e`
+- Build date represented by archive timestamps: `2026-07-20`
+- Static audit: ZIP safety and Python syntax passed
+- Runtime test: not performed in this audit
+- Current recorded feature: Edit Tools > Object Snap
+- GitHub footer link: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`
+- Status: best available candidate development baseline pending Blender 4.5 smoke test and canonical source import
+
+## Witch's Dev Modules
+
+### Current development candidate — user supplied and statically audited
+
+- Host version: `Dev_v0.0.9`
+- Artifact: `witch_dev_modules.zip`
+- Package folder: `witch_dev_modules`
+- Target Blender version: `4.5.0`
+- SHA-256: `e5306886a1e5edd1bb57fcf106f9a4ca51503060e0ecb5b4a0ed8a1bcead28f6`
+- Build date represented by archive timestamps: `2026-05-10`
+- Included modules:
+  - Re-Namer `Dev_v0.0.1`
+  - Loose Parts → Objects `Dev_v0.0.1`
+  - Chain Generator `Dev_v0.0.8`
+- Static audit: ZIP safety and Python syntax passed
+- Packaging defect: 34 `.pyc` files shipped inside `__pycache__` directories
+- Documentation defect: package documents are not normalized to the declared host `Dev_v0.0.9`
+- Runtime test: not performed in this audit
+- Status: candidate baseline; canonical import must strip generated cache files and preserve the original archive hash in the audit record
 
 ## Witch Core
 
 - Current development baseline: not yet imported into this branch
 - Target Blender version: expected `4.5`, must be confirmed
 - Status: pending audit
+
+## Baseline manifests
+
+Per-file SHA-256 manifests are stored under:
+
+- `docs/project_state/baseline_manifests/WITCH_TOOLS_DEV_2_4_0.json`
+- `docs/project_state/baseline_manifests/WITCH_QUICKBAR_DEV_1_3_18.json`
+- `docs/project_state/baseline_manifests/WITCH_DEV_MODULES_0_0_9.json`
 
 ## Build-entry requirements
 
@@ -65,4 +106,4 @@ Every future entry must include:
 
 ## Rule
 
-Do not replace an entry marked verified with a remembered or chat-generated version unless the candidate files have been compared and the replacement is explicitly recorded.
+Do not replace an entry marked verified or candidate-current with a remembered or chat-generated version unless the replacement files are hashed, compared, and explicitly recorded.
