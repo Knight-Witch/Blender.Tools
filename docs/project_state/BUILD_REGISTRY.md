@@ -46,16 +46,17 @@ This registry records verified and candidate baselines. A build is not current m
 - PNG assets: 6
 - Generated cache files: none
 - Static syntax/package audit: passed
-- Runtime environment tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 runtime: pending user validation
+- Automated runtime environment tested: Blender Python `5.2.0 LTS`
+- Blender 4.5 production validation: user installed the build, reopened the supplied pre-curvature collar, ran Analyze/Apply with misaligned-column replacement enabled, and reported that the corrected result worked beautifully
 - Added capability: safe replacement of existing interior cross-edges mapped to different canonical column slots
 - Retained capabilities: Auto-Aligned Vertex Inject and circular multi-chain/multi-object Curvature Sync
-- Actual collar test: 26 chains, 26 segments per side, 520 injected vertices, 1,324 moved vertices, 96 replaced misaligned edges, 975 created canonical column edges, zero unresolved positions
+- Actual collar automated test: 26 chains, 26 segments per side, 520 injected vertices, 1,324 moved vertices, 96 replaced misaligned edges, 975 created canonical column edges, zero unresolved positions
 - Geometry regression: exact vertex-coordinate multiset match with the successful Dev_v2.5.1 post-curvature file
 - Safety checks: no zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes; special-data rejection occurred before real-mesh mutation
-- Known limitations: explicit A/M/Z and chain selection; only safe two-face interior edge replacement; Blender 4.5 UI and interactive undo/redo unverified
+- Remaining validation: interactive undo/redo, formal normals/manifold inspection, and print-fit/slicer validation
+- Known limitations: explicit A/M/Z and chain selection; only safe two-face interior edge replacement
 - Footer link remains: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`
-- Status: current urgent candidate build pending Blender 4.5 user test and canonical source import
+- Status: current urgent development build; primary Blender 4.5 production workflow user-validated, broader release validation and canonical source import pending
 
 ### Superseded urgent development build — Vertex Inject + Curvature Sync
 
