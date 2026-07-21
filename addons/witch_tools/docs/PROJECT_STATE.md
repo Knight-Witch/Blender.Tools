@@ -11,97 +11,95 @@ Last updated: 2026-07-21
 
 ## Current development build
 
-- Version: `Dev_v2.5.0`
-- Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
-- SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
+- Version: `Dev_v2.5.1`
+- Artifact: `Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`
+- SHA-256: `fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
 - Package folder: `Witch_Tools_Dev`
 - Declared Blender target: `4.5.0`
-- Python source files: 44
+- Python source files: 45
 - PNG assets: 6
-- Shipped cache artifacts: none
+- Generated cache files: none
 - Static Python syntax audit: passed
 - Runtime environment tested: Blender Python `5.2.0 LTS`
 - Exact Blender 4.5 runtime: pending user test
 
-This build was produced from the user-supplied Dev_v2.4.0 baseline without changing the package folder, operator namespaces, asset paths, or Witch Tools GitHub footer destination.
+Dev_v2.5.1 was produced from Dev_v2.5.0 without changing package identity, existing operator namespaces, assets, or the Witch Tools footer URL.
 
 ## Current implementation
 
-Dev_v2.5.0 retains the modular Dev_v2.x N-panel architecture and adds Edit Tools > Curvature Sync MVP:
+Dev_v2.5.1 retains all Dev_v2.5.0 Curvature Sync MVP behavior and adds Edit Tools > Edge / Vertex Inject:
 
-- explicit A/M/Z capture for selected open curve chains
-- automatic selection clearing after each capture
-- circular XY/XZ/YZ fitting
-- exact middle-axis normalization
-- equal segment counts per side of Middle
-- multi-chain and multi-object synchronization
-- missing-vertex injection
-- optional cross-column face splitting
-- copied-BMesh dry-run validation
-- Vertex Lock / Protected Edit Zone integration and index remapping
-- unresolved-column reporting
+- ordered A/B/C vertex selection
+- A-B source-column and B-C row-edge validation
+- ideal D relation from `C + (A - B)`
+- target-chain inference from A
+- strict straightest-continuation traversal and fork rejection
+- projection tolerance and existing-vertex reuse tolerance
+- target-edge splitting
+- default optional C-D connection and shared-face split
+- copied-BMesh preflight
+- shape-key and zero-area-face rejection
+- Vertex Lock, Protected Edit Zone, and Curvature Sync anchor remapping
+- C and D selected after success
 
-An existing Vertex Locks unregister failure caused by a missing safe RNA-property deletion helper was also repaired.
+Curvature Sync remains available with explicit A/M/Z circular multi-chain and multi-object repair.
 
 ## Last completed work
 
-- Inspected the Dev_v2.4.0 source and current Vertex Lock/protected-zone data model.
-- Implemented and packaged Curvature Sync MVP as Dev_v2.5.0.
-- Added add-on changelog, README workflow, quick-start guide, notes changelogs, and compatibility records.
-- Ran static parsing and runtime tests against synthetic geometry and the supplied collar file.
-- Confirmed the original uploaded collar file was not overwritten.
+- Implemented and packaged Auto-Aligned Vertex Inject as Dev_v2.5.1.
+- Added a dedicated Edit Tools section and user controls.
+- Added `VERTEX_INJECT_QUICK_START.md` and package changelog/compatibility updates.
+- Ran full package syntax, registration/unregistration, synthetic vertex-injection, face-split, and Curvature Sync regression tests.
+- Preserved the original uploaded collar file and all public compatibility surfaces.
 
 ## Current known-working state
 
 Under Blender Python 5.2.0 LTS:
 
 - add-on registration/unregistration passed
-- synthetic missing-vertex and missing-column repair passed
-- strict invalid-selection cancellation passed without mutation
-- locked anchor behavior and lock/index preservation passed
-- actual two-object collar test completed and saved/reopened
-- lower collar remained manifold
-- no zero-length edges, duplicate edges, zero-area faces, invalid faces, or new 3D edge intersections were introduced
-- matching upper/lower outer interface curves aligned within floating-point tolerance
+- synthetic target-edge injection placed D at the exact expected position
+- C-D face splitting produced two valid faces from one quad
+- result selection retained C and D
+- Curvature Sync synthetic regression passed
+- no zero-area faces were produced in the injection test
+
+The previous actual-collar Curvature Sync harness result remains documented, but standalone Vertex Inject has not yet been manually exercised on the actual collar topology.
 
 ## Active problems
 
 1. Exact Blender 4.5 installation and UI test are pending.
-2. Interactive undo/redo could not be validated in the background Python runtime.
-3. The actual user selection workflow must be tested manually on the collar.
-4. The upper collar already contains non-manifold/wire/intersection conditions that predate Curvature Sync.
-5. The MVP reports but does not resolve every non-connectable column position.
-6. Automatic chain discovery, automatic missing-Middle creation, and surplus-vertex dissolution are not implemented.
-7. The full Dev_v2.5.0 source tree has not yet been imported into its final canonical repository source location.
-8. UI and operator registries still need source-derived generation.
+2. Interactive undo/redo is unverified because background-mode undo is unavailable.
+3. Real collar A/B/C selection and target-chain inference require immediate user validation.
+4. The injector currently acts on the active object and aborts on ambiguous topology forks.
+5. Bulk standalone injection and curvature-aware single injection are not yet exposed.
+6. Curvature Sync still has unresolved-column and missing-Middle limitations.
+7. The full Dev_v2.5.1 source tree has not yet been imported into the final canonical repository source location.
 
 ## Next exact implementation step
 
-Install Dev_v2.5.0 in Blender 4.5 and test it on a backup copy of `Collar_Blender_DEV.blend` using explicit A/M/Z and curve-chain selections. Record:
+Install Dev_v2.5.1 in Blender 4.5 on a backup collar file. Test Edge / Vertex Inject before Curvature Sync:
 
-- installation/registration
-- Curvature Sync panel rendering
-- Analyze output
-- Apply output
-- interactive undo/redo
-- intended upper/lower interface alignment
-- unresolved positions or selection failures
+1. click A, B, and C individually in that order;
+2. keep Connect & Split Face enabled;
+3. run Inject Auto-Aligned Vertex;
+4. inspect D placement, C-D topology, normals, and face winding;
+5. test undo and redo;
+6. report any error message or incorrect target-chain choice.
 
-Patch only the required Curvature Sync or registration files in response to that test. After the urgent collar workflow is usable, import the full source into the canonical Witch Tools development tree and generate the UI/operator registries.
+Patch only the required injector files in response to that test. Once the collar has the required missing vertices/columns, continue with Curvature Sync.
 
 ## Test status
 
 - ZIP integrity and package layout: passed
-- Python syntax: passed for all 44 source files
+- Python syntax: passed for all 45 source files
 - Blender Python 5.2 registration/unregistration: passed
-- synthetic topology repair: passed
-- protected-anchor and locked-interior behavior: passed
-- actual collar runtime test: passed with reported unresolved columns
-- save/reopen: passed
+- synthetic Vertex Inject topology test: passed
+- Curvature Sync synthetic regression: passed
 - Blender 4.5 runtime: not performed
 - interactive undo/redo: not verified
+- actual collar standalone injection: pending
 - public release/update behavior: not modified or tested
 
 ## Known remaining issues
 
-Dev_v2.5.0 is an urgent MVP development build, not a public release. It must be tested on a backup in Blender 4.5 before production use or printing decisions.
+Dev_v2.5.1 is an urgent development build, not a public release. Use it only on a backup until Blender 4.5 manual validation is complete.
