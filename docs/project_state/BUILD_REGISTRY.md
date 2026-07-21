@@ -39,7 +39,27 @@ This registry records verified and candidate baselines. A build is not current m
 - Default branch head: `ed92ded9fde9c1ee812faf227b31383b3eaa674d`
 - Branch content state: placeholder documentation only
 
-### Current development candidate — user supplied and statically audited
+### Current urgent development build — Curvature Sync MVP
+
+- Version: `Dev_v2.5.0`
+- Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
+- Package folder: `Witch_Tools_Dev`
+- Target Blender version: `4.5.0`
+- SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
+- Build date: `2026-07-21`
+- Supersedes development baseline: `Dev_v2.4.0`
+- Python files: 44
+- PNG assets: 6
+- Generated cache files: none
+- Static syntax/package audit: passed
+- Runtime environment tested: Blender Python `5.2.0 LTS`
+- Blender 4.5 runtime: pending user validation
+- Runtime tests: registration/unregistration, synthetic repair, protected locks, invalid-selection rollback, actual two-object collar repair, save/reopen, topology validation
+- Known limitations: circular planar MVP; explicit A/M/Z and chain selection; unresolved columns may remain; interactive undo/redo and Blender 4.5 UI not verified
+- GitHub footer link remains: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`
+- Status: current urgent candidate build pending Blender 4.5 user test and canonical source import
+
+### Superseded development baseline — user supplied and statically audited
 
 - Version: `Dev_v2.4.0`
 - Artifact: `Witch_Tools_Dev_v2_4_0_Blender_4_5.zip`
@@ -48,10 +68,8 @@ This registry records verified and candidate baselines. A build is not current m
 - SHA-256: `e141774f307f2402f2d0151f1f69be9f8fb6257254d0a1db223b6c1f3d457e6e`
 - Build date represented by archive timestamps: `2026-07-20`
 - Static audit: ZIP safety and Python syntax passed
-- Runtime test: not performed in this audit
 - Current recorded feature: Edit Tools > Object Snap
-- GitHub footer link: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`
-- Status: best available candidate development baseline pending Blender 4.5 smoke test and canonical source import
+- Status: preserved baseline used to produce Dev_v2.5.0
 
 ## Witch's Dev Modules
 
@@ -86,6 +104,8 @@ Per-file SHA-256 manifests are stored under:
 - `docs/project_state/baseline_manifests/WITCH_TOOLS_DEV_2_4_0.json`
 - `docs/project_state/baseline_manifests/WITCH_QUICKBAR_DEV_1_3_18.json`
 - `docs/project_state/baseline_manifests/WITCH_DEV_MODULES_0_0_9.json`
+
+A Dev_v2.5.0 source/build manifest must be added when the full source is imported into the canonical repository tree.
 
 ## Build-entry requirements
 
