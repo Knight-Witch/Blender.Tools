@@ -1,5 +1,24 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-07-21 — Dev_v2.5.2 Curvature Sync column repair
+
+- Compared the user-supplied pre/post Curvature Sync collar files.
+- Confirmed that the Dev_v2.5.1 circular fit and vertex redistribution were correct.
+- Diagnosed 96 retained pre-existing cross-edges mapped to different canonical column slots: 81 on `RIGHT EXTENSION` and 15 on `COLLAR - UPPER.002`.
+- Added **Replace Misaligned Column Edges** to Curvature Sync.
+- Added copied-BMesh preflight that permits only safe two-face interior edges and rejects boundary, non-two-face, Seam, Sharp, Crease, bevel/custom-data, mixed-material, and mixed-smoothing cases.
+- Added native stale-edge dissolution and canonical same-slot column reconstruction.
+- Preserved the exact Dev_v2.5.1 successful curve-coordinate result while correcting topology correspondence.
+- Produced `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`, SHA-256 `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`.
+- Static parsing passed for all 45 Python files; no generated cache files were shipped.
+- Blender Python 5.2.0 LTS registration/unregistration passed.
+- The actual collar test processed 26 chains, injected 520 vertices, moved 1,324, replaced 96 misaligned edges, created 975 canonical columns, and reported zero unresolved positions.
+- Exact vertex-coordinate multiset regression against the Dev_v2.5.1 post-curvature file passed.
+- No zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes were introduced.
+- A marked special-data edge caused copied-BMesh preflight cancellation without real-mesh topology changes; save/reopen passed.
+- Exact Blender 4.5 UI and interactive undo/redo remain pending.
+- No public branch, Quickbar URL, package identity, operator namespace, asset path, or update destination changed.
+
 ## 2026-07-21 — Collar embedded-edge / unsplit-face repair
 
 - Inspected `Collar_DESIGN_v6 - Copy.blend` after manual vertex and edge insertion.
