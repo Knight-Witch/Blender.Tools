@@ -47,9 +47,10 @@ Curvature Sync remains available with explicit A/M/Z circular multi-chain and mu
 ## Last completed work
 
 - Implemented and packaged Auto-Aligned Vertex Inject as Dev_v2.5.1.
-- Added a dedicated Edit Tools section and user controls.
-- Added `VERTEX_INJECT_QUICK_START.md` and package changelog/compatibility updates.
-- Ran full package syntax, registration/unregistration, synthetic vertex-injection, face-split, and Curvature Sync regression tests.
+- Inspected `Collar_DESIGN_v6 - Copy.blend` after manual edge creation and identified eight stale unsplit-face cases.
+- Produced a file-specific Blender 4.5 repair script plus optional BAT launcher that splits those faces along the existing edge network and saves a new file without overwriting the original.
+- Added transactional baseline validation and geometry-integrity checks to that repair script.
+- Added `WT-CLEAN-001 — Resolve Embedded Edges / Repair Unsplit Faces` to the roadmap for generalized Witch Tools integration.
 - Preserved the original uploaded collar file and all public compatibility surfaces.
 
 ## Current known-working state
@@ -61,45 +62,51 @@ Under Blender Python 5.2.0 LTS:
 - C-D face splitting produced two valid faces from one quad
 - result selection retained C and D
 - Curvature Sync synthetic regression passed
-- no zero-area faces were produced in the injection test
+- the exact-file unsplit-face repair found and split eight stale faces
+- repair vertex and edge counts remained unchanged
+- repaired face count increased by exactly eight
+- no new zero-length edges, zero-area faces, duplicate faces, boundary changes, or overlinked-edge-count changes were introduced
 
-The previous actual-collar Curvature Sync harness result remains documented, but standalone Vertex Inject has not yet been manually exercised on the actual collar topology.
+The previous actual-collar Curvature Sync harness result remains documented, but standalone Vertex Inject and the repair script still require manual Blender 4.5 execution.
 
 ## Active problems
 
-1. Exact Blender 4.5 installation and UI test are pending.
+1. Exact Blender 4.5 installation and UI test are pending for Dev_v2.5.1.
 2. Interactive undo/redo is unverified because background-mode undo is unavailable.
 3. Real collar A/B/C selection and target-chain inference require immediate user validation.
-4. The injector currently acts on the active object and aborts on ambiguous topology forks.
+4. The file-specific unsplit-face repair must be executed inside Blender 4.5 so its saved output remains Blender 4.5-compatible.
 5. Bulk standalone injection and curvature-aware single injection are not yet exposed.
 6. Curvature Sync still has unresolved-column and missing-Middle limitations.
-7. The full Dev_v2.5.1 source tree has not yet been imported into the final canonical repository source location.
+7. Generalized embedded-edge repair is documented but not yet integrated into the add-on.
+8. The full Dev_v2.5.1 source tree has not yet been imported into the final canonical repository source location.
 
 ## Next exact implementation step
 
-Install Dev_v2.5.1 in Blender 4.5 on a backup collar file. Test Edge / Vertex Inject before Curvature Sync:
+Run `repair_collar_unsplit_faces.py` against the uploaded `Collar_DESIGN_v6 - Copy.blend` in Blender 4.5. Open the newly saved `_REPAIRED_UNSPLIT_FACES.blend` output and visually verify the eight repaired locations.
 
-1. click A, B, and C individually in that order;
-2. keep Connect & Split Face enabled;
-3. run Inject Auto-Aligned Vertex;
-4. inspect D placement, C-D topology, normals, and face winding;
-5. test undo and redo;
-6. report any error message or incorrect target-chain choice.
+Then continue the urgent collar workflow:
 
-Patch only the required injector files in response to that test. Once the collar has the required missing vertices/columns, continue with Curvature Sync.
+1. test Edge / Vertex Inject on any remaining required A/B/C locations;
+2. inspect D placement and C-D face splitting;
+3. test undo/redo;
+4. run Curvature Sync after the required correspondence vertices are present;
+5. inspect topology and print-critical surfaces before slicing.
+
+Patch only the required injector, Curvature Sync, or cleanup behavior in response to the Blender 4.5 result.
 
 ## Test status
 
 - ZIP integrity and package layout: passed
-- Python syntax: passed for all 45 source files
+- Python syntax: passed for all 45 add-on source files
 - Blender Python 5.2 registration/unregistration: passed
 - synthetic Vertex Inject topology test: passed
 - Curvature Sync synthetic regression: passed
-- Blender 4.5 runtime: not performed
+- exact-file unsplit-face repair under Blender Python 5.2: passed
+- Blender 4.5 add-on runtime: not performed
+- Blender 4.5 repair-script execution: not performed
 - interactive undo/redo: not verified
-- actual collar standalone injection: pending
 - public release/update behavior: not modified or tested
 
 ## Known remaining issues
 
-Dev_v2.5.1 is an urgent development build, not a public release. Use it only on a backup until Blender 4.5 manual validation is complete.
+Dev_v2.5.1 and the collar repair script are urgent development tools, not public releases. Use them only on backups until Blender 4.5 manual validation is complete.
