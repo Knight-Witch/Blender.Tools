@@ -2,18 +2,29 @@
 
 Date: 2026-07-21
 
-## Dev_v2.5.1 — Auto-Aligned Vertex Inject
+## Collar embedded-edge / unsplit-face repair
 
-- Added Edit Tools > Edge / Vertex Inject to the Curvature Sync MVP build.
-- Added ordered A/B/C selection, ideal D calculation, target-chain inference, strict fork rejection, projected edge splitting, existing-vertex reuse, and default C-D shared-face splitting.
-- Added copied-BMesh preflight, shape-key rejection, zero-area-face validation, and lock/edit-zone/anchor remapping.
-- Added projection and existing-vertex tolerances plus `VERTEX_INJECT_QUICK_START.md`.
-- Packaged `Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`.
+- Inspected `Collar_DESIGN_v6 - Copy.blend` after manual vertex and edge insertion.
+- Confirmed the stale-face problem is represented by existing wire edges whose endpoints already belong to one older unsplit face.
+- Identified eight unambiguous repair locations:
+  - `COLLAR - UPPER.002`: 2
+  - `RIGHT EXTENSION`: 6
+- Produced an exact-file Blender 4.5 repair script that splits the existing faces along those edges without moving vertices or deleting the new edge network.
+- Added transactional baseline checks, material/smoothing preservation, normal update, duplicate/degenerate geometry validation, non-manifold-count preservation, safe output naming, and a JSON repair report.
+- Added optional Windows BAT execution plus manual Scripting-workspace instructions.
+- Added `WT-CLEAN-001 — Resolve Embedded Edges / Repair Unsplit Faces` to the Witch Tools roadmap for later generalized add-on integration.
 
 ## Testing
 
-- Complete package syntax audit: passed for 45 Python files.
-- Registration/unregistration in Blender Python 5.2.0 LTS: passed.
-- Synthetic vertex injection and C-D face split: passed.
-- Curvature Sync synthetic regression: passed.
-- Exact Blender 4.5 UI, real collar injection, and interactive undo/redo: pending user test.
+- Script syntax: passed.
+- Exact uploaded file detection: passed under Blender Python 5.2.0 LTS.
+- Eight face splits completed in the test copy.
+- Vertex and edge counts remained unchanged.
+- Face counts increased by exactly eight.
+- No new zero-length edges, zero-area faces, duplicate faces, boundary-edge changes, or overlinked-edge changes were introduced.
+- Blender 4.5 execution and saved-file verification remain pending user execution.
+
+## Add-on status
+
+- Current Witch Tools build remains Dev_v2.5.1.
+- No add-on package, public branch, operator namespace, update URL, or public compatibility surface was changed in this repair pass.
