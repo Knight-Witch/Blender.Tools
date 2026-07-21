@@ -1,5 +1,15 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-07-21 — Dev_v2.5.2 Blender 4.5 production collar validation
+
+- The user installed Dev_v2.5.2 in Blender 4.5 and reopened the supplied pre-curvature production collar file.
+- The saved A/M/Z anchors and curvature-chain selection were available.
+- Curvature Sync Analyze/Apply completed with **Replace Misaligned Column Edges** enabled.
+- The user reported that the result worked beautifully, confirming the intended curvature and visible same-slot column topology in the actual production workflow.
+- This validates the primary installed Blender 4.5 workflow that remained pending after automated Blender Python 5.2.0 LTS tests.
+- Interactive undo/redo, formal normals/manifold inspection, and final print-fit/slicer validation remain unreported and pending.
+- No public branch, Quickbar URL, package identity, operator namespace, asset path, update destination, or public release location changed.
+
 ## 2026-07-21 — Dev_v2.5.2 Curvature Sync column repair
 
 - Compared the user-supplied pre/post Curvature Sync collar files.
@@ -16,7 +26,7 @@
 - Exact vertex-coordinate multiset regression against the Dev_v2.5.1 post-curvature file passed.
 - No zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes were introduced.
 - A marked special-data edge caused copied-BMesh preflight cancellation without real-mesh topology changes; save/reopen passed.
-- Exact Blender 4.5 UI and interactive undo/redo remain pending.
+- Exact Blender 4.5 UI and interactive undo/redo remained pending until the production user validation recorded above.
 - No public branch, Quickbar URL, package identity, operator namespace, asset path, or update destination changed.
 
 ## 2026-07-21 — Collar embedded-edge / unsplit-face repair
