@@ -2,7 +2,7 @@
 
 The filename retains the historical project spelling for continuity.
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
 
 ## Policy
 
@@ -34,16 +34,30 @@ Last updated: 2026-07-20
 
 ## Witch Tools
 
-### Development Dev_v2.4.0
+### Development Dev_v2.5.0 — Curvature Sync MVP
+
+- Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
+- Package folder: `Witch_Tools_Dev`
+- Intended Blender target in source metadata: 4.5.0
+- Archive SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
+- Static Python/package audit: passed
+- Runtime environment actually tested: Blender Python `5.2.0 LTS`
+- Blender 4.5 runtime verification: not performed; user test pending
+- Operating environment: Linux container for automated checks
+- Features tested: registration/unregistration, synthetic circular chain repair, vertex injection, shared-face splitting, exact middle normalization, locked-anchor behavior, locked-interior rejection, invalid-selection cancellation, actual two-object collar repair, save/reopen, geometry validity, manifold comparison, 3D edge-intersection comparison
+- Result: tested operations passed in Blender Python 5.2.0 LTS; the collar test reported 41 unresolved column positions rather than forcing them
+- Known compatibility limitations: normal Blender 4.5 UI interaction and interactive undo/redo remain unverified
+- Tester: OpenAI container test harness using the user-supplied source and `.blend` file
+
+### Development Dev_v2.4.0 — superseded candidate baseline
 
 - Artifact: `Witch_Tools_Dev_v2_4_0_Blender_4_5.zip`
 - Package folder: `Witch_Tools_Dev`
 - Intended Blender target in source metadata: 4.5.0
 - Archive SHA-256: `e141774f307f2402f2d0151f1f69be9f8fb6257254d0a1db223b6c1f3d457e6e`
 - Static Python syntax audit: passed
-- Blender 4.5 runtime verification in this audit: not performed
-- Additional versions verified in this audit: none
-- Known compatibility limitations: install, registration, UI, operators, undo, and feature behavior remain untested in the current repository audit
+- Blender 4.5 runtime verification in the baseline audit: not performed
+- Status: preserved source baseline used to produce Dev_v2.5.0
 
 ## Witch's Dev Modules
 
