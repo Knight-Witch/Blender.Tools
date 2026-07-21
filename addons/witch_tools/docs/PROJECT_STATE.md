@@ -20,8 +20,8 @@ Last updated: 2026-07-21
 - PNG assets: 6
 - Generated cache files: none
 - Static Python syntax audit: passed
-- Runtime environment tested: Blender Python `5.2.0 LTS`
-- Exact Blender 4.5 runtime: pending user test
+- Automated runtime tested: Blender Python `5.2.0 LTS`
+- Blender 4.5 installed production workflow: user-validated for Curvature Sync Apply on the supplied collar
 
 Dev_v2.5.2 was produced from Dev_v2.5.1 without changing package identity, existing operator identifiers, assets, or the Witch Tools footer URL.
 
@@ -48,7 +48,8 @@ Dev_v2.5.2 adds Curvature Sync > **Replace Misaligned Column Edges**:
 - Confirmed the curvature math and vertex positions were successful.
 - Diagnosed 96 retained pre-existing cross-edges mapped to different canonical slots: 81 on `RIGHT EXTENSION` and 15 on `COLLAR - UPPER.002`.
 - Implemented safe misaligned-column replacement and packaged Dev_v2.5.2.
-- Updated package README, quick start, changelog, notes, compatibility, feature state, roadmap, build registry, and project-state documentation.
+- User installed Dev_v2.5.2 in Blender 4.5, ran the corrected Curvature Sync workflow on the supplied pre-curvature collar file, and reported that the result worked beautifully.
+- Updated feature, build, compatibility, project-state, roadmap, and notes documentation.
 - Preserved the prior exact-file unsplit-face repair utility as separate work; no unrelated cleanup system was refactored.
 
 ## Current known-working state
@@ -69,46 +70,49 @@ Under Blender Python 5.2.0 LTS:
 - special-data edge rejection occurred during copied-BMesh preflight without real-mesh topology-count changes;
 - save and reopen passed.
 
+Under the user's Blender 4.5 environment:
+
+- the add-on installed and the Curvature Sync UI was usable;
+- the saved A/M/Z and chain selection workflow restored from the supplied file;
+- Analyze/Apply completed on the production collar;
+- the user visually confirmed that the corrected curvature and column topology worked beautifully.
+
 Pre-existing wire, boundary, overlinked, and intersection conditions remain in the collar files. The patch corrects column correspondence and does not claim to clean unrelated pre-existing topology.
 
 ## Active problems
 
-1. Exact Blender 4.5 installation and UI testing are pending.
-2. Interactive undo/redo remains unverified because the automated runtime is background Blender Python 5.2.0 LTS.
-3. The user must visually inspect the corrected production topology before slicing/printing.
-4. Only safe two-face interior misaligned edges are replaced; special-data and ambiguous cases abort.
-5. Surplus chain vertices and automatic missing-Middle creation remain outside the current MVP.
-6. Standalone Vertex Inject remains active-object based and aborts on ambiguous forks.
-7. The full Dev_v2.5.2 source tree has not yet been imported into the final canonical repository source location.
-8. Source-derived UI and operator registries remain pending.
+1. Interactive undo/redo has not yet been reported by the user.
+2. Formal normals, face-winding, manifold, and print-fit inspection remain pending before slicing.
+3. Only safe two-face interior misaligned edges are replaced; special-data and ambiguous cases abort.
+4. Surplus chain vertices and automatic missing-Middle creation remain outside the current MVP.
+5. Standalone Vertex Inject remains active-object based and aborts on ambiguous forks.
+6. The full Dev_v2.5.2 source tree has not yet been imported into the final canonical repository source location.
+7. Source-derived UI and operator registries remain pending.
 
 ## Next exact implementation step
 
-Install Dev_v2.5.2 in Blender 4.5 and reopen `Collar_PRE-curvature_sync.blend`. Keep **Replace Misaligned Column Edges** enabled, run Analyze, then Apply Curvature Sync. Verify:
-
-1. the reported misaligned-edge plan;
-2. clean same-slot column topology instead of retained diagonals;
-3. unchanged intended curvature;
-4. normals and face winding;
-5. interactive undo and redo;
-6. print-critical surfaces before slicing.
-
-Patch only failures found in that Blender 4.5 test. After the urgent print workflow is validated, import the complete Dev_v2.5.2 source into the canonical Witch Tools repository tree and generate UI/operator registries.
+1. Save the successful corrected collar under a new versioned filename.
+2. Test interactive undo/redo in Blender 4.5.
+3. Inspect normals, face winding, non-manifold selections, and print-critical surfaces before slicing.
+4. Record any remaining unrelated topology problems separately from Curvature Sync.
+5. Import the complete Dev_v2.5.2 source into the canonical Witch Tools repository tree and generate UI/operator registries.
 
 ## Test status
 
 - ZIP integrity and package layout: passed
 - Python syntax: passed for all 45 source files
 - Blender Python 5.2 registration/unregistration: passed
-- actual collar correspondence repair: passed in tested runtime
+- actual collar correspondence repair: passed in automated runtime
 - geometry-coordinate regression against Dev_v2.5.1: passed
 - degeneracy/duplicate/boundary-count checks: passed
 - special-data cancellation without real-mesh mutation: passed
 - save/reopen: passed
-- Blender 4.5 runtime: not performed
-- interactive undo/redo: not verified
+- Blender 4.5 installed Curvature Sync production run: user-reported passed
+- Blender 4.5 visual curvature/column result: user-reported passed
+- interactive undo/redo: not yet reported
+- formal normals/manifold/print-fit validation: pending
 - public release/update behavior: not modified or tested
 
 ## Known remaining issues
 
-Dev_v2.5.2 is an urgent development build, not a public release. Use it on the pre-curvature backup and inspect the result before printing.
+Dev_v2.5.2 remains a development build rather than a public release. The primary collar repair workflow is now user-validated in Blender 4.5, but final print preparation still requires topology and surface inspection.
