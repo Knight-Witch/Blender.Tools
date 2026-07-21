@@ -33,34 +33,43 @@ This registry records verified and candidate baselines. A build is not current m
 - Default branch head: `ed92ded9fde9c1ee812faf227b31383b3eaa674d`
 - Branch content state: placeholder documentation only
 
-### Current urgent development build — Vertex Inject + Curvature Sync
+### Current urgent development build — Vertex Inject + Curvature Sync column repair
 
-- Version: `Dev_v2.5.1`
-- Artifact: `Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`
+- Version: `Dev_v2.5.2`
+- Artifact: `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`
 - Package folder: `Witch_Tools_Dev`
 - Target Blender version: `4.5.0`
-- SHA-256: `fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
+- SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
 - Build date: `2026-07-21`
-- Supersedes: `Dev_v2.5.0`
+- Supersedes: `Dev_v2.5.1`
 - Python files: 45
 - PNG assets: 6
 - Generated cache files: none
 - Static syntax/package audit: passed
 - Runtime environment tested: Blender Python `5.2.0 LTS`
 - Blender 4.5 runtime: pending user validation
-- Added capability: standalone ordered A/B/C Auto-Aligned Vertex Inject with projected target-edge split and optional C-D shared-face split
-- Retained capability: Curvature Sync circular multi-chain/multi-object MVP
-- Runtime tests: registration/unregistration, synthetic vertex injection, synthetic face split, Curvature Sync synthetic regression
-- Known limitations: active-object single inject; explicit click-order selection; ambiguous forks abort; Blender 4.5 UI and interactive undo/redo unverified
+- Added capability: safe replacement of existing interior cross-edges mapped to different canonical column slots
+- Retained capabilities: Auto-Aligned Vertex Inject and circular multi-chain/multi-object Curvature Sync
+- Actual collar test: 26 chains, 26 segments per side, 520 injected vertices, 1,324 moved vertices, 96 replaced misaligned edges, 975 created canonical column edges, zero unresolved positions
+- Geometry regression: exact vertex-coordinate multiset match with the successful Dev_v2.5.1 post-curvature file
+- Safety checks: no zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes; special-data rejection occurred before real-mesh mutation
+- Known limitations: explicit A/M/Z and chain selection; only safe two-face interior edge replacement; Blender 4.5 UI and interactive undo/redo unverified
 - Footer link remains: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`
 - Status: current urgent candidate build pending Blender 4.5 user test and canonical source import
+
+### Superseded urgent development build — Vertex Inject + Curvature Sync
+
+- Version: `Dev_v2.5.1`
+- Artifact: `Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`
+- SHA-256: `fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
+- Status: superseded by Dev_v2.5.2; retained as the first standalone Vertex Inject build
 
 ### Superseded urgent development build — Curvature Sync MVP
 
 - Version: `Dev_v2.5.0`
 - Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
 - SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
-- Status: superseded by Dev_v2.5.1; preserved as the first Curvature Sync MVP baseline
+- Status: superseded; preserved as the first Curvature Sync MVP baseline
 
 ### Superseded development baseline
 
@@ -99,7 +108,7 @@ Current imported-baseline manifests:
 - `docs/project_state/baseline_manifests/WITCH_QUICKBAR_DEV_1_3_18.json`
 - `docs/project_state/baseline_manifests/WITCH_DEV_MODULES_0_0_9.json`
 
-A Dev_v2.5.1 source manifest must be added when its full source is imported into the canonical repository tree.
+A Dev_v2.5.2 source manifest must be added when its full source is imported into the canonical repository tree.
 
 ## Build-entry requirements
 
