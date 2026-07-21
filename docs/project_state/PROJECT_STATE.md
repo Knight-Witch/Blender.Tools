@@ -14,15 +14,14 @@ Last updated: 2026-07-21
 
 ### Witch Tools
 
-- Current build: `Dev_v2.6.0`
-- Artifact: `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`
+- Current build: `Dev_v2.6.1`
+- Artifact: `Witch_Tools_Dev_v2_6_1_Selection_Slots_NPanel_Hotfix_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
-- SHA-256: `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`
-- Based on supplied baseline: `Dev_v2.4.0`
-- Supersedes: `Dev_v2.5.2`
+- SHA-256: `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`
+- Supersedes: `Dev_v2.6.0`
 - Target: Blender `4.5.0`
-- Selection Slots runtime: pending
-- Retained Curvature Sync production workflow: user-reported passed in Blender 4.5 under Dev_v2.5.2
+- Hotfix runtime: pending Blender 4.5 user test
+- Retained Curvature Sync workflow: user-reported passed in Blender 4.5
 
 ### Witch Quickbar
 
@@ -30,100 +29,85 @@ Last updated: 2026-07-21
 - Artifact: `witch_quickbar_dev_Dev_v1_4_0_Select_Tab_Blender_4_5.zip`
 - Package: `witch_quickbar_dev`
 - SHA-256: `be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea`
-- Supersedes: `Dev_v1.3.18`
 - Target: Blender `4.5.0`
-- Update destination: `Witch_Quick_Access` public branch
-- Runtime test: pending
+- Select workflow: user-reported working perfectly in Blender 4.5
+- Update destination: unchanged public `Witch_Quick_Access` branch
 
 ### Witch's Dev Modules
 
 - Version: `Dev_v0.0.9`
 - Artifact: `witch_dev_modules.zip`
-- Package: `witch_dev_modules`
 - SHA-256: `e5306886a1e5edd1bb57fcf106f9a4ca51503060e0ecb5b4a0ed8a1bcead28f6`
-- Packaging defect: original archive contains 34 `.pyc` files
-- Runtime test: pending
+- Original packaging defect: 34 `.pyc` files
 
 ## Last completed work
 
-- Established repository rules, architecture, documentation tracking, and non-breaking branch safeguards on `Blender_Dev`.
-- Audited supplied Witch Tools, Quickbar, and Dev Modules baselines.
 - Implemented and user-validated the primary Curvature Sync production collar workflow through Dev_v2.5.2.
-- Implemented Witch Tools Dev_v2.6.0 **Selection Slots**:
-  - persistent vertex/edge/face/mixed selection slots;
-  - multi-object Edit Mode;
-  - save/reselect/overwrite/clear/Clear All/add/remove/rename/reorder;
-  - scene records plus mesh custom-data markers;
-  - N-panel UI below Curvature Sync;
-  - stable operator contract.
-- Implemented Quickbar Dev_v1.4.0:
-  - populated Select tab;
-  - thin optional invocation of Witch Tools Selection Slots;
-  - responsive names, tooltips, rename, actions, and grip reorder;
-  - five supplied icons converted to packaged PNGs;
-  - safe unavailable-backend state.
-- Produced and statically audited both versioned ZIPs.
-- Created the Selection Slots feature packet and updated Witch Tools, Quickbar, build, compatibility, asset, integration, and state documentation.
-- Preserved all public branches, update URLs, package identities, existing operator namespaces, inherited asset paths, and external release locations.
+- Implemented Selection Slots in Witch Tools Dev_v2.6.0 and the Quickbar Select tab in Dev_v1.4.0.
+- User reported the Quickbar implementation worked perfectly.
+- User reported the Witch Tools Dev_v2.6.0 N-panel showed only the Selection Slots header/Clear All and would not reveal its controls.
+- Inspected the current package and produced Dev_v2.6.1:
+  - removed slot initialization from `Panel.draw()`;
+  - added safe operator-driven Slot 1 initialization;
+  - fixed empty Add behavior;
+  - made the title/arrow clickable;
+  - added row draw failure containment.
+- Statically and synthetically audited Dev_v2.6.1.
+- Updated feature, Witch Tools, Quickbar, build, compatibility, project-state, and notes documentation.
+- Preserved public branches, URLs, package identities, operator namespaces, inherited assets, and release locations.
 
 ## Current known-working state
 
-Witch Tools Dev_v2.6.0 static validation:
+Witch Tools Dev_v2.6.1:
 
 - 46 Python files parse/compile;
-- no duplicate operator IDs;
+- 92 operator IDs have no duplicates;
 - ZIP integrity/safe paths/package hygiene passed;
+- simulated expanded/collapsed/populated/empty N-panel layouts passed;
+- simulated Slot 1 initialization passed;
 - package identity and footer URL preserved.
 
-Quickbar Dev_v1.4.0 static validation:
+Quickbar Dev_v1.4.0:
 
-- 13 Python files parse/compile;
-- 36 packaged PNG assets and all icon mappings verified;
-- no duplicate operator IDs;
-- synthetic multi-slot layout construction passed;
-- package identity and public update URL preserved.
+- static/package/asset/layout checks passed;
+- primary Blender 4.5 Select workflow user-reported passed;
+- operator contract remains compatible with Witch Tools Dev_v2.6.1.
 
-Previously user-validated runtime state:
+Previously verified runtime:
 
-- Witch Tools Dev_v2.5.2 installed in Blender 4.5;
-- saved Curvature Sync anchors/chains loaded;
-- Analyze/Apply completed on the production collar;
-- user reported the curvature and corrected column topology worked beautifully.
-
-No Blender runtime claim is made yet for the new Selection Slots or Quickbar Select tab.
+- Dev_v2.5.2 Curvature Sync production collar workflow user-reported passed in Blender 4.5.
 
 ## Active problems
 
-1. Witch Tools Dev_v2.6.0 Selection Slots require Blender 4.5 registration, UI, selection-domain, multi-object, save/reopen, topology-change, and undo/redo tests.
-2. Quickbar Dev_v1.4.0 requires Blender 4.5 overlay, dependency, drag/reorder, resize, tooltip, pass-through, file-load recovery, and undo tests.
-3. Public/dev side-by-side installation and update-button launch remain untested.
-4. Selection markers are persistent custom element data rather than immutable topology IDs; delete/split/duplicate behavior must be recorded.
-5. Final collar normals/manifold/print-fit inspection remains pending independently of Selection Slots.
-6. Full canonical source imports and source-derived UI/operator/asset registries remain pending.
-7. Public Witch Tools distribution/update strategy remains unresolved.
+1. Witch Tools Dev_v2.6.1 N-panel hotfix requires immediate Blender 4.5 confirmation.
+2. Selection Slots save/reselect, save/reopen, multi-object, topology propagation, and undo/redo require broader testing.
+3. Quickbar full overlay regression remains pending despite the successful Select workflow.
+4. Public/dev side-by-side installation and update-button launch remain untested.
+5. Selection markers are persistent custom data rather than immutable topology IDs.
+6. Final collar normals/manifold/print-fit inspection remains pending.
+7. Canonical source imports and source-derived registries/manifests remain pending.
 8. Witch Core source import remains pending.
 
 ## Next exact implementation step
 
-1. Install Witch Tools Dev_v2.6.0 in Blender 4.5 and test Selection Slots thoroughly.
-2. Install Quickbar Dev_v1.4.0 after Witch Tools and test the Select tab plus the full overlay regression matrix.
-3. Test Quickbar with Witch Tools disabled.
-4. Patch only failures found in these runtime tests.
-5. Complete final collar inspection before slicing.
-6. Import both successful development source trees canonically and generate registries/manifests.
+1. Install Witch Tools Dev_v2.6.1 over Dev_v2.6.0.
+2. Confirm Selection Slots expands and displays Slot 1.
+3. Test Save/Reselect on the current collar chain selection, then Add/Clear/Remove/Rename/Reorder.
+4. Test save/reopen, multi-object selection, and undo/redo.
+5. Keep Quickbar Dev_v1.4.0 installed; no Quickbar replacement is required.
+6. Patch only failures found, then import successful sources canonically.
 
 ## Test status
 
-- Dev_v2.5.2 Blender 4.5 production Curvature Sync: user-reported passed
-- Dev_v2.6.0 static ZIP/package checks: passed
-- Dev_v1.4.0 static ZIP/package/asset/layout checks: passed
-- Selection Slots Blender 4.5 runtime: not performed
-- Quickbar Select tab Blender 4.5 runtime: not performed
-- Interactive undo/redo for new features: not verified
-- Save/reopen for Selection Slots: not performed
-- Public branches modified: no
-- Public Quickbar update URL modified: no
+- Dev_v2.5.2 Curvature Sync Blender 4.5: user-reported passed
+- Quickbar Dev_v1.4.0 Select workflow Blender 4.5: user-reported passed
+- Witch Tools Dev_v2.6.0 N-panel: failed to reveal slot rows
+- Witch Tools Dev_v2.6.1 static/simulated tests: passed
+- Witch Tools Dev_v2.6.1 Blender 4.5: pending
+- Selection Slots persistence/multi-object/undo: pending
+- Quickbar full overlay regression: pending
+- Public branches/URLs modified: no
 
 ## Known remaining issues
 
-Dev_v2.6.0 and Quickbar Dev_v1.4.0 are development builds, not public releases. Their new Selection Slots workflow is statically validated but requires installed Blender 4.5 testing before release or reliance on long-term saved selections.
+Dev_v2.6.1 and Quickbar Dev_v1.4.0 remain development builds. The Quickbar Select workflow is user-validated; the Witch Tools N-panel hotfix is ready for immediate user validation.
