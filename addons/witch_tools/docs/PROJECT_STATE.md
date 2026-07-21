@@ -12,110 +12,108 @@ Last updated: 2026-07-21
 
 ## Current development build
 
-- Version: `Dev_v2.6.0`
-- Artifact: `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`
-- SHA-256: `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`
+- Version: `Dev_v2.6.1`
+- Artifact: `Witch_Tools_Dev_v2_6_1_Selection_Slots_NPanel_Hotfix_Blender_4_5.zip`
+- SHA-256: `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`
+- Supersedes: `Dev_v2.6.0`
 - Package folder: `Witch_Tools_Dev`
 - Declared Blender target: `4.5.0`
 - Python source files: 46
 - PNG assets: 6
 - Generated cache files: none
 - Static syntax/package audit: passed
-- Blender runtime in this implementation pass: not available
+- Exact Blender 4.5 hotfix runtime: pending user test
 
-Dev_v2.6.0 was produced from the successful Dev_v2.5.2 collar build without changing package identity, prior operator identifiers, assets, or the Witch Tools footer URL.
+Dev_v2.6.1 was produced from Dev_v2.6.0 without changing package identity, existing operator identifiers, assets, Selection Slots storage format/operator contract, or the Witch Tools footer URL.
 
 ## Current implementation
 
-Dev_v2.6.0 retains:
+Dev_v2.6.1 retains:
 
+- persistent Selection Slots backend for vertex/edge/face/mixed and multi-object Edit Mode selections;
+- `mesh.wt_selection_slot_*` operator integration used by Quickbar Dev_v1.4.0;
 - Auto-Aligned Vertex Inject;
-- Curvature Sync circular A/M/Z multi-chain and multi-object repair;
-- Replace Misaligned Column Edges;
+- user-validated Curvature Sync and Replace Misaligned Column Edges;
 - Vertex Lock / Protected Edit Zone integration;
 - all existing Dev_v2.x panels and workflows.
 
-It adds **Edit Tools > Selection Slots** immediately below Curvature Sync:
+Dev_v2.6.1 fixes the Selection Slots N-panel:
 
-- persistent renameable slots for vertex, edge, face, and combined mesh selection modes;
-- one or multiple objects in multi-object Edit Mode;
-- save/overwrite, reselect, clear, Clear All, remove, add, and reorder;
-- automatic initial Slot 1 and a maximum of 20 slots;
-- scene slot records with stable UIDs and object references;
-- per-slot vertex/edge/face integer custom-data markers stored in mesh data;
-- `.blend` persistence design without transient BMesh-index storage;
-- stable `mesh.wt_selection_slot_*` operator family for Quickbar integration;
-- responsive N-panel name fields and native LONGDISPLAY, FILE_TICK, TRASH, REMOVE, and ADD icons.
+- removes slot initialization/mutation from `Panel.draw()`;
+- adds an operator-driven empty-scene Slot 1 fallback;
+- prevents the fallback Add action from creating Slot 1 and Slot 2 together;
+- makes the title and disclosure arrow both clickable;
+- contains per-row draw errors so one row cannot blank the section.
 
 ## Last completed work
 
-- Recorded user validation that Dev_v2.5.2 corrected the production collar curvature/column topology in Blender 4.5.
-- Implemented Selection Slots as the canonical Witch Tools backend and N-panel UI.
-- Added Quickbar-safe operator contracts for save, reselect, clear, Clear All, add, remove, rename, and move.
-- Added a Selection Slots quick-start and package README/changelog/notes/compatibility updates.
-- Produced and statically audited the Dev_v2.6.0 ZIP.
-- Created the repository Selection Slots specification, state, roadmap, test plan, decisions, and reference cases.
+- User reported Quickbar Dev_v1.4.0 worked correctly in Blender 4.5.
+- User reported Witch Tools Dev_v2.6.0 showed the Selection Slots title/Clear All but no expandable body.
+- Inspected the Dev_v2.6.0 package and isolated unsafe draw-path initialization as a failure risk.
+- Implemented and packaged Dev_v2.6.1.
+- Updated package changelog, quick start, README, notes, compatibility, feature state/roadmap/test plan, build registry, and project state.
 
 ## Current known-working state
 
-Previously verified Dev_v2.5.2 state:
+Previously verified:
 
-- the user installed it in Blender 4.5 and confirmed the production Curvature Sync result worked beautifully;
-- automated Blender Python 5.2 tests passed for the collar correspondence repair and save/reopen.
+- Dev_v2.5.2 Curvature Sync production collar workflow passed in the user's Blender 4.5 environment.
+- Quickbar Dev_v1.4.0 Select workflow was user-reported working.
 
-Dev_v2.6.0 static validation:
+Dev_v2.6.1 validation completed outside Blender:
 
 - all 46 Python files parse and compile;
-- no duplicate `bl_idname` values;
+- 92 operator IDs scanned with no duplicates;
 - ZIP integrity and safe paths passed;
-- no `__pycache__`, `.pyc`, `.pyo`, or unrelated source assets shipped;
-- package root remains `Witch_Tools_Dev`;
-- footer URL remains `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`.
-
-Selection Slots itself has not yet been runtime-tested in Blender.
+- no generated cache files shipped;
+- simulated N-panel layout passed for expanded, collapsed, populated, and empty states;
+- simulated Add behavior creates exactly Slot 1 from an empty scene and Slot 2 on the next Add;
+- package root and footer URL remain unchanged.
 
 ## Active problems
 
-1. Dev_v2.6.0 installation and registration require Blender 4.5 testing.
-2. Vertex, edge, face, mixed-domain, and multi-object save/reselect behavior require runtime validation.
-3. Save/reopen persistence and interactive undo/redo are unverified.
-4. Blender topology operations may delete or propagate custom marker data; actual Blender 4.5 behavior must be recorded.
-5. Hidden or unavailable saved objects are not forcibly unhidden.
-6. Linked objects sharing one Mesh datablock share underlying selection-marker layers.
-7. N-panel native tooltip behavior for clipped editable names requires visual validation.
-8. The full Dev_v2.6.0 source tree has not yet been imported into the final canonical repository source location.
-9. Source-derived UI and operator registries remain pending.
-10. Final collar normals/manifold/print-fit inspection remains pending independently of Selection Slots.
+1. Dev_v2.6.1 N-panel expansion and row interaction require immediate Blender 4.5 validation.
+2. Selection Slots save/reselect, save/reopen, multi-object, topology propagation, and undo/redo remain incompletely tested.
+3. Full Quickbar overlay regression remains pending despite the user-reported successful Select workflow.
+4. Hidden/unavailable saved objects are not forcibly unhidden.
+5. Linked objects sharing one Mesh datablock share marker layers.
+6. Full canonical source import and source-derived registries remain pending.
+7. Final collar normals/manifold/print-fit inspection remains pending independently of Selection Slots.
 
 ## Next exact implementation step
 
-Install Dev_v2.6.0 in Blender 4.5 on a backup `.blend`. Test:
+Install Dev_v2.6.1 over Dev_v2.6.0 in Blender 4.5. Expand Selection Slots and verify Slot 1 appears. Test Save and Reselect on the current collar edge selection, then test Add, Clear, Remove, rename, reorder, save/reopen, multi-object selection, and undo/redo. Quickbar Dev_v1.4.0 does not need to be replaced for this patch.
 
-1. vertex, edge, face, and combined-domain slots;
-2. multi-object Edit Mode;
-3. overwrite after adding a missed element;
-4. save/reopen persistence;
-5. clear versus remove and Clear All;
-6. add, rename, and reorder;
-7. deleted/subdivided/duplicated topology behavior;
-8. undo/redo;
-9. regression of Curvature Sync, Vertex Inject, Vertex Locks, Object Snap, panel collapse, and unregister/re-register.
+## Files changed in Dev_v2.6.1
 
-Patch only runtime failures found by those tests. After validation, import the complete Dev_v2.6.0 source tree canonically and generate UI/operator registries.
+Runtime:
+
+- `panel_edit_tools.py`
+- `operators_selection_slots.py`
+- `state.py`
+- `__init__.py`
+
+Package documentation:
+
+- `CHANGELOG.md`
+- `NOTES_CHANGELOG.md`
+- `NOTES_CHANGELOG_FULL.md`
+- `README.md`
+- `SELECTION_SLOTS_QUICK_START.md`
+- `Blender_Version_Compatability.md`
 
 ## Test status
 
-- Dev_v2.5.2 Blender 4.5 production Curvature Sync: user-reported passed
-- Dev_v2.6.0 ZIP integrity and safe paths: passed
-- Dev_v2.6.0 Python syntax/compile: passed for 46 files
-- Duplicate operator-ID scan: passed
-- Cache/package hygiene: passed
-- Blender 4.5 Selection Slots runtime: not performed
-- Save/reopen: not performed for Selection Slots
-- Multi-object selection restore: not performed
-- Interactive undo/redo: not verified
-- Public release/update behavior: not modified or tested
+- ZIP integrity/safe paths: passed
+- Python syntax/compile: passed for 46 files
+- Duplicate operator IDs: passed
+- Simulated populated/empty/collapsed N-panel layout: passed
+- Simulated empty-scene initialization: passed
+- Blender 4.5 Dev_v2.6.1 runtime: not performed
+- Save/reopen and multi-object behavior: pending
+- Interactive undo/redo: pending
+- Public release/update behavior: unchanged and not retested
 
 ## Known remaining issues
 
-Dev_v2.6.0 is a development build, not a public release. Selection Slots uses persistent custom element markers rather than immutable topology UUIDs, so destructive topology changes can alter which elements survive or inherit a saved slot.
+Dev_v2.6.1 is a development hotfix. The N-panel failure mechanism has been removed and the package is statically/synthetically validated, but the corrected UI must be confirmed in Blender 4.5.
