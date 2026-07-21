@@ -1,5 +1,20 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-07-21 — Dev_v2.6.0 Selection Slots
+
+- Added **Edit Tools > Selection Slots** immediately below Curvature Sync.
+- Added persistent renameable slots for vertex, edge, face, and combined mesh selection modes.
+- Added multi-object Edit Mode save/reselect behavior.
+- Added save/overwrite, reselect, clear, Clear All, add, remove, rename, and reorder controls.
+- Added one automatic Slot 1 and a maximum of 20 slots.
+- Added scene slot records with generated UIDs, object references, stored modes/counts, and per-mesh vertex/edge/face integer custom-data markers.
+- Added stable `mesh.wt_selection_slot_*` operators for optional Quickbar integration.
+- Added responsive N-panel names and LONGDISPLAY, FILE_TICK, TRASH, REMOVE, and ADD native icons.
+- Produced `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`, SHA-256 `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`.
+- ZIP integrity, safe paths, 46-file Python syntax/compile, duplicate operator-ID, and package-hygiene checks passed.
+- Blender 4.5 Selection Slots runtime, save/reopen, multi-object, topology-change, and undo/redo tests remain pending.
+- Retained the user-validated Dev_v2.5.2 Curvature Sync workflow and preserved public branches, URLs, package identity, prior operator IDs, and asset paths.
+
 ## 2026-07-21 — Dev_v2.5.2 Blender 4.5 production collar validation
 
 - The user installed Dev_v2.5.2 in Blender 4.5 and reopened the supplied pre-curvature production collar file.
