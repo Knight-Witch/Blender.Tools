@@ -91,6 +91,7 @@ Each substantial feature uses a self-contained packet:
 Current packets:
 
 - `features/curvature_sync/`
+- `features/selection_slots/`
 
 ## Root changelogs
 
