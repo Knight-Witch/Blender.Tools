@@ -108,6 +108,15 @@ Purpose:
 
 `Blender_Dev` is not a public release branch.
 
+## Temporary connector test refs
+
+Two temporary branch refs were created while validating the Git tree write API:
+
+- `tmp_tree_test`
+- `tmp_tree_test_2`
+
+Both refs were force-reset to the current `Blender_Dev` head after the test, so they contain no unique test-marker content. The current connector does not expose branch deletion; these refs should be deleted manually from GitHub when convenient.
+
 ## Outstanding audit items
 
 - `AUD-PKG-001`: Map the exact public Quickbar package path and identity from the branch tree.
@@ -118,6 +127,7 @@ Purpose:
 - `AUD-BUILD-001`: Run Blender 4.5 clean-install, registration, unregistration, and upgrade tests.
 - `AUD-EXT-001`: Verify current Nexus and other published download/version references.
 - `AUD-URL-001`: Test update/link controls from installed builds.
+- `AUD-BRANCH-001`: Delete the temporary connector test refs after confirming they are no longer needed.
 
 ## Safety conclusion
 
