@@ -14,16 +14,35 @@ This registry records verified and candidate baselines. A build is not current m
 - Update destination: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Quick_Access`
 - Status: public compatibility baseline; unchanged
 
-### Current development candidate
+### Current development build — Select tab
+
+- Version: `Dev_v1.4.0`
+- Artifact: `witch_quickbar_dev_Dev_v1_4_0_Select_Tab_Blender_4_5.zip`
+- Package folder: `witch_quickbar_dev`
+- Operator namespace: `witch_quickbar_dev.*`
+- Target Blender version: `4.5.0`
+- SHA-256: `be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea`
+- Build date: `2026-07-21`
+- Supersedes development candidate: `Dev_v1.3.18`
+- Python files: 13
+- PNG assets: 36
+- Generated cache/source SVG files: none
+- Static syntax/package/asset audit: passed
+- Runtime environment tested: none in this implementation pass
+- Added capability: populated Select tab with optional Witch Tools Dev_v2.6.0 Selection Slots integration, responsive names, full tooltips, rename, save/reselect/clear/remove/add/Clear All, and drag reorder
+- Dependency behavior: intended to remain usable without Witch Tools and show a disabled requirement state; runtime test pending
+- Known limitations: Blender 4.5 overlay, pass-through, drag/resize, file-load recovery, undo/redo, and side-by-side installation unverified
+- Update destination remains: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Quick_Access`
+- Status: current development candidate pending Blender 4.5 runtime validation and canonical source import
+
+### Superseded development candidate
 
 - Version: `Dev_v1.3.18`
 - Artifact: `witch_quickbar_dev_Dev_v1_3_18_package.zip`
 - Package folder: `witch_quickbar_dev`
-- Operator namespace: `witch_quickbar_dev.*`
 - Target Blender version: `4.5.0`
 - SHA-256: `01fc12ee366c6484e209d1ee71519bd1f1ca711d4fc3c2710fec5e20b2ba2a1b`
-- Static audit: passed
-- Runtime test: pending
+- Status: preserved baseline used to produce Dev_v1.4.0
 
 ## Witch Tools
 
@@ -33,44 +52,48 @@ This registry records verified and candidate baselines. A build is not current m
 - Default branch head: `ed92ded9fde9c1ee812faf227b31383b3eaa674d`
 - Branch content state: placeholder documentation only
 
-### Current urgent development build — Vertex Inject + Curvature Sync column repair
+### Current development build — Selection Slots
 
-- Version: `Dev_v2.5.2`
-- Artifact: `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`
+- Version: `Dev_v2.6.0`
+- Artifact: `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`
 - Package folder: `Witch_Tools_Dev`
 - Target Blender version: `4.5.0`
-- SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
+- SHA-256: `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`
 - Build date: `2026-07-21`
-- Supersedes: `Dev_v2.5.1`
-- Python files: 45
+- Supersedes: `Dev_v2.5.2`
+- Python files: 46
 - PNG assets: 6
 - Generated cache files: none
 - Static syntax/package audit: passed
-- Automated runtime environment tested: Blender Python `5.2.0 LTS`
-- Blender 4.5 production validation: user installed the build, reopened the supplied pre-curvature collar, ran Analyze/Apply with misaligned-column replacement enabled, and reported that the corrected result worked beautifully
-- Added capability: safe replacement of existing interior cross-edges mapped to different canonical column slots
-- Retained capabilities: Auto-Aligned Vertex Inject and circular multi-chain/multi-object Curvature Sync
-- Actual collar automated test: 26 chains, 26 segments per side, 520 injected vertices, 1,324 moved vertices, 96 replaced misaligned edges, 975 created canonical column edges, zero unresolved positions
-- Geometry regression: exact vertex-coordinate multiset match with the successful Dev_v2.5.1 post-curvature file
-- Safety checks: no zero-length edges, zero-area faces, duplicate edges, duplicate faces, or boundary-count changes; special-data rejection occurred before real-mesh mutation
-- Remaining validation: interactive undo/redo, formal normals/manifold inspection, and print-fit/slicer validation
-- Known limitations: explicit A/M/Z and chain selection; only safe two-face interior edge replacement
+- Runtime environment tested for Selection Slots: none in this implementation pass
+- Added capability: persistent multi-slot vertex/edge/face/mixed selection save and restore, multi-object Edit Mode, add/remove/clear/Clear All/rename/reorder, and Quickbar operator contract
+- Retained capabilities: Auto-Aligned Vertex Inject, user-validated Curvature Sync and misaligned-column repair, Vertex Locks, Object Snap, and existing Dev_v2.x workflows
+- Known limitations: Selection Slots Blender 4.5 registration, save/reopen, topology propagation, multi-object restore, and undo/redo unverified
 - Footer link remains: `https://github.com/Knight-Witch/Blender.Tools/tree/Witch_Main_Tools`
-- Status: current urgent development build; primary Blender 4.5 production workflow user-validated, broader release validation and canonical source import pending
+- Status: current development candidate pending Blender 4.5 Selection Slots validation and canonical source import
 
-### Superseded urgent development build — Vertex Inject + Curvature Sync
+### Superseded development build — Curvature Sync column repair
+
+- Version: `Dev_v2.5.2`
+- Artifact: `Witch_Tools_Dev_v2_5_2_Curvature_Sync_Column_Repair_Blender_4_5.zip`
+- SHA-256: `0b61992f09e745f011a13a45a29e5d8e342e0ab7c4e4405d828c76dfb85ef42a`
+- Automated runtime: Blender Python `5.2.0 LTS`
+- Blender 4.5 result: user installed and reported production Curvature Sync result worked beautifully
+- Status: preserved user-validated topology baseline included in Dev_v2.6.0
+
+### Superseded development build — Vertex Inject + Curvature Sync
 
 - Version: `Dev_v2.5.1`
 - Artifact: `Witch_Tools_Dev_v2_5_1_Vertex_Inject_Curvature_Sync_Blender_4_5.zip`
 - SHA-256: `fe8972980c9f3c6ec29653db44695133107d7124d8efcfc8cce77448daa253d3`
-- Status: superseded by Dev_v2.5.2; retained as the first standalone Vertex Inject build
+- Status: superseded by Dev_v2.5.2
 
-### Superseded urgent development build — Curvature Sync MVP
+### Superseded development build — Curvature Sync MVP
 
 - Version: `Dev_v2.5.0`
 - Artifact: `Witch_Tools_Dev_v2_5_0_Curvature_Sync_MVP_Blender_4_5.zip`
 - SHA-256: `258e39794b4a8eee93fb9729f121c4903b237f9123d8506a48884e306d748189`
-- Status: superseded; preserved as the first Curvature Sync MVP baseline
+- Status: preserved first Curvature Sync MVP baseline
 
 ### Superseded development baseline
 
@@ -79,7 +102,7 @@ This registry records verified and candidate baselines. A build is not current m
 - Package folder: `Witch_Tools_Dev`
 - Target Blender version: `4.5.0`
 - SHA-256: `e141774f307f2402f2d0151f1f69be9f8fb6257254d0a1db223b6c1f3d457e6e`
-- Status: source baseline used for Dev_v2.5.x
+- Status: source baseline used for Dev_v2.5.x and Dev_v2.6.0
 
 ## Witch's Dev Modules
 
@@ -103,13 +126,13 @@ This registry records verified and candidate baselines. A build is not current m
 
 ## Baseline manifests
 
-Current imported-baseline manifests:
+Current immutable supplied-baseline manifests:
 
 - `docs/project_state/baseline_manifests/WITCH_TOOLS_DEV_2_4_0.json`
 - `docs/project_state/baseline_manifests/WITCH_QUICKBAR_DEV_1_3_18.json`
 - `docs/project_state/baseline_manifests/WITCH_DEV_MODULES_0_0_9.json`
 
-A Dev_v2.5.2 source manifest must be added when its full source is imported into the canonical repository tree.
+Dev_v2.6.0 and Quickbar Dev_v1.4.0 source manifests must be added when their complete source trees are imported canonically.
 
 ## Build-entry requirements
 
