@@ -8,7 +8,7 @@ Last updated: 2026-07-21
 
 - Status: completed for implementation; canonical repository source import remains pending
 - Baseline used: Witch Tools `Dev_v2.4.0`
-- Current derivative build: Witch Tools `Dev_v2.5.1`
+- Current derivative build: Witch Tools `Dev_v2.5.2`
 
 ### CS-VINJ-001 — Standalone Auto-Aligned Vertex Inject
 
@@ -17,19 +17,17 @@ Last updated: 2026-07-21
   - ordered A/B/C selection
   - A-B and B-C edge validation
   - ideal D calculation from `C + (A - B)`
-  - target-chain inference and straightest-continuation traversal
-  - ambiguous fork rejection
-  - projected target-edge split
-  - existing-vertex reuse
-  - default C-D connect and shared-face split
+  - target-chain inference and strict fork rejection
+  - projected target-edge split and existing-vertex reuse
+  - default C-D shared-face connection/split
   - copied-BMesh preflight
   - lock/edit-zone/anchor remapping
   - shape-key and degenerate-face rejection
 - Remaining:
   - bulk standalone injection
   - curvature-guide-aware single injection
-  - richer preview/diagnostics
-  - multiple-object single-inject workflow
+  - richer preview and diagnostics
+  - multi-object single-inject workflow
 
 ### CS-CURV-001 — Circular multi-chain curvature solve
 
@@ -39,7 +37,7 @@ Last updated: 2026-07-21
   - XY/XZ/YZ circular fitting
   - exact middle-axis normalization
   - equal per-side segment count
-  - multiple parallel chains
+  - multiple parallel chains and aligned objects
   - transition-anchor preservation
 - Remaining:
   - persistent repair groups
@@ -47,19 +45,23 @@ Last updated: 2026-07-21
   - automatic missing-Middle creation
   - generalized non-circular support
 
-### CS-BULK-001 — Bulk missing correspondence injection
+### CS-BULK-001 — Bulk correspondence repair
 
-- Status: Curvature Sync internal MVP partially implemented
+- Status: MVP implemented inside Curvature Sync; standalone workflow remains planned
 - Implemented:
   - canonical target slots
   - selected-chain edge splitting
-  - optional corresponding-column construction
+  - corresponding-column construction
   - unresolved-column reporting
+  - detection of existing cross-edges mapped to different canonical slots
+  - explicit **Replace Misaligned Column Edges** toggle
+  - safe two-face interior-edge dissolution and canonical same-slot reconstruction
+  - strict rejection of unsafe boundary, non-two-face, special-data, mixed-material, and mixed-smoothing edges
 - Remaining:
   - automatic chain/correspondence discovery
-  - reuse of the new standalone Vertex Inject backend
-  - surplus-vertex analysis
-  - richer preflight and preview
+  - reuse of the standalone Vertex Inject backend
+  - surplus-chain-vertex analysis
+  - richer preflight visualization
 
 ### CS-XOBJ-001 — Multi-object synchronization
 
@@ -67,7 +69,7 @@ Last updated: 2026-07-21
 - Implemented:
   - multi-object Edit Mode participation
   - shared target segment count
-  - upper/lower collar interface alignment test
+  - upper/lower collar interface alignment
 - Remaining:
   - persistent master/follower data
   - transform mismatch diagnostics
@@ -84,16 +86,20 @@ Last updated: 2026-07-21
 - Remaining:
   - dedicated Curvature Ignore Zone UI
   - explicit per-operation permission matrix
-  - protected dissolve policies
+  - protected dissolve policies beyond strict current rejection
 
 ### CS-UI-001 — Witch Tools N-panel integration
 
 - Status: MVP implemented
 - Current UI:
-  - Edge / Vertex Inject section
-  - Connect & Split Face toggle
-  - projection and existing-vertex tolerances
-  - Curvature Sync A/M/Z controls and settings
+  - Edge / Vertex Inject controls
+  - Curvature Sync A/M/Z controls
+  - plane and segment controls
+  - Inject Missing Vertices
+  - Build Missing Column Edges
+  - Replace Misaligned Column Edges
+  - Respect Vertex Locks
+  - Analyze and Apply
 - Remaining:
   - preview overlays
   - richer diagnostics
@@ -102,32 +108,36 @@ Last updated: 2026-07-21
 ### CS-TEST-001 — MVP validation
 
 - Status: partially completed
-- Completed:
+- Completed under Blender Python 5.2.0 LTS:
   - package syntax and registration tests
-  - synthetic standalone vertex injection
-  - synthetic face split
-  - Curvature Sync regression test
-  - prior protected-anchor and actual collar harness tests
+  - synthetic standalone vertex injection and face split
+  - Curvature Sync regression
+  - protected-anchor and failure-without-mutation tests
+  - actual supplied pre/post collar comparison
+  - 96-edge misaligned-column replacement
+  - exact vertex-coordinate regression against the successful Dev_v2.5.1 result
+  - topology-degeneracy, duplicate, boundary-count, save/reopen, and special-data cancellation checks
 - Pending:
   - Blender 4.5 installation and panel rendering
-  - real collar manual A/B/C injection
   - interactive undo/redo
-  - production topology and print-fit inspection
+  - user-run production collar inspection
+  - final slicer/print-fit validation
 
 ## Next exact patch scope
 
-1. User-test Dev_v2.5.1 Vertex Inject in Blender 4.5.
-2. Patch only selection-history, chain-inference, projection, face-split, or undo failures required by that test.
-3. Use Vertex Inject to prepare the collar anchors/topology required by Curvature Sync.
-4. User-test Curvature Sync on the repaired topology.
-5. Add automatic missing-Middle and bulk correspondence improvements after the urgent print workflow succeeds.
+1. Install Dev_v2.5.2 in Blender 4.5.
+2. Open the supplied pre-curvature collar backup with the saved A/M/Z and chain selections.
+3. Keep **Replace Misaligned Column Edges** enabled.
+4. Run Analyze and confirm the planned misaligned-edge count.
+5. Apply Curvature Sync and inspect the corrected column topology.
+6. Verify interactive undo/redo, normals, and print-critical surfaces.
+7. Patch only Blender 4.5 UI, undo, or remaining topology failures found by that test.
 
 ## Later development
 
 ### CS-VINJ-002 — Curvature-aware single inject
 
 - Status: planned
-- Dependency: Dev_v2.5.1 user validation
 
 ### CS-GROUP-001 — Persistent repair-group data
 
@@ -140,7 +150,7 @@ Last updated: 2026-07-21
 ### CS-CLEAN-001 — Safe surplus-vertex handling
 
 - Status: deferred
-- Default remains leave existing surplus topology unchanged
+- Default remains leave surplus chain vertices unchanged and report/select them.
 
 ### CS-VINJ-003 — Manual/local-frame inject
 
@@ -153,29 +163,31 @@ Last updated: 2026-07-21
 ### CS-AUTO-001 — Automatic chain and curved-region discovery
 
 - Status: research
-- Must remain conservative and abort on ambiguity
+- Must remain conservative and abort on ambiguity.
 
 ## Rejected for current MVP
 
 - one-click automatic remesh
-- silent topology dissolution
+- silent or unreported topology dissolution
 - fitting from every malformed vertex
 - movement outside A/Z
 - protected-coordinate drift
 - Quickbar-first implementation
 
+The explicit Dev_v2.5.2 column-replacement toggle is not silent dissolution: it preflights, reports a count, accepts only safe two-face interior edges, and aborts on ambiguous or protected/special-data cases.
+
 ## Milestone status
 
 ### Urgent MVP development build
 
-- Produced: Dev_v2.5.1
+- Produced: Dev_v2.5.2
 - Runtime-tested environment: Blender Python 5.2.0 LTS
 - Blender 4.5 verification: pending
 
 ### Alpha exit criteria
 
-- standalone Vertex Inject succeeds on the actual collar
-- user completes collar Curvature Sync workflow in Blender 4.5
+- Vertex Inject succeeds on the actual collar where still required
+- user completes Curvature Sync with corrected column topology in Blender 4.5
 - interactive undo/redo verified
 - no partial destructive failures
 - unresolved topology clearly reported
