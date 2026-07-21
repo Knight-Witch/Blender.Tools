@@ -8,8 +8,8 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 ### SS-CORE-001 — Persistent mesh Selection Slots
 
-- Status: implemented development build; Blender 4.5 runtime validation pending
-- Witch Tools build: `Dev_v2.6.0`
+- Status: implemented development backend; Blender 4.5 behavioral validation active
+- Current Witch Tools build: `Dev_v2.6.1`
 - Scope:
   - vertex/edge/face and combined-domain save;
   - multi-object Edit Mode;
@@ -19,14 +19,22 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 ### SS-UI-001 — Witch Tools N-panel
 
-- Status: implemented development build; Blender 4.5 UI validation pending
+- Status: hotfix implemented in Dev_v2.6.1; Blender 4.5 validation pending
 - Location: Edit Tools immediately below Curvature Sync
-- Current reorder UI: up/down controls
-- Remaining: verify compact sizing, native icon enums, field expansion, and tooltip behavior in Blender 4.5.
+- Dev_v2.6.0 finding: header and Clear All rendered, but expanding did not reveal slot rows
+- Dev_v2.6.1 correction:
+  - no Scene mutation inside `Panel.draw()`;
+  - safe empty-scene Slot 1 initialization through an operator;
+  - clickable disclosure arrow and title;
+  - row-level draw failure containment.
+- Remaining:
+  - verify expanded rows in Blender 4.5;
+  - verify compact sizing, icon enums, field expansion, and native tooltip behavior;
+  - verify panel collapse/minimal-view regression.
 
 ### SS-QB-001 — Quickbar Select tab
 
-- Status: implemented development build; Blender 4.5 overlay validation pending
+- Status: user-reported working in Blender 4.5 for the tested Select workflow
 - Quickbar build: `Dev_v1.4.0`
 - Scope:
   - optional Witch Tools operator integration;
@@ -35,21 +43,28 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
   - responsive names and full-name tooltips;
   - grip drag reorder;
   - unavailable-backend state.
+- Remaining:
+  - full overlay regression: pass-through, resize, lock, file-load recovery, undo/redo, and dependency-absent behavior.
 
 ### SS-TEST-001 — Runtime validation
 
-- Status: active/pending user test
-- Required:
-  - install/register/unregister;
+- Status: active
+- Completed:
+  - Dev_v2.6.0 Quickbar Select workflow user-reported working;
+  - Dev_v2.6.0 N-panel expansion failure reproduced by user report;
+  - Dev_v2.6.1 static and simulated panel-layout validation passed.
+- Required next:
+  - Dev_v2.6.1 install/register/unregister;
+  - N-panel expand/collapse and Slot 1 display;
   - each mesh selection domain;
   - multi-object Edit Mode;
   - save/reopen;
   - overwrite and empty-save rejection;
   - clear versus remove;
   - reorder and naming;
-  - topology change behavior;
+  - topology-change behavior;
   - undo/redo;
-  - Quickbar draw/input/pass-through/resize/file-load tests.
+  - Quickbar complete overlay regression.
 
 ## Next release candidates
 
@@ -57,42 +72,37 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 - Status: planned after runtime validation
 - Possible scope:
-  - show missing object count;
-  - compare stored and surviving element counts;
-  - indicate topology-propagated extra markers;
-  - select/report incomplete slots without silently rewriting them.
+  - missing object count;
+  - stored versus surviving element counts;
+  - topology-propagated marker indication;
+  - incomplete-slot report without silent rewriting.
 
 ### SS-MODE-001 — Additive/subtractive reselect modes
 
 - Status: deferred
-- Current behavior replaces the current selection.
-- Possible later modes: Replace, Add, Subtract, Intersect.
+- Current behavior: Replace Selection.
 
 ### SS-OBJECT-001 — Object Mode selection slots
 
 - Status: deferred
-- Must remain distinct from mesh-element Selection Slots.
 
 ### SS-UV-001 — Independent UV selection storage
 
 - Status: research
-- Requires explicit UV-loop identity and synchronization rules; mesh selection alone is insufficient.
 
 ### SS-TRANSFER-001 — Cross-file export/import
 
 - Status: research
-- Requires a stable topology matching strategy; raw object pointers and mesh custom layers are file-local.
 
 ### SS-STABLE-ID-001 — Immutable topology identity
 
 - Status: research
-- Explore whether explicit element UUID attributes provide meaningful advantages over current custom markers without causing severe data bloat or propagation ambiguity.
 
 ## Rejected for the current build
 
-- storing transient BMesh indices as persistent identity;
-- silently rebuilding selections after deleted topology;
-- duplicating the canonical backend inside Quickbar;
-- forcing hidden objects visible during reselect;
-- unlimited slot creation;
-- treating slot names as unique identifiers.
+- transient BMesh indices as persistent identity;
+- silent reconstruction of deleted topology;
+- duplicate canonical backend inside Quickbar;
+- forcing hidden objects visible;
+- unlimited slots;
+- slot names as unique identifiers.
