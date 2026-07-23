@@ -2,10 +2,8 @@ name: Import isolated development sources
 
 on:
   push:
-    branches:
-      - Blender_Dev
-    paths:
-      - .github/import_dev_sources/READY
+    branches: [Blender_Dev]
+    paths: [.github/import_dev_sources/READY]
 
 permissions:
   contents: write
@@ -15,21 +13,15 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out Blender_Dev
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: Blender_Dev
           fetch-depth: 0
 
-      - name: Reconstruct and verify text source archives
+      - name: Reconstruct, verify, and import sources
         shell: python
         run: |
-          import base64
-          import hashlib
-          import json
-          import pathlib
-          import shutil
-          import tarfile
+          import base64, hashlib, json, pathlib, shutil, tarfile
 
           root = pathlib.Path.cwd()
           payload = root / ".github" / "import_dev_sources"
@@ -41,7 +33,7 @@ jobs:
           builds = [
               {
                   "name": "witch_tools",
-                  "payload": "witch_tools_text.tar.gz.b64",
+                  "payload_glob": "witch_tools_text.b64.part*",
                   "text_archive_sha256": "1581de4f7e7869df9074c4fe93e96cdfca1bbf14dd12913c24587efca153fb4f",
                   "package_root": "Witch_Tools_Dev",
                   "target": root / "addons" / "witch_tools" / "dev" / "Witch_Tools_Dev",
@@ -51,7 +43,7 @@ jobs:
               },
               {
                   "name": "quickbar",
-                  "payload": "quickbar_text.tar.gz.b64",
+                  "payload_glob": "quickbar_text.b64.part*",
                   "text_archive_sha256": "787efef4f0e0a5277367704697b744484f605aea476ef4e13c0d6f866ab83335",
                   "package_root": "witch_quickbar_dev",
                   "target": root / "addons" / "witch_quickbar" / "dev" / "witch_quickbar_dev",
@@ -62,18 +54,16 @@ jobs:
           ]
 
           for build in builds:
-              encoded_path = payload / build["payload"]
-              if not encoded_path.is_file():
-                  raise RuntimeError(f"Missing payload for {build['name']}: {encoded_path.name}")
-              encoded = "".join(encoded_path.read_text(encoding="ascii").split())
+              parts = sorted(payload.glob(build["payload_glob"]))
+              if not parts:
+                  raise RuntimeError(f"Missing payload parts for {build['name']}")
+              encoded = "".join(part.read_text(encoding="ascii").strip() for part in parts)
               archive_bytes = base64.b64decode(encoded, validate=True)
               digest = hashlib.sha256(archive_bytes).hexdigest()
               if digest != build["text_archive_sha256"]:
-                  raise RuntimeError(
-                      f"{build['name']} text archive hash mismatch: {digest} != {build['text_archive_sha256']}"
-                  )
+                  raise RuntimeError(f"{build['name']} payload hash mismatch: {digest}")
 
-              archive_path = staging / f"{build['name']}_text.tar.gz"
+              archive_path = staging / f"{build['name']}.tar.gz"
               archive_path.write_bytes(archive_bytes)
               extract_dir = staging / build["name"]
               extract_dir.mkdir()
@@ -87,67 +77,43 @@ jobs:
               source = extract_dir / build["package_root"]
               if not source.is_dir():
                   raise RuntimeError(f"Missing package root: {build['package_root']}")
-
               target = build["target"]
               target.mkdir(parents=True, exist_ok=True)
               for path in source.rglob("*"):
-                  if not path.is_file():
-                      continue
-                  rel = path.relative_to(source)
-                  dest = target / rel
-                  dest.parent.mkdir(parents=True, exist_ok=True)
-                  shutil.copy2(path, dest)
+                  if path.is_file():
+                      dest = target / path.relative_to(source)
+                      dest.parent.mkdir(parents=True, exist_ok=True)
+                      shutil.copy2(path, dest)
 
-              generated = [
-                  p for p in target.rglob("*")
-                  if p.is_file() and (p.name.endswith((".pyc", ".pyo")) or "__pycache__" in p.parts)
-              ]
+              generated = [p for p in target.rglob("*") if p.is_file() and (p.suffix in {".pyc", ".pyo"} or "__pycache__" in p.parts)]
               if generated:
-                  raise RuntimeError(f"Generated cache files found in {build['name']}: {generated}")
+                  raise RuntimeError(f"Generated cache files found: {generated}")
 
               files = []
               for path in sorted(p for p in target.rglob("*") if p.is_file()):
                   data = path.read_bytes()
-                  files.append({
-                      "path": path.relative_to(target).as_posix(),
-                      "size": len(data),
-                      "sha256": hashlib.sha256(data).hexdigest(),
-                  })
-
+                  files.append({"path": path.relative_to(target).as_posix(), "size": len(data), "sha256": hashlib.sha256(data).hexdigest()})
               manifest = {
-                  "component": build["name"],
-                  "version": build["version"],
-                  "artifact": build["artifact"],
-                  "archive_sha256": build["archive_sha256"],
-                  "package_root": build["package_root"],
-                  "target_blender": "4.5.0",
-                  "source_branch": "Blender_Dev",
-                  "status": "development-only source import",
+                  "component": build["name"], "version": build["version"],
+                  "artifact": build["artifact"], "archive_sha256": build["archive_sha256"],
+                  "package_root": build["package_root"], "target_blender": "4.5.0",
+                  "source_branch": "Blender_Dev", "status": "development-only source import",
                   "files": files,
               }
-              (target.parent / "SOURCE_MANIFEST.json").write_text(
-                  json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
-              )
+              (target.parent / "SOURCE_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
           (root / "addons" / "witch_tools" / "dev" / "README.md").write_text(
-              "# Witch Tools development source\n\n"
-              "This directory contains development-only Witch Tools source. "
-              "It is isolated from public release branches and is not the official public package.\n\n"
-              "Current imported package: `Witch_Tools_Dev` Dev_v2.6.1, target Blender 4.5.\n",
+              "# Witch Tools development source\n\nDevelopment-only source, isolated from public release branches.\n\nCurrent package: `Witch_Tools_Dev` Dev_v2.6.1; Blender 4.5.\n",
               encoding="utf-8",
           )
           (root / "addons" / "witch_quickbar" / "dev" / "README.md").write_text(
-              "# Witch Quickbar development source\n\n"
-              "This directory contains development-only Witch Quickbar source. "
-              "It is isolated from the public `Witch_Quick_Access` branch and is not the official public package.\n\n"
-              "Current imported package: `witch_quickbar_dev` Dev_v1.4.0, target Blender 4.5.\n",
+              "# Witch Quickbar development source\n\nDevelopment-only source, isolated from public `Witch_Quick_Access`.\n\nCurrent package: `witch_quickbar_dev` Dev_v1.4.0; Blender 4.5.\n",
               encoding="utf-8",
           )
-
           shutil.rmtree(payload)
           shutil.rmtree(staging)
 
-      - name: Commit isolated development source trees
+      - name: Commit imported development sources
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
