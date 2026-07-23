@@ -31,6 +31,7 @@ This registry records verified and candidate baselines. A build is not current m
 - Remaining tests: full overlay pass-through, drag cancel, resize, lock, file-load recovery, unregister/re-register, undo/redo, backend unavailable, side-by-side install, update launch
 - Dependency: Witch Tools Dev_v2.6.0+ operator contract; compatible with Dev_v2.6.1
 - Update destination: unchanged
+- Isolated source snapshot/import: pending
 - Status: current development build; primary Select workflow user-validated, full regression pending
 
 ### Superseded development candidate
@@ -65,7 +66,21 @@ This registry records verified and candidate baselines. A build is not current m
 - Retained capabilities: Selection Slots backend/operator contract, Auto-Aligned Vertex Inject, user-validated Curvature Sync, Vertex Locks, Object Snap, existing Dev_v2.x workflows
 - Blender 4.5 hotfix runtime: pending user validation
 - Footer link: unchanged
-- Status: current urgent development hotfix pending Blender 4.5 confirmation and canonical source import
+- Status: current urgent development hotfix pending Blender 4.5 confirmation
+
+### Verified isolated source snapshot
+
+- Snapshot path: `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/`
+- Manifest: `manifest.json`
+- Restoration utility: `tools/restore_dev_snapshot.py`
+- Source artifact size/SHA-256: 127,401 bytes / `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`
+- Reconstructed archive size/SHA-256: 81,400 bytes / `33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa`
+- Extracted package root: `Witch_Tools_Dev`
+- Extracted source tree: 60 files, 383,270 bytes
+- Deterministic source-tree SHA-256: `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`
+- Verification date: `2026-07-23`
+- Verification result: ordered parts, individual part hashes/sizes, archive reconstruction/hash/size, safe extraction, package root, file count, byte count, and source-tree digest passed locally
+- Scope: development-only preservation; no public or official source path changed
 
 ### Superseded development build — initial Selection Slots
 
@@ -103,13 +118,19 @@ This registry records verified and candidate baselines. A build is not current m
 - Current baseline: pending source import/audit
 - Expected target: Blender 4.5
 
-## Baseline manifests
+## Baseline and source manifests
+
+Historical supplied-baseline manifests:
 
 - `docs/project_state/baseline_manifests/WITCH_TOOLS_DEV_2_4_0.json`
 - `docs/project_state/baseline_manifests/WITCH_QUICKBAR_DEV_1_3_18.json`
 - `docs/project_state/baseline_manifests/WITCH_DEV_MODULES_0_0_9.json`
 
-Dev_v2.6.1 and Quickbar Dev_v1.4.0 source manifests remain pending canonical source import.
+Current development preservation:
+
+- Witch Tools Dev_v2.6.1 isolated snapshot manifest: complete and verified.
+- Quickbar Dev_v1.4.0 isolated snapshot manifest: pending.
+- Direct unpacked development source layouts and source-derived registries: pending.
 
 ## Rule
 
