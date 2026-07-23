@@ -21,15 +21,14 @@ jobs:
           ref: Blender_Dev
           fetch-depth: 0
 
-      - name: Reconstruct and verify source archives
+      - name: Reconstruct and verify text source archives
         shell: python
         run: |
-          import base64
           import hashlib
           import json
           import pathlib
           import shutil
-          import zipfile
+          import tarfile
 
           root = pathlib.Path.cwd()
           payload = root / ".github" / "import_dev_sources"
@@ -41,21 +40,23 @@ jobs:
           builds = [
               {
                   "name": "witch_tools",
-                  "parts": "witch_tools.b64.part*",
-                  "sha256": "671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e",
+                  "parts": "witch_tools_text.bin.part*",
+                  "sha256": "1581de4f7e7869df9074c4fe93e96cdfca1bbf14dd12913c24587efca153fb4f",
                   "package_root": "Witch_Tools_Dev",
                   "target": root / "addons" / "witch_tools" / "dev" / "Witch_Tools_Dev",
                   "version": "Dev_v2.6.1",
                   "artifact": "Witch_Tools_Dev_v2_6_1_Selection_Slots_NPanel_Hotfix_Blender_4_5.zip",
+                  "archive_sha256": "671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e",
               },
               {
                   "name": "quickbar",
-                  "parts": "quickbar.b64.part*",
-                  "sha256": "be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea",
+                  "parts": "quickbar_text.bin.part*",
+                  "sha256": "787efef4f0e0a5277367704697b744484f605aea476ef4e13c0d6f866ab83335",
                   "package_root": "witch_quickbar_dev",
                   "target": root / "addons" / "witch_quickbar" / "dev" / "witch_quickbar_dev",
                   "version": "Dev_v1.4.0",
                   "artifact": "witch_quickbar_dev_Dev_v1_4_0_Select_Tab_Blender_4_5.zip",
+                  "archive_sha256": "be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea",
               },
           ]
 
@@ -63,37 +64,37 @@ jobs:
               parts = sorted(payload.glob(build["parts"]))
               if not parts:
                   raise RuntimeError(f"Missing payload parts for {build['name']}")
-              encoded = "".join(part.read_text(encoding="ascii").strip() for part in parts)
-              archive_bytes = base64.b64decode(encoded, validate=True)
+              archive_bytes = b"".join(part.read_bytes() for part in parts)
               digest = hashlib.sha256(archive_bytes).hexdigest()
               if digest != build["sha256"]:
                   raise RuntimeError(
-                      f"{build['name']} archive hash mismatch: {digest} != {build['sha256']}"
+                      f"{build['name']} text archive hash mismatch: {digest} != {build['sha256']}"
                   )
 
-              archive_path = staging / f"{build['name']}.zip"
+              archive_path = staging / f"{build['name']}_text.tar.gz"
               archive_path.write_bytes(archive_bytes)
               extract_dir = staging / build["name"]
               extract_dir.mkdir()
-              with zipfile.ZipFile(archive_path) as zf:
-                  bad = zf.testzip()
-                  if bad:
-                      raise RuntimeError(f"Corrupt ZIP entry: {bad}")
-                  for info in zf.infolist():
-                      path = pathlib.PurePosixPath(info.filename)
+              with tarfile.open(archive_path, "r:gz") as tf:
+                  for member in tf.getmembers():
+                      path = pathlib.PurePosixPath(member.name)
                       if path.is_absolute() or ".." in path.parts:
-                          raise RuntimeError(f"Unsafe ZIP path: {info.filename}")
-                  zf.extractall(extract_dir)
+                          raise RuntimeError(f"Unsafe tar path: {member.name}")
+                  tf.extractall(extract_dir)
 
               source = extract_dir / build["package_root"]
               if not source.is_dir():
                   raise RuntimeError(f"Missing package root: {build['package_root']}")
 
               target = build["target"]
-              if target.exists():
-                  shutil.rmtree(target)
-              target.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copytree(source, target)
+              target.mkdir(parents=True, exist_ok=True)
+              for path in source.rglob("*"):
+                  if not path.is_file():
+                      continue
+                  rel = path.relative_to(source)
+                  dest = target / rel
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(path, dest)
 
               generated = [
                   p for p in target.rglob("*")
@@ -115,7 +116,7 @@ jobs:
                   "component": build["name"],
                   "version": build["version"],
                   "artifact": build["artifact"],
-                  "archive_sha256": build["sha256"],
+                  "archive_sha256": build["archive_sha256"],
                   "package_root": build["package_root"],
                   "target_blender": "4.5.0",
                   "source_branch": "Blender_Dev",
