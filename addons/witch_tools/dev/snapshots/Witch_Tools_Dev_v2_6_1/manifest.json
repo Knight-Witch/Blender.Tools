@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "component": "witch_tools",
+  "addon_name": "Witch Tools",
+  "version": "Dev_v2.6.1",
+  "status": "development-only isolated source snapshot",
+  "source_branch": "Blender_Dev",
+  "target_blender": "4.5.0",
+  "package_root": "Witch_Tools_Dev",
+  "source_artifact": {
+    "name": "Witch_Tools_Dev_v2_6_1_Selection_Slots_NPanel_Hotfix_Blender_4_5.zip",
+    "size": 127401,
+    "sha256": "671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e"
+  },
+  "archive_name": "Witch_Tools_Dev_v2_6_1_source.tar.xz",
+  "archive_format": "tar.xz",
+  "archive_size": 81400,
+  "archive_sha256": "33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa",
+  "parts": 9,
+  "part_files": [
+    "part_001_1.b64",
+    "part_001_2.b64",
+    "part_001_3.b64",
+    "part_001_4.b64",
+    "part_002.b64",
+    "part_003.b64",
+    "part_004.b64",
+    "part_005.b64",
+    "part_006.b64"
+  ],
+  "part_manifest": [
+    {
+      "file": "part_001_1.b64",
+      "size": 5000,
+      "sha256": "22f59fcb3121181b7c742b7840325462ddc4107bb52c31f7e9cced33753da625",
+      "git_blob_sha1": "605be08b0439f64ad451fe4376e82c44074bf91a"
+    },
+    {
+      "file": "part_001_2.b64",
+      "size": 5000,
+      "sha256": "2095503981a79063e4246f314980d8e741215a0dc11bc6f4c076660b761912b8",
+      "git_blob_sha1": "5ab753826683dcad5ecbb01b6ceb53a4f051701b"
+    },
+    {
+      "file": "part_001_3.b64",
+      "size": 5000,
+      "sha256": "89d4614db8d527e06d483f9acd32a0954384e942bb14b90fa8c5eadc0c27dfff",
+      "git_blob_sha1": "5b4ad7f49d6132c84185a76e440a141fc45b04b1"
+    },
+    {
+      "file": "part_001_4.b64",
+      "size": 5000,
+      "sha256": "1c4eb82fe2aa4b6ad802adb6946c6df68441dce6635179181bb06cbecca6ac06",
+      "git_blob_sha1": "f267d0fbdc9ce1d3324e5993b939822602a6161d"
+    },
+    {
+      "file": "part_002.b64",
+      "size": 20000,
+      "sha256": "63c7f7875ed4e0448b7f9214dcae3e712eedec8f1f58b5a5afd09b2ccfa95ed2",
+      "git_blob_sha1": "95a9603c78ffb09338fc8848bcadee0d6122dfaf"
+    },
+    {
+      "file": "part_003.b64",
+      "size": 20000,
+      "sha256": "337fb4a6242b819d913935ae8127c9db367d5c7410159eb138f643109ffa21fd",
+      "git_blob_sha1": "81cc3ba680da163dab9479b3550a1faa9f18c3cb"
+    },
+    {
+      "file": "part_004.b64",
+      "size": 20000,
+      "sha256": "cfdc6794967d7d641c00cbbaa322d2e1861b56e64d98290669ff74d7cb6ab162",
+      "git_blob_sha1": "4d3e437b0ab78dee396ad817468f021d3050717d"
+    },
+    {
+      "file": "part_005.b64",
+      "size": 20000,
+      "sha256": "f851715ad5881ae6c353ac94e0a19fc43fc92783691ea75eeba154ecfd3e259a",
+      "git_blob_sha1": "ce119f8e11fe708f366dc86ffed0507211c2dda1"
+    },
+    {
+      "file": "part_006.b64",
+      "size": 8536,
+      "sha256": "ebf46159d94ff5c5945c4708a58cb6bc691c50c9b8a7f4fd0f8ddcf547723ae7",
+      "git_blob_sha1": "1cbdb634a1e2ecceca4fd7593db909d12ade9ef7"
+    }
+  ],
+  "source_tree": {
+    "file_count": 60,
+    "uncompressed_bytes": 383270,
+    "tree_sha256": "8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3"
+  },
+  "verification": {
+    "date": "2026-07-23",
+    "method": "tools/restore_dev_snapshot.py",
+    "status": "archive reconstruction and extracted source-tree verification passed locally"
+  }
+}
