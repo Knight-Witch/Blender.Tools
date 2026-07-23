@@ -1,0 +1,153 @@
+name: Import isolated development sources
+
+on:
+  push:
+    branches:
+      - Blender_Dev
+    paths:
+      - .github/import_dev_sources/READY
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Blender_Dev
+        uses: actions/checkout@v4
+        with:
+          ref: Blender_Dev
+          fetch-depth: 0
+
+      - name: Reconstruct and verify source archives
+        shell: python
+        run: |
+          import base64
+          import hashlib
+          import json
+          import pathlib
+          import shutil
+          import zipfile
+
+          root = pathlib.Path.cwd()
+          payload = root / ".github" / "import_dev_sources"
+          staging = root / ".dev_import_staging"
+          if staging.exists():
+              shutil.rmtree(staging)
+          staging.mkdir()
+
+          builds = [
+              {
+                  "name": "witch_tools",
+                  "parts": "witch_tools.b64.part*",
+                  "sha256": "671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e",
+                  "package_root": "Witch_Tools_Dev",
+                  "target": root / "addons" / "witch_tools" / "dev" / "Witch_Tools_Dev",
+                  "version": "Dev_v2.6.1",
+                  "artifact": "Witch_Tools_Dev_v2_6_1_Selection_Slots_NPanel_Hotfix_Blender_4_5.zip",
+              },
+              {
+                  "name": "quickbar",
+                  "parts": "quickbar.b64.part*",
+                  "sha256": "be2453f4ea2425e94b4da9c764c04b2efbf61d21d3401e75f74e61ab451866ea",
+                  "package_root": "witch_quickbar_dev",
+                  "target": root / "addons" / "witch_quickbar" / "dev" / "witch_quickbar_dev",
+                  "version": "Dev_v1.4.0",
+                  "artifact": "witch_quickbar_dev_Dev_v1_4_0_Select_Tab_Blender_4_5.zip",
+              },
+          ]
+
+          for build in builds:
+              parts = sorted(payload.glob(build["parts"]))
+              if not parts:
+                  raise RuntimeError(f"Missing payload parts for {build['name']}")
+              encoded = "".join(part.read_text(encoding="ascii").strip() for part in parts)
+              archive_bytes = base64.b64decode(encoded, validate=True)
+              digest = hashlib.sha256(archive_bytes).hexdigest()
+              if digest != build["sha256"]:
+                  raise RuntimeError(
+                      f"{build['name']} archive hash mismatch: {digest} != {build['sha256']}"
+                  )
+
+              archive_path = staging / f"{build['name']}.zip"
+              archive_path.write_bytes(archive_bytes)
+              extract_dir = staging / build["name"]
+              extract_dir.mkdir()
+              with zipfile.ZipFile(archive_path) as zf:
+                  bad = zf.testzip()
+                  if bad:
+                      raise RuntimeError(f"Corrupt ZIP entry: {bad}")
+                  for info in zf.infolist():
+                      path = pathlib.PurePosixPath(info.filename)
+                      if path.is_absolute() or ".." in path.parts:
+                          raise RuntimeError(f"Unsafe ZIP path: {info.filename}")
+                  zf.extractall(extract_dir)
+
+              source = extract_dir / build["package_root"]
+              if not source.is_dir():
+                  raise RuntimeError(f"Missing package root: {build['package_root']}")
+
+              target = build["target"]
+              if target.exists():
+                  shutil.rmtree(target)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copytree(source, target)
+
+              generated = [
+                  p for p in target.rglob("*")
+                  if p.is_file() and (p.name.endswith((".pyc", ".pyo")) or "__pycache__" in p.parts)
+              ]
+              if generated:
+                  raise RuntimeError(f"Generated cache files found in {build['name']}: {generated}")
+
+              files = []
+              for path in sorted(p for p in target.rglob("*") if p.is_file()):
+                  data = path.read_bytes()
+                  files.append({
+                      "path": path.relative_to(target).as_posix(),
+                      "size": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                  })
+
+              manifest = {
+                  "component": build["name"],
+                  "version": build["version"],
+                  "artifact": build["artifact"],
+                  "archive_sha256": build["sha256"],
+                  "package_root": build["package_root"],
+                  "target_blender": "4.5.0",
+                  "source_branch": "Blender_Dev",
+                  "status": "development-only source import",
+                  "files": files,
+              }
+              (target.parent / "SOURCE_MANIFEST.json").write_text(
+                  json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+              )
+
+          (root / "addons" / "witch_tools" / "dev" / "README.md").write_text(
+              "# Witch Tools development source\n\n"
+              "This directory contains development-only Witch Tools source. "
+              "It is isolated from public release branches and is not the official public package.\n\n"
+              "Current imported package: `Witch_Tools_Dev` Dev_v2.6.1, target Blender 4.5.\n",
+              encoding="utf-8",
+          )
+          (root / "addons" / "witch_quickbar" / "dev" / "README.md").write_text(
+              "# Witch Quickbar development source\n\n"
+              "This directory contains development-only Witch Quickbar source. "
+              "It is isolated from the public `Witch_Quick_Access` branch and is not the official public package.\n\n"
+              "Current imported package: `witch_quickbar_dev` Dev_v1.4.0, target Blender 4.5.\n",
+              encoding="utf-8",
+          )
+
+          shutil.rmtree(payload)
+          shutil.rmtree(staging)
+
+      - name: Commit isolated development source trees
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Import isolated Witch Tools and Quickbar development sources"
+          git push origin HEAD:Blender_Dev
