@@ -24,6 +24,7 @@ jobs:
       - name: Reconstruct and verify text source archives
         shell: python
         run: |
+          import base64
           import hashlib
           import json
           import pathlib
@@ -40,8 +41,8 @@ jobs:
           builds = [
               {
                   "name": "witch_tools",
-                  "parts": "witch_tools_text.bin.part*",
-                  "sha256": "1581de4f7e7869df9074c4fe93e96cdfca1bbf14dd12913c24587efca153fb4f",
+                  "payload": "witch_tools_text.tar.gz.b64",
+                  "text_archive_sha256": "1581de4f7e7869df9074c4fe93e96cdfca1bbf14dd12913c24587efca153fb4f",
                   "package_root": "Witch_Tools_Dev",
                   "target": root / "addons" / "witch_tools" / "dev" / "Witch_Tools_Dev",
                   "version": "Dev_v2.6.1",
@@ -50,8 +51,8 @@ jobs:
               },
               {
                   "name": "quickbar",
-                  "parts": "quickbar_text.bin.part*",
-                  "sha256": "787efef4f0e0a5277367704697b744484f605aea476ef4e13c0d6f866ab83335",
+                  "payload": "quickbar_text.tar.gz.b64",
+                  "text_archive_sha256": "787efef4f0e0a5277367704697b744484f605aea476ef4e13c0d6f866ab83335",
                   "package_root": "witch_quickbar_dev",
                   "target": root / "addons" / "witch_quickbar" / "dev" / "witch_quickbar_dev",
                   "version": "Dev_v1.4.0",
@@ -61,14 +62,14 @@ jobs:
           ]
 
           for build in builds:
-              parts = sorted(payload.glob(build["parts"]))
-              if not parts:
-                  raise RuntimeError(f"Missing payload parts for {build['name']}")
-              archive_bytes = b"".join(part.read_bytes() for part in parts)
+              encoded_path = payload / build["payload"]
+              if not encoded_path.is_file():
+                  raise RuntimeError(f"Missing payload for {build['name']}: {encoded_path.name}")
+              archive_bytes = base64.b64decode(encoded_path.read_text(encoding="ascii"), validate=True)
               digest = hashlib.sha256(archive_bytes).hexdigest()
-              if digest != build["sha256"]:
+              if digest != build["text_archive_sha256"]:
                   raise RuntimeError(
-                      f"{build['name']} text archive hash mismatch: {digest} != {build['sha256']}"
+                      f"{build['name']} text archive hash mismatch: {digest} != {build['text_archive_sha256']}"
                   )
 
               archive_path = staging / f"{build['name']}_text.tar.gz"
