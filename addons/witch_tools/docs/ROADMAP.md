@@ -4,23 +4,30 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 ## Current release / baseline recovery
 
-### WT-BASE-001 — Import latest Witch Tools development baseline
+### WT-BASE-001 — Preserve latest Witch Tools development baseline
 
-- Status: active
+- Status: complete for isolated reproducible snapshot; direct unpacked canonical source import remains active
 - Priority: critical
-- Current implementation baseline: Dev_v2.4.0 imported locally and used to produce Dev_v2.5.x and Dev_v2.6.x builds
 - Current derivative build: Dev_v2.6.1
-- Remaining: canonical repository source import, manifest, branch ancestry, and Blender target record
+- Completed 2026-07-23:
+  - development-only snapshot stored under `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/`;
+  - manifest records source ZIP, ordered parts, archive, package root, and source-tree identities;
+  - final reconstruction verified 60 files, 383,270 bytes, and tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`;
+  - public Witch Tools source paths and branches remained unchanged.
+- Remaining:
+  - decide and execute the direct unpacked development source layout;
+  - generate source-derived UI/operator registries;
+  - preserve branch ancestry and public integration strategy.
 
 ### WT-BASE-002 — Build current UI and operator registries
 
 - Status: planned
-- Dependency: canonical source import
+- Dependency: direct unpacked development source import
 
 ### WT-BASE-003 — Audit public/update compatibility
 
 - Status: planned
-- Dependency: canonical source import
+- Dependency: direct unpacked development source import
 
 ## Current selection infrastructure
 
@@ -49,7 +56,7 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
   - Blender 4.5 N-panel confirmation;
   - save/reopen, multi-object, and undo/redo validation;
   - record marker behavior after delete/subdivide/duplicate;
-  - canonical source import and registries.
+  - direct unpacked source import and registries.
 
 ### WT-SEL-002 — Selection Slot diagnostics
 
@@ -108,7 +115,7 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 ## Immediate next step
 
-User-test Witch Tools Dev_v2.6.1 in Blender 4.5. Confirm the Selection Slots body expands and Slot 1 renders, then test the selection workflow and panel regression matrix. Patch only failures found in that test.
+Complete the isolated Quickbar Dev_v1.4.0 source snapshot, then user-test Witch Tools Dev_v2.6.1 in Blender 4.5. Confirm the Selection Slots body expands and Slot 1 renders, then test the selection workflow and panel regression matrix. Patch only failures found in that test.
 
 ## Deferred/rejected policy
 
