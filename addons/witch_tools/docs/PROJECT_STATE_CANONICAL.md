@@ -1,0 +1,1 @@
+This staging alias is replaced by the canonical PROJECT_STATE.md through a Git tree commit.
