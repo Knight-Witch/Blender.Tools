@@ -1,5 +1,18 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-23 — Witch Tools Dev_v2.6.1 isolated source snapshot verification
+
+- Added a complete development-only manifest for the Witch Tools Dev_v2.6.1 source snapshot on `Blender_Dev`.
+- Replaced the malformed original first Base64 part with four smaller verified parts and removed the superseded file.
+- Hardened `tools/restore_dev_snapshot.py` to validate the explicit ordered part list, every part size/hash, archive size/hash, safe extraction, package root, file count, byte count, and deterministic source-tree digest.
+- Final local reconstruction verification passed:
+  - source ZIP: 127,401 bytes, SHA-256 `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`;
+  - reconstructed `.tar.xz`: 81,400 bytes, SHA-256 `33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa`;
+  - extracted package root `Witch_Tools_Dev`: 60 files, 383,270 bytes, tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
+- Added `addons/witch_tools/dev/SNAPSHOT_VERIFICATION.md` and corrected `addons/DEV_SOURCE_SNAPSHOTS.md` to distinguish the completed Witch Tools snapshot from the pending Quickbar snapshot.
+- This was source preservation and verification only; no add-on runtime behavior changed.
+- No public branch, official source path, update URL, package identity, operator namespace, asset path, or release location changed.
+
 ## 2026-07-21 — Witch Tools Dev_v2.6.1 Selection Slots N-panel hotfix
 
 - User reported Quickbar Dev_v1.4.0 worked perfectly in the tested Selection Slots workflow.
