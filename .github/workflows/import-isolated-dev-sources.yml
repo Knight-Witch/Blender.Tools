@@ -65,7 +65,8 @@ jobs:
               encoded_path = payload / build["payload"]
               if not encoded_path.is_file():
                   raise RuntimeError(f"Missing payload for {build['name']}: {encoded_path.name}")
-              archive_bytes = base64.b64decode(encoded_path.read_text(encoding="ascii"), validate=True)
+              encoded = "".join(encoded_path.read_text(encoding="ascii").split())
+              archive_bytes = base64.b64decode(encoded, validate=True)
               digest = hashlib.sha256(archive_bytes).hexdigest()
               if digest != build["text_archive_sha256"]:
                   raise RuntimeError(
