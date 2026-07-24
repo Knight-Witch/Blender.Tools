@@ -1,0 +1,113 @@
+name: Reconstruct development baselines
+
+on:
+  push:
+    branches: [Blender_Dev]
+    paths: [.github/import_dev_sources/BASE_READY]
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: Blender_Dev
+          fetch-depth: 0
+
+      - name: Reconstruct verified baseline source trees
+        shell: python
+        run: |
+          import base64, hashlib, json, pathlib, shutil, subprocess, tarfile
+
+          root = pathlib.Path.cwd()
+
+          def tree_info(package_root):
+              files = []
+              for path in sorted(p for p in package_root.rglob('*') if p.is_file()):
+                  data = path.read_bytes()
+                  files.append({
+                      'path': path.relative_to(package_root).as_posix(),
+                      'size': len(data),
+                      'sha256': hashlib.sha256(data).hexdigest(),
+                  })
+              digest = hashlib.sha256()
+              for item in files:
+                  digest.update(item['path'].encode('utf-8'))
+                  digest.update(b'\0')
+                  digest.update(item['sha256'].encode('ascii'))
+                  digest.update(b'\0')
+                  digest.update(str(item['size']).encode('ascii'))
+                  digest.update(b'\n')
+              return files, sum(item['size'] for item in files), digest.hexdigest()
+
+          # Witch Tools: restore the already-verified Dev_v2.6.1 snapshot.
+          wt_snapshot = root / 'addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1'
+          subprocess.run(['python', 'tools/restore_dev_snapshot.py', str(wt_snapshot)], check=True)
+          wt_source = wt_snapshot / 'restored' / 'Witch_Tools_Dev'
+          wt_files, wt_bytes, wt_tree = tree_info(wt_source)
+          if (len(wt_files), wt_bytes, wt_tree) != (
+              60,
+              383270,
+              '8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3',
+          ):
+              raise RuntimeError(f'Unexpected Witch Tools tree: {len(wt_files)}, {wt_bytes}, {wt_tree}')
+
+          wt_target = root / 'addons/witch_tools/dev/Witch_Tools_Dev'
+          if wt_target.exists():
+              shutil.rmtree(wt_target)
+          shutil.copytree(wt_source, wt_target)
+
+          # Quickbar: reconstruct the complete Dev_v1.4.0 package already staged as qb4k parts.
+          payload = root / '.github/import_dev_sources'
+          qb_parts = sorted(payload.glob('qb4k.part*'))
+          if not qb_parts:
+              raise RuntimeError('Missing qb4k Quickbar baseline parts')
+          qb_archive = base64.b64decode(''.join(p.read_text(encoding='ascii').strip() for p in qb_parts), validate=True)
+          qb_stage = root / '.quickbar_baseline_stage'
+          if qb_stage.exists():
+              shutil.rmtree(qb_stage)
+          qb_stage.mkdir()
+          qb_tar = qb_stage / 'quickbar.tar.gz'
+          qb_tar.write_bytes(qb_archive)
+          with tarfile.open(qb_tar, 'r:gz') as tf:
+              for member in tf.getmembers():
+                  path = pathlib.PurePosixPath(member.name)
+                  if path.is_absolute() or '..' in path.parts:
+                      raise RuntimeError(f'Unsafe Quickbar archive path: {member.name}')
+              tf.extractall(qb_stage / 'extracted')
+          candidates = [p for p in (qb_stage / 'extracted').iterdir() if p.is_dir()]
+          if len(candidates) != 1:
+              raise RuntimeError(f'Unexpected Quickbar archive roots: {candidates}')
+          qb_source = candidates[0]
+          qb_files, qb_bytes, qb_tree = tree_info(qb_source)
+          if (len(qb_files), qb_bytes, qb_tree) != (
+              54,
+              276665,
+              'ef9bba1988a1410ea568aaeeabdc33c0418bbd23dff13d13a6d8259eacd1fadd',
+          ):
+              raise RuntimeError(f'Unexpected Quickbar tree: {len(qb_files)}, {qb_bytes}, {qb_tree}')
+
+          qb_target = root / 'addons/witch_quickbar/dev/witch_quickbar_dev'
+          if qb_target.exists():
+              shutil.rmtree(qb_target)
+          shutil.copytree(qb_source, qb_target)
+
+          # Remove generated restore output and one-use import payload/workflow.
+          archive_name = json.loads((wt_snapshot / 'manifest.json').read_text())['archive_name']
+          (wt_snapshot / archive_name).unlink(missing_ok=True)
+          shutil.rmtree(wt_snapshot / 'restored', ignore_errors=True)
+          shutil.rmtree(qb_stage, ignore_errors=True)
+          shutil.rmtree(payload, ignore_errors=True)
+          pathlib.Path('.github/workflows/reconstruct-development-baselines.yml').unlink(missing_ok=True)
+
+      - name: Commit reconstructed baselines
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Reconstruct verified Witch Tools and Quickbar development baselines"
+          git push origin HEAD:Blender_Dev
