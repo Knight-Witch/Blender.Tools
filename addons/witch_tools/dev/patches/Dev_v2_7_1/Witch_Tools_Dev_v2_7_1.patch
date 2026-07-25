@@ -1,0 +1,47 @@
+diff --git a/Witch_Tools_Dev/preferences.py b/Witch_Tools_Dev/preferences.py
+--- a/Witch_Tools_Dev/preferences.py
++++ b/Witch_Tools_Dev/preferences.py
+@@
+     show_edit_vertex_inject: BoolProperty(name='Edge / Vertex Inject', default=True)
+     show_edit_curvature_sync: BoolProperty(name='Curvature Sync', default=True)
++    show_edit_align_selection: BoolProperty(name='Align Selection', default=True)
+     show_edit_selection_slots: BoolProperty(name='Selection Slots', default=True)
+
+diff --git a/Witch_Tools_Dev/panel_edit_tools.py b/Witch_Tools_Dev/panel_edit_tools.py
+--- a/Witch_Tools_Dev/panel_edit_tools.py
++++ b/Witch_Tools_Dev/panel_edit_tools.py
+@@
+             ui,
+             'show_edit_align_selection',
+             'Align Selection',
+-            section_icon='ALIGN',
++            section_icon='PIVOT_ACTIVE',
+             help_topic='align_selection_title',
+         ):
+
+diff --git a/Witch_Tools_Dev/state.py b/Witch_Tools_Dev/state.py
+--- a/Witch_Tools_Dev/state.py
++++ b/Witch_Tools_Dev/state.py
+@@
+-ADDON_VERSION = (2, 7, 0)
++ADDON_VERSION = (2, 7, 1)
+ IS_DEV_BUILD = True
+-VERSION_LABEL = 'Dev_v2.7.0' if IS_DEV_BUILD else 'v2.7.0'
++VERSION_LABEL = 'Dev_v2.7.1' if IS_DEV_BUILD else 'v2.7.1'
+
+diff --git a/Witch_Tools_Dev/__init__.py b/Witch_Tools_Dev/__init__.py
+--- a/Witch_Tools_Dev/__init__.py
++++ b/Witch_Tools_Dev/__init__.py
+@@
+-    'name': 'Witch Tools Dev_v2.7.0',
++    'name': 'Witch Tools Dev_v2.7.1',
+@@
+-    'version': (2, 7, 0),
++    'version': (2, 7, 1),
+
+diff --git a/Witch_Tools_Dev/ALIGN_SELECTION_QUICK_START.md b/Witch_Tools_Dev/ALIGN_SELECTION_QUICK_START.md
+--- a/Witch_Tools_Dev/ALIGN_SELECTION_QUICK_START.md
++++ b/Witch_Tools_Dev/ALIGN_SELECTION_QUICK_START.md
+@@
+-Build: Witch Tools Dev_v2.7.0  
++Build: Witch Tools Dev_v2.7.1  
