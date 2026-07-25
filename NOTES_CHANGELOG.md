@@ -1,21 +1,30 @@
 # Blender.Tools Notes Changelog — Latest Update
 
-Date: 2026-07-23
+Date: 2026-07-24
 
-## Update: Witch Tools Dev_v2.6.1 source snapshot verification
+## Witch Tools Dev_v2.7.0 — Align Selection
 
-- Added a complete development-only manifest for the Witch Tools Dev_v2.6.1 source snapshot on `Blender_Dev`.
-- Replaced the malformed original first Base64 part with four smaller verified parts and removed the superseded file.
-- Hardened `tools/restore_dev_snapshot.py` to validate the ordered part list, each part size/hash, reconstructed archive size/hash, safe extraction, package root, file count, byte count, and deterministic source-tree digest.
-- Final reconstruction passed:
-  - source ZIP: 127,401 bytes, SHA-256 `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`;
-  - reconstructed `.tar.xz`: 81,400 bytes, SHA-256 `33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa`;
-  - extracted `Witch_Tools_Dev`: 60 files, 383,270 bytes, tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
-- Added a dedicated snapshot verification record and corrected the development snapshot index to show Witch Tools complete and Quickbar still pending.
+- Added the canonical Align Selection backend and N-panel controls under Edit Tools.
+- Added persistent Source and Target Anchor capture for vertex, edge, face, and mixed selections.
+- Added Match Coordinates for direct world-space X/Y/Z assignment.
+- Added Move Shape to align an anchor while preserving the complete selected shape.
+- Added Whole Selection and Per Selected Island, including independent alignment of multiple cavities.
+- Added multi-object world/local conversion and strict preflight for locks, stale captures, missing anchors, shape keys, and invalid transforms.
+- Produced `Witch_Tools_Dev_v2_7_0_Align_Selection_Blender_4_5.zip`, SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`.
+- Added a verified Dev_v2.7.0 source snapshot on `Blender_Dev`.
 
-## Scope
+## Local Quickbar Dev_v1.5.0
 
-- This update preserves and verifies source; it does not change Witch Tools runtime behavior.
-- Witch Tools Dev_v2.6.1 Blender 4.5 N-panel validation remains pending.
-- Witch Quickbar Dev_v1.4.0 source snapshot/import remains pending.
-- No public branch, official source path, update destination, package identity, operator namespace, inherited asset path, external release link, or public download location changed.
+- Added compact Align Selection controls to the Edit tab.
+- The Quickbar calls Witch Tools operators/properties and contains no duplicate geometry backend.
+- Produced `witch_quickbar_dev_Dev_v1_5_0_Align_Selection_Blender_4_5.zip`, SHA-256 `d2ace3cd3310686664cebfce6242717af3afed3f5954a4bd3cd6bc2a26eded5c`.
+- Quickbar source was intentionally not updated on GitHub per user instruction.
+
+## Testing
+
+- Static syntax, duplicate operator IDs, pure core tests, synthetic operator planning, Quickbar layout/integration, ZIP integrity, package hygiene, and Witch Tools snapshot reconstruction passed.
+- Blender 4.5 registration, real mesh execution, N-panel/overlay UI, undo/redo, save/reopen, multi-object/multi-island runtime, locks, and shape-key behavior remain pending.
+
+## Compatibility
+
+No public branch, package identity, update URL, inherited asset path, or public release location changed.
