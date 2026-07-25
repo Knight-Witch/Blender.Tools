@@ -9,7 +9,7 @@ Date: 2026-07-24
 - Registered the missing persistent preference with a default expanded state.
 - Replaced the invalid/unverified `ALIGN` section icon with valid `PIVOT_ACTIVE`.
 - Preserved all Align Selection geometry logic, operator IDs, property contracts, and Quickbar integration.
-- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`.
+- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,053 bytes, SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
 
 ## Baseline record
 
