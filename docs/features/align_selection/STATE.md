@@ -48,7 +48,8 @@ Correction:
 ## Build identity
 
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
-- SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
+- Size: 132,053 bytes
+- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
 - Package: `Witch_Tools_Dev`
 - Baseline: exact user-tested replacement Dev_v2.7.0 ZIP, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
 
@@ -73,7 +74,7 @@ The replacement Dev_v2.7.0 ZIP differed from the earlier Dev_v2.7.0 snapshot ide
 - Multi-object and multiple-cavity runtime.
 - Vertex Lock and shape-key behavior inside Blender.
 - Undo/redo and save/reopen.
-- Quickbar dropdown/layout work, which is intentionally deferred to the next local-only Quickbar pass.
+- Quickbar dropdown/layout work, intentionally deferred to the next local-only Quickbar pass.
 
 ## Known remaining issues
 
