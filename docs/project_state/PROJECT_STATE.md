@@ -18,8 +18,8 @@ Last updated: 2026-07-24
 - Current build: `Dev_v2.7.1`
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
-- Size: 132,053 bytes
-- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
+- Size: 132,189 bytes
+- SHA-256: `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
 - Target: Blender `4.5.0`
 - Source record: verified patch and manifest on `Blender_Dev`
 - Runtime: N-panel hotfix pending user validation
