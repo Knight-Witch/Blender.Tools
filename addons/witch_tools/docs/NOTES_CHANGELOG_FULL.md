@@ -7,7 +7,7 @@
 - Registered the missing persistent preference and changed the section icon from invalid/unverified `ALIGN` to valid `PIVOT_ACTIVE`.
 - Preserved all Align Selection backend behavior, operator IDs, scene-property contracts, and Quickbar integration.
 - Recorded that the user-tested replacement Dev_v2.7.0 ZIP, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`, differed from the earlier repository snapshot identity; Dev_v2.7.1 supersedes both.
-- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,053 bytes, SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
+- Delivered `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,189 bytes, SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`.
 - Static parse/compile, operator-ID, UI-state consistency, icon-reference, ZIP integrity, safe-path, package-hygiene, and source-patch checks passed.
 - Exact Blender 4.5 N-panel and runtime validation remains pending.
 - Quickbar source was not updated on GitHub.
