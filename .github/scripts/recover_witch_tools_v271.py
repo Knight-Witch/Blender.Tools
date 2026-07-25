@@ -1,0 +1,211 @@
+import ast
+import base64
+import hashlib
+import json
+import pathlib
+import re
+import shutil
+import tarfile
+import zipfile
+
+root = pathlib.Path.cwd()
+snapshot = root / "addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_7_0"
+manifest = json.loads((snapshot / "manifest.json").read_text(encoding="utf-8"))
+encoded = "".join(
+    (snapshot / "parts" / name).read_text(encoding="ascii").strip()
+    for name in manifest["part_files"]
+)
+archive = base64.b64decode(encoded, validate=True)
+if hashlib.sha256(archive).hexdigest() != manifest["archive_sha256"]:
+    raise RuntimeError("Snapshot archive hash mismatch")
+
+stage = root / ".artifact_recovery"
+shutil.rmtree(stage, ignore_errors=True)
+stage.mkdir()
+archive_path = stage / manifest["archive_name"]
+archive_path.write_bytes(archive)
+extract_dir = stage / "extracted"
+extract_dir.mkdir()
+with tarfile.open(archive_path, "r:xz") as tf:
+    for member in tf.getmembers():
+        path = pathlib.PurePosixPath(member.name)
+        if path.is_absolute() or ".." in path.parts:
+            raise RuntimeError(f"Unsafe archive path: {member.name}")
+    tf.extractall(extract_dir)
+
+package = extract_dir / "Witch_Tools_Dev"
+if not package.is_dir():
+    candidates = [p for p in extract_dir.rglob("Witch_Tools_Dev") if p.is_dir()]
+    if len(candidates) != 1:
+        raise RuntimeError(f"Could not resolve package root: {candidates}")
+    package = candidates[0]
+
+
+def replace_once(path, old, new):
+    text = path.read_text(encoding="utf-8")
+    if new in text:
+        return
+    if old not in text:
+        raise RuntimeError(f"Missing expected text in {path}: {old!r}")
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+preferences = package / "preferences.py"
+text = preferences.read_text(encoding="utf-8")
+if "show_edit_align_selection:" not in text:
+    anchor = "    show_edit_curvature_sync: BoolProperty(name='Curvature Sync', default=True)\n"
+    if anchor not in text:
+        raise RuntimeError("Missing Align Selection preference insertion anchor")
+    text = text.replace(
+        anchor,
+        anchor + "    show_edit_align_selection: BoolProperty(name='Align Selection', default=True)\n",
+        1,
+    )
+    preferences.write_text(text, encoding="utf-8")
+
+replace_once(package / "panel_edit_tools.py", "section_icon='ALIGN'", "section_icon='PIVOT_ACTIVE'")
+replace_once(package / "state.py", "ADDON_VERSION = (2, 7, 0)", "ADDON_VERSION = (2, 7, 1)")
+replace_once(
+    package / "state.py",
+    "VERSION_LABEL = 'Dev_v2.7.0' if IS_DEV_BUILD else 'v2.7.0'",
+    "VERSION_LABEL = 'Dev_v2.7.1' if IS_DEV_BUILD else 'v2.7.1'",
+)
+replace_once(
+    package / "__init__.py",
+    "'name': 'Witch Tools Dev_v2.7.0'",
+    "'name': 'Witch Tools Dev_v2.7.1'",
+)
+replace_once(package / "__init__.py", "'version': (2, 7, 0)", "'version': (2, 7, 1)")
+quick_start = package / "ALIGN_SELECTION_QUICK_START.md"
+if quick_start.exists():
+    replace_once(quick_start, "Build: Witch Tools Dev_v2.7.0", "Build: Witch Tools Dev_v2.7.1")
+
+latest_notes = """# Witch Tools Notes Changelog — Latest Update
+
+## Dev_v2.7.1 — Align Selection N-panel Rendering Hotfix
+
+- Registered the missing `show_edit_align_selection` persistent preference.
+- Replaced the invalid Align Selection section icon with `PIVOT_ACTIVE`.
+- Preserved the Align Selection backend, operator IDs, and scene-property contracts.
+- Target Blender version: 4.5.0.
+- Static verification passed; Blender 4.5 runtime validation remains pending.
+"""
+(package / "NOTES_CHANGELOG.md").write_text(latest_notes, encoding="utf-8")
+
+full_notes = package / "NOTES_CHANGELOG_FULL.md"
+entry = """## Dev_v2.7.1 — Align Selection N-panel Rendering Hotfix
+
+- Registered the missing `show_edit_align_selection` persistent preference.
+- Replaced the invalid Align Selection section icon with `PIVOT_ACTIVE`.
+- Preserved the Align Selection backend and operator contracts.
+- Static verification passed; Blender 4.5 runtime validation remains pending.
+
+"""
+existing = (
+    full_notes.read_text(encoding="utf-8")
+    if full_notes.exists()
+    else "# Witch Tools Notes Changelog — Full History\n\n"
+)
+if "## Dev_v2.7.1 — Align Selection N-panel Rendering Hotfix" not in existing:
+    if existing.startswith("#") and "\n\n" in existing:
+        head, body = existing.split("\n\n", 1)
+        existing = head + "\n\n" + entry + body
+    else:
+        existing = entry + existing
+    full_notes.write_text(existing, encoding="utf-8")
+
+changelog = package / "CHANGELOG.md"
+if changelog.exists():
+    existing = changelog.read_text(encoding="utf-8")
+    entry = """## Dev_v2.7.1
+
+- Fixed the empty Align Selection N-panel section by registering its persistent disclosure preference.
+- Replaced the invalid Align Selection header icon.
+
+"""
+    if "## Dev_v2.7.1" not in existing:
+        if existing.startswith("#") and "\n\n" in existing:
+            head, body = existing.split("\n\n", 1)
+            existing = head + "\n\n" + entry + body
+        else:
+            existing = entry + existing
+        changelog.write_text(existing, encoding="utf-8")
+
+compatibility = package / "Blender_Version_Compatability.md"
+if compatibility.exists():
+    existing = compatibility.read_text(encoding="utf-8")
+    line = "- Witch Tools Dev_v2.7.1 target: Blender 4.5.0; runtime validation pending.\n"
+    if line not in existing:
+        compatibility.write_text(existing.rstrip() + "\n\n" + line, encoding="utf-8")
+
+readme = package / "README.md"
+if readme.exists():
+    existing = readme.read_text(encoding="utf-8")
+    note = "\n\nCurrent development build: `Dev_v2.7.1` for Blender 4.5.0.\n"
+    if "Current development build: `Dev_v2.7.1`" not in existing:
+        readme.write_text(existing.rstrip() + note, encoding="utf-8")
+
+for path in package.rglob("*"):
+    if path.is_file() and (
+        path.suffix in {".pyc", ".pyo"} or "__pycache__" in path.parts
+    ):
+        path.unlink()
+for path in sorted(package.rglob("__pycache__"), reverse=True):
+    if path.is_dir():
+        shutil.rmtree(path)
+
+py_files = sorted(package.rglob("*.py"))
+for path in py_files:
+    source = path.read_text(encoding="utf-8")
+    ast.parse(source, filename=str(path))
+    compile(source, str(path), "exec")
+
+operator_ids = []
+pattern = re.compile(r"bl_idname\s*=\s*['\"]([^'\"]+)['\"]")
+for path in py_files:
+    operator_ids.extend(pattern.findall(path.read_text(encoding="utf-8")))
+duplicates = sorted({item for item in operator_ids if operator_ids.count(item) > 1})
+if duplicates:
+    raise RuntimeError(f"Duplicate operator IDs: {duplicates}")
+
+if "show_edit_align_selection:" not in preferences.read_text(encoding="utf-8"):
+    raise RuntimeError("Align Selection preference is missing after patch")
+panel_text = (package / "panel_edit_tools.py").read_text(encoding="utf-8")
+if "section_icon='ALIGN'" in panel_text or "section_icon='PIVOT_ACTIVE'" not in panel_text:
+    raise RuntimeError("Align Selection icon patch failed")
+
+output = root / "Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Rebuilt_Blender_4_5.zip"
+with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+    for path in sorted(p for p in package.rglob("*") if p.is_file()):
+        zf.write(path, pathlib.Path("Witch_Tools_Dev") / path.relative_to(package))
+
+with zipfile.ZipFile(output, "r") as zf:
+    bad = zf.testzip()
+    if bad:
+        raise RuntimeError(f"ZIP integrity failure: {bad}")
+    names = zf.namelist()
+    if not names or not all(
+        name == "Witch_Tools_Dev" or name.startswith("Witch_Tools_Dev/")
+        for name in names
+    ):
+        raise RuntimeError("Unexpected ZIP package root")
+    if any(
+        "__pycache__" in name or name.endswith((".pyc", ".pyo"))
+        for name in names
+    ):
+        raise RuntimeError("Generated cache files found in ZIP")
+
+info = {
+    "artifact": output.name,
+    "size": output.stat().st_size,
+    "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+    "python_files": len(py_files),
+    "operator_ids": len(operator_ids),
+    "target_blender": "4.5.0",
+    "runtime_tested": False,
+    "source_snapshot_sha256": manifest["source_artifact"]["sha256"],
+}
+(root / "Witch_Tools_Dev_v2_7_1_BUILD_INFO.json").write_text(
+    json.dumps(info, indent=2) + "\n", encoding="utf-8"
+)
+print(json.dumps(info, indent=2))
