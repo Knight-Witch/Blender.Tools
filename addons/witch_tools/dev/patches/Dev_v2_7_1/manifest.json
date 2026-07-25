@@ -13,8 +13,8 @@
   },
   "artifact": {
     "name": "Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip",
-    "size": 132763,
-    "sha256": "f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110"
+    "size": 132053,
+    "sha256": "d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9"
   },
   "runtime_changes": [
     "Witch_Tools_Dev/preferences.py",
