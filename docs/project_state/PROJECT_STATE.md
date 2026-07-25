@@ -18,7 +18,8 @@ Last updated: 2026-07-24
 - Current build: `Dev_v2.7.1`
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
-- SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
+- Size: 132,053 bytes
+- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
 - Target: Blender `4.5.0`
 - Source record: verified patch and manifest on `Blender_Dev`
 - Runtime: N-panel hotfix pending user validation
@@ -44,7 +45,7 @@ Dev_v2.7.1 uses the exact failing replacement package as its patch baseline, rec
 - Added the missing `show_edit_align_selection` persistent preference.
 - Replaced the invalid/unverified `ALIGN` section icon with `PIVOT_ACTIVE`.
 - Built Witch Tools Dev_v2.7.1 without changing alignment operators or Quickbar contracts.
-- Added a focused patch, manifest, and build identity to the Witch Tools development source area.
+- Added a focused patch, manifest, and corrected build identity to the Witch Tools development source area.
 - Updated Align Selection feature docs, Witch Tools state/roadmap/UI map/notes, root state/build registry/notes, and source-record index.
 - Quickbar source and public branches remained unchanged.
 
