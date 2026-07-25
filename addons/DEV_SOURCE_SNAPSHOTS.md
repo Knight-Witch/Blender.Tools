@@ -1,15 +1,25 @@
 # Development Source Snapshots
 
-This area stores development-only source snapshots for Witch Tools and Witch Quickbar. It is isolated from the public `Witch_Main_Tools` and `Witch_Quick_Access` branches and is not a public release surface.
+This area stores development-only source snapshots. It is isolated from the public `Witch_Main_Tools` and `Witch_Quick_Access` branches and is not a public release surface.
 
 ## Current status
 
-- Witch Tools `Dev_v2.6.1` — manifest and reconstruction verification complete at `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/`.
-  - source artifact SHA-256: `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`;
-  - reconstructed archive SHA-256: `33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa`;
-  - verified source tree: 60 files, 383,270 bytes, tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
-- Witch Quickbar `Dev_v1.4.0` — isolated source snapshot/import remains pending final assembly and verification.
+- Witch Tools `Dev_v2.7.0` — current verified snapshot:
+  - path: `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_7_0/`;
+  - source ZIP SHA-256: `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`;
+  - reconstructed archive SHA-256: `2a73eaeb209602b30c4ee8e3378961038249ca3782cac23b7ad5923e3d994cab`;
+  - verified source tree: 63 files, 412,416 bytes;
+  - tree SHA-256: `c8ece8e4e0a750763e90ccabaa16cf6c0e1f0f8f01a06f67b2bbea1ae3d752b5`.
+- Witch Tools `Dev_v2.6.1` — retained historical verified snapshot.
+- Witch Quickbar `Dev_v1.5.0` — local-only delivery; no GitHub source snapshot/update was made per user instruction.
+- Witch Quickbar `Dev_v1.4.0` repository snapshot/import remains pending.
 
-Run `python tools/restore_dev_snapshot.py <snapshot-directory>` from the repository root. The script reads the ordered part list from `manifest.json`, verifies every part, reconstructs and verifies the `.tar.xz`, performs safe-path extraction, and verifies the extracted package root, file count, byte count, and deterministic source-tree digest.
+Run:
 
-The snapshots intentionally remain separate from public source paths until an explicit integration/release pass is approved.
+```text
+python tools/restore_dev_snapshot.py <snapshot-directory>
+```
+
+The restore script verifies the ordered parts, every part size/hash, reconstructed archive, safe extraction, package root, file count, byte count, and deterministic source-tree digest.
+
+Snapshots remain separate from public source paths until an explicit audited integration/release pass is approved.
