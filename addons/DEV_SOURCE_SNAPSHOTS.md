@@ -1,25 +1,15 @@
-# Development Source Snapshots
+# Development Source Snapshots and Patches
 
-This area stores development-only source snapshots. It is isolated from the public `Witch_Main_Tools` and `Witch_Quick_Access` branches and is not a public release surface.
+This area stores development-only source records. It is isolated from the public `Witch_Main_Tools` and `Witch_Quick_Access` branches and is not a public release surface.
 
 ## Current status
 
-- Witch Tools `Dev_v2.7.0` — current verified snapshot:
-  - path: `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_7_0/`;
-  - source ZIP SHA-256: `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`;
-  - reconstructed archive SHA-256: `2a73eaeb209602b30c4ee8e3378961038249ca3782cac23b7ad5923e3d994cab`;
-  - verified source tree: 63 files, 412,416 bytes;
-  - tree SHA-256: `c8ece8e4e0a750763e90ccabaa16cf6c0e1f0f8f01a06f67b2bbea1ae3d752b5`.
-- Witch Tools `Dev_v2.6.1` — retained historical verified snapshot.
-- Witch Quickbar `Dev_v1.5.0` — local-only delivery; no GitHub source snapshot/update was made per user instruction.
-- Witch Quickbar `Dev_v1.4.0` repository snapshot/import remains pending.
+- Witch Tools `Dev_v2.7.1` — current verified source patch:
+  - path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`;
+  - build artifact SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`;
+  - baseline: exact user-tested replacement Dev_v2.7.0 ZIP, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`;
+  - focused patch and manifest: verified.
+- Witch Tools `Dev_v2.7.0` and `Dev_v2.6.1` — retained historical full snapshots.
+- Witch Quickbar `Dev_v1.5.0` — local-only delivery; no GitHub source update was made per user instruction.
 
-Run:
-
-```text
-python tools/restore_dev_snapshot.py <snapshot-directory>
-```
-
-The restore script verifies the ordered parts, every part size/hash, reconstructed archive, safe extraction, package root, file count, byte count, and deterministic source-tree digest.
-
-Snapshots remain separate from public source paths until an explicit audited integration/release pass is approved.
+The Dev_v2.7.1 patch is the authoritative repository record for the hotfix changes. A new full archive snapshot is deferred until the next broader source import/rebuild pass.
