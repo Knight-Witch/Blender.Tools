@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "component": "witch_tools",
+  "addon_name": "Witch Tools",
+  "version": "Dev_v2.7.0",
+  "status": "development-only isolated source snapshot",
+  "source_branch": "Blender_Dev",
+  "target_blender": "4.5.0",
+  "package_root": "Witch_Tools_Dev",
+  "source_artifact": {
+    "name": "Witch_Tools_Dev_v2_7_0_Align_Selection_Blender_4_5.zip",
+    "size": 136327,
+    "sha256": "426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45"
+  },
+  "archive_name": "Witch_Tools_Dev_v2_7_0_source.tar.xz",
+  "archive_format": "tar.xz",
+  "archive_size": 85712,
+  "archive_sha256": "2a73eaeb209602b30c4ee8e3378961038249ca3782cac23b7ad5923e3d994cab",
+  "parts": 6,
+  "part_files": [
+    "part_001.b64",
+    "part_002.b64",
+    "part_003.b64",
+    "part_004.b64",
+    "part_005.b64",
+    "part_006.b64"
+  ],
+  "part_manifest": [
+    {
+      "file": "part_001.b64",
+      "size": 20000,
+      "sha256": "5375207f17fa5c7da13bf8c7afb3f03dd8304ce8ffe9fe87cc2187ea41c8aa05",
+      "git_blob_sha1": "76a350c3ff3c82d3bdba294f2288c38a9fe8c29f"
+    },
+    {
+      "file": "part_002.b64",
+      "size": 20000,
+      "sha256": "37256222583f29774125a5b90c37ed9faae2aa4f44745ff2163b68f9de73e023",
+      "git_blob_sha1": "beb14cd975f1d53e1124ad73a5fb9423f0ebc93a"
+    },
+    {
+      "file": "part_003.b64",
+      "size": 20000,
+      "sha256": "8c126a4ace99a0facf95132f7147f20a371ab6e63eacdb38b2971804d55ba0da",
+      "git_blob_sha1": "5774243d5f30cc55f0e6166e6d1a8a7b6d884f8d"
+    },
+    {
+      "file": "part_004.b64",
+      "size": 20000,
+      "sha256": "ebe3eacedea1d4dca6b080d824212f5c50cf70ab7dfa752287ca9229657fb944",
+      "git_blob_sha1": "d7bb92523ad9878f098357bc9c576b14b1d4269d"
+    },
+    {
+      "file": "part_005.b64",
+      "size": 20000,
+      "sha256": "7602196e99dd1ebf5e6955a4c04452da57d5b06e0363c9a23510771ccc857aca",
+      "git_blob_sha1": "aa4c325678508a443cb37470f9019a053717b55c"
+    },
+    {
+      "file": "part_006.b64",
+      "size": 14284,
+      "sha256": "6b279a69778458fc33474b648d7a3dd1e258bfe229029a6099ce6948820a0cce",
+      "git_blob_sha1": "378dc0e3d1161ae5565cee54972e9c98c480a360"
+    }
+  ],
+  "source_tree": {
+    "file_count": 63,
+    "uncompressed_bytes": 412416,
+    "tree_sha256": "c8ece8e4e0a750763e90ccabaa16cf6c0e1f0f8f01a06f67b2bbea1ae3d752b5"
+  },
+  "verification": {
+    "date": "2026-07-24",
+    "method": "tools/restore_dev_snapshot.py",
+    "status": "archive reconstruction and extracted source-tree verification passed locally"
+  }
+}
