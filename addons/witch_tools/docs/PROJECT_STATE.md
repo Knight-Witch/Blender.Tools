@@ -14,7 +14,8 @@ Last updated: 2026-07-24
 
 - Version: `Dev_v2.7.1`
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
-- SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
+- Size: 132,053 bytes
+- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
 - Supersedes: both recorded Dev_v2.7.0 artifact identities
 - Package folder: `Witch_Tools_Dev`
 - Declared target: Blender `4.5.0`
@@ -25,9 +26,9 @@ Last updated: 2026-07-24
 
 ## Baseline conflict resolved
 
-The Dev_v2.7.0 replacement ZIP actually installed and tested by the user had SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def` and 47 Python files. Earlier repository records also referenced a different Dev_v2.7.0 artifact, SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`, with a 48-file snapshot.
+The Dev_v2.7.0 replacement ZIP actually installed and tested by the user had SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`. Earlier repository records also referenced a different Dev_v2.7.0 artifact, SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`.
 
-Dev_v2.7.1 uses the exact user-tested failing replacement package as its repair baseline and explicitly supersedes both identities. This prevents the discrepancy from being silently hidden.
+Dev_v2.7.1 uses the exact user-tested failing replacement package as its repair baseline and explicitly supersedes both identities.
 
 ## Current implementation
 
@@ -52,7 +53,6 @@ Quickbar remains local-only and unchanged for this patch:
 
 - Path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
 - Contains the focused runtime/version patch, manifest, and build identity.
-- Build artifact: 132,763 bytes; SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`.
 - Static/compile, operator-ID, ZIP-integrity, safe-path, and package-hygiene verification: passed.
 - A full Dev_v2.7.1 archive snapshot is deferred; the verified patch is the current repository source record for this hotfix.
 
@@ -61,9 +61,8 @@ Quickbar remains local-only and unchanged for this patch:
 - Reproduced the user's empty Align Selection N-panel box from source inspection.
 - Identified the missing preference property that stopped panel drawing.
 - Identified the invalid/unverified section icon identifier.
-- Implemented Dev_v2.7.1.
-- Built and statically validated the new ZIP.
-- Added a focused source patch and manifest.
+- Implemented and rebuilt Dev_v2.7.1.
+- Added a focused source patch and corrected manifest.
 - Updated feature state, decisions, roadmap, test plan, UI map, project state, build registry, and latest/full notes.
 - Did not modify Quickbar source or public branches.
 
