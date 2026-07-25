@@ -1,65 +1,58 @@
 # Blender.Tools Notes Changelog — Full History
 
+## 2026-07-24 — Align Selection development builds
+
+- Implemented Witch Tools Dev_v2.7.0 with canonical **Edit Tools > Align Selection**.
+- Added Source and Target Anchor capture for vertex, edge, face, and mixed mesh selections.
+- Added world-space Match Coordinates and shape-preserving Move Shape on X/Y/Z combinations.
+- Added Whole Selection and Per Selected Island grouping, including independent alignment of multiple disconnected cavities.
+- Added multi-object world/local conversion and preflight for locks, stale captures, missing anchors, shape keys, and invalid transforms.
+- Added a local-only Quickbar Dev_v1.5.0 Edit-tab integration through the canonical Witch Tools operator/property contract.
+- Produced Witch Tools artifact SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`.
+- Produced Quickbar artifact SHA-256 `d2ace3cd3310686664cebfce6242717af3afed3f5954a4bd3cd6bc2a26eded5c`.
+- Static/core/synthetic/package tests passed; Blender runtime remains pending.
+- Added the Align Selection feature packet and a verified Witch Tools Dev_v2.7.0 source snapshot.
+- Quickbar source was intentionally not committed to GitHub.
+- No public compatibility surface changed.
+
 ## 2026-07-23 — Witch Tools Dev_v2.6.1 isolated source snapshot verification
 
 - Added a complete development-only manifest for the Witch Tools Dev_v2.6.1 source snapshot on `Blender_Dev`.
 - Replaced the malformed original first Base64 part with four smaller verified parts and removed the superseded file.
-- Hardened `tools/restore_dev_snapshot.py` to validate the explicit ordered part list, every part size/hash, archive size/hash, safe extraction, package root, file count, byte count, and deterministic source-tree digest.
-- Final local reconstruction verification passed:
-  - source ZIP: 127,401 bytes, SHA-256 `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`;
-  - reconstructed `.tar.xz`: 81,400 bytes, SHA-256 `33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa`;
-  - extracted package root `Witch_Tools_Dev`: 60 files, 383,270 bytes, tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
-- Added `addons/witch_tools/dev/SNAPSHOT_VERIFICATION.md` and corrected `addons/DEV_SOURCE_SNAPSHOTS.md` to distinguish the completed Witch Tools snapshot from the pending Quickbar snapshot.
-- This was source preservation and verification only; no add-on runtime behavior changed.
-- No public branch, official source path, update URL, package identity, operator namespace, asset path, or release location changed.
+- Hardened `tools/restore_dev_snapshot.py` to validate parts, archive identity, safe extraction, package root, file count, byte count, and source-tree digest.
+- Final reconstruction passed for 60 files, 383,270 bytes, tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
+- No public compatibility surface changed.
 
 ## 2026-07-21 — Witch Tools Dev_v2.6.1 Selection Slots N-panel hotfix
 
-- User reported Quickbar Dev_v1.4.0 worked perfectly in the tested Selection Slots workflow.
-- User reported Witch Tools Dev_v2.6.0 displayed only the Selection Slots header and Clear All control and would not reveal its rows.
-- Inspected the Dev_v2.6.0 package and removed slot initialization from `Panel.draw()` so UI drawing no longer mutates Scene data.
-- Added safe operator-driven Slot 1 initialization for empty scenes and corrected Add so it does not create Slot 2 during initial setup.
-- Made the section title and disclosure arrow both clickable.
-- Added row-level draw failure containment.
-- Produced `Witch_Tools_Dev_v2_6_1_Selection_Slots_NPanel_Hotfix_Blender_4_5.zip`, SHA-256 `671290a99803c2b709c0595237756a46faecbac3400cc5cb3b03c50d0fa4ba3e`.
-- Static parsing/compile passed for 46 files; 92 operator IDs had no duplicates; ZIP safety/package hygiene passed.
-- Simulated populated, empty, expanded, and collapsed N-panel layouts and empty-scene Slot 1 initialization passed.
-- Exact Blender 4.5 Dev_v2.6.1 confirmation remains pending.
-- Quickbar Dev_v1.4.0 remains the current integration build and does not require replacement.
-- Updated Selection Slots feature state/roadmap/test plan, Witch Tools/Quickbar state and notes, build registry, compatibility, umbrella project state, and latest/full notes.
-- No public branch, update URL, package identity, operator namespace, inherited asset path, or public release location changed.
+- Removed slot initialization from `Panel.draw()`.
+- Added safe operator-driven Slot 1 initialization, corrected initial Add behavior, made title/arrow clickable, and contained row draw failures.
+- Produced Dev_v2.6.1 and passed static/synthetic checks; Blender 4.5 confirmation remained pending.
+- Quickbar Dev_v1.4.0 remained the current integration build.
 
 ## 2026-07-21 — Selection Slots development builds
 
-- Implemented Witch Tools `Dev_v2.6.0` with persistent **Selection Slots** below Curvature Sync.
-- Added vertex, edge, face, combined-domain, and multi-object Edit Mode save/reselect using scene records and per-mesh custom element markers.
-- Added rename, save/overwrite, reselect, clear, Clear All, add, remove, and reorder controls plus a stable `mesh.wt_selection_slot_*` operator contract.
-- Implemented Witch Quickbar `Dev_v1.4.0` with a populated **Select** tab using thin optional invocation of the canonical Witch Tools backend.
-- Added responsive slot names, full-name tooltips, rename dialog, all slot actions, grip drag reorder, and a safe unavailable-backend state.
-- Converted the supplied SVGs into packaged transparent PNG assets.
-- Produced Dev_v2.6.0 and Quickbar Dev_v1.4.0 artifacts and passed static/package/layout checks.
-- Runtime result: Quickbar Select workflow user-reported passed; Witch Tools N-panel required the Dev_v2.6.1 hotfix above.
+- Added persistent Selection Slots to Witch Tools Dev_v2.6.0.
+- Added a thin Quickbar Dev_v1.4.0 Select tab.
+- Quickbar workflow was user-reported successful; Witch Tools N-panel required Dev_v2.6.1.
 
-## 2026-07-21 — Dev_v2.5.2 production collar validation in Blender 4.5
+## 2026-07-21 — Dev_v2.5.2 production collar validation
 
-- The user installed Witch Tools Dev_v2.5.2, ran Curvature Sync with misaligned-column replacement, and reported that the corrected production collar result worked beautifully.
+- User reported the corrected Curvature Sync collar result worked beautifully in Blender 4.5.
 
-## 2026-07-21 — Witch Tools Dev_v2.5.2 Curvature Sync column repair
+## 2026-07-21 — Dev_v2.5.2 Curvature Sync column repair
 
-- Diagnosed retained misaligned cross-edges and rebuilt canonical same-slot columns while preserving the successful curvature coordinates.
+- Rebuilt misaligned same-slot columns while preserving successful curvature coordinates.
 
-## 2026-07-21 — Witch Tools Dev_v2.5.1 Auto-Aligned Vertex Inject
+## 2026-07-21 — Dev_v2.5.1 Auto-Aligned Vertex Inject
 
-- Added standalone A/B/C vertex injection and face-splitting support.
+- Added standalone A/B/C vertex injection and face splitting.
 
-## 2026-07-21 — Witch Tools Dev_v2.5.0 Curvature Sync MVP
+## 2026-07-21 — Dev_v2.5.0 Curvature Sync MVP
 
 - Added circular multi-chain/multi-object topology repair and correspondence injection.
 
-## 2026-07-20 — Supplied development baseline audit
+## 2026-07-20 — Supplied baseline audit and repository architecture
 
-- Audited Witch Tools Dev_v2.4.0, Quickbar Dev_v1.3.18, and Dev Modules Dev_v0.0.9 artifacts.
-
-## 2026-07-20 — Development architecture and non-breaking repository organization
-
-- Established repository rules, documentation, architecture boundaries, migration safeguards, build tracking, and feature packets on `Blender_Dev`.
+- Audited Witch Tools Dev_v2.4.0, Quickbar Dev_v1.3.18, and Dev Modules Dev_v0.0.9.
+- Established repository rules, architecture boundaries, build tracking, and feature packets on `Blender_Dev`.
