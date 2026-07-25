@@ -15,84 +15,76 @@ Last updated: 2026-07-24
 
 ### Witch Tools
 
-- Current build: `Dev_v2.7.0`
-- Artifact: `Witch_Tools_Dev_v2_7_0_Align_Selection_Blender_4_5.zip`
+- Current build: `Dev_v2.7.1`
+- Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
-- SHA-256: `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`
+- SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
 - Target: Blender `4.5.0`
-- Source snapshot: complete and verified on `Blender_Dev`
-- Runtime: Blender validation pending
+- Source record: verified patch and manifest on `Blender_Dev`
+- Runtime: N-panel hotfix pending user validation
 
 ### Witch Quickbar
 
 - Current delivered companion build: `Dev_v1.5.0`
-- Artifact: `witch_quickbar_dev_Dev_v1_5_0_Align_Selection_Blender_4_5.zip`
 - Package: `witch_quickbar_dev`
-- SHA-256: `d2ace3cd3310686664cebfce6242717af3afed3f5954a4bd3cd6bc2a26eded5c`
 - Target: Blender `4.5.0`
 - Source handling: local-only; GitHub Quickbar source intentionally not updated
-- Supersedes local Dev_v1.4.0 package for this workflow
-- Existing Dev_v1.4.0 Selection Slots workflow: user-reported passed in Blender 4.5
-- Dev_v1.5.0 runtime: pending
+- Runtime finding: Align Selection controls render, but source-reference dropdown is not exposed
+- This Witch Tools hotfix does not replace or modify Quickbar
 
-### Witch's Dev Modules
+## Baseline discrepancy
 
-- Version: `Dev_v0.0.9`
-- SHA-256: `e5306886a1e5edd1bb57fcf106f9a4ca51503060e0ecb5b4a0ed8a1bcead28f6`
-- Original packaging defect: 34 `.pyc` files
+The exact replacement Dev_v2.7.0 ZIP used in the user's test had SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`. Earlier repository records referenced a different Dev_v2.7.0 artifact, SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`.
+
+Dev_v2.7.1 uses the exact failing replacement package as its patch baseline, records the conflict explicitly, and supersedes both Dev_v2.7.0 identities.
 
 ## Last completed work
 
-- Added the canonical Align Selection backend and N-panel to Witch Tools Dev_v2.7.0.
-- Added Match Coordinates and shape-preserving Move Shape modes.
-- Added independent Per Selected Island alignment for multiple cavities.
-- Added world-space multi-object conversion, persistent source/anchor captures, and strict preflight.
-- Added local Quickbar Dev_v1.5.0 Edit-tab controls that invoke Witch Tools without duplicating geometry logic.
-- Added complete Align Selection feature documentation and test plan.
-- Built, hashed, and verified both distributable ZIPs.
-- Added and verified the Witch Tools Dev_v2.7.0 isolated source snapshot.
-- Did not update Quickbar source on GitHub, per user instruction.
+- Diagnosed the empty Witch Tools Align Selection N-panel box.
+- Added the missing `show_edit_align_selection` persistent preference.
+- Replaced the invalid/unverified `ALIGN` section icon with `PIVOT_ACTIVE`.
+- Built Witch Tools Dev_v2.7.1 without changing alignment operators or Quickbar contracts.
+- Added a focused patch, manifest, and build identity to the Witch Tools development source area.
+- Updated Align Selection feature docs, Witch Tools state/roadmap/UI map/notes, root state/build registry/notes, and source-record index.
+- Quickbar source and public branches remained unchanged.
 
 ## Current known-working state
 
 Previously user-validated:
 
-- Witch Tools Dev_v2.5.2 Curvature Sync production collar workflow in Blender 4.5.
-- Quickbar Dev_v1.4.0 Selection Slots workflow in Blender 4.5.
+- Witch Tools Dev_v2.5.2 Curvature Sync production collar workflow.
+- Quickbar Dev_v1.4.0 Selection Slots workflow.
+- Quickbar Dev_v1.5.0 Align Selection section rendering.
 
-Dev_v2.7.0 / Dev_v1.5.0 validation outside Blender:
+Dev_v2.7.1 validation outside Blender:
 
-- 48 Witch Tools and 14 Quickbar Python files parsed;
-- duplicate operator-ID scans passed;
-- pure alignment math and component tests passed;
-- synthetic Figure-B-style cavity translation preserved relative distances;
-- two disconnected cavities aligned independently in synthetic planning;
-- lock cancellation and malformed-case tests passed;
-- Quickbar layout and unavailable-backend tests passed;
-- ZIP integrity and package hygiene passed;
-- Witch Tools source snapshot reconstruction passed.
+- 47 Python files parsed and compiled;
+- 96 operator IDs have no duplicates;
+- Align Selection UI-state declaration consistency passed;
+- invalid icon reference removed;
+- ZIP integrity, safe paths, and package hygiene passed;
+- source patch/manifest verification passed.
 
 ## Active problems
 
-1. Blender 4.5 runtime testing for Align Selection is pending.
-2. N-panel and Quickbar visual/interaction regression is pending.
-3. Real BMesh capture, multi-object, multi-island, undo/redo, lock, shape-key, and save/reopen tests are pending.
-4. Selection Slots Dev_v2.6.1 N-panel hotfix still lacks recorded Blender 4.5 confirmation.
-5. Quickbar Dev_v1.5.0 is local-only and has no GitHub source snapshot.
-6. Direct unpacked development source layouts and source-derived registries remain pending.
-7. Final collar normals/manifold/print-fit inspection remains pending.
-8. Witch Core source import remains pending.
+1. Blender 4.5 confirmation of the Dev_v2.7.1 Align Selection N-panel is pending.
+2. Real BMesh capture/application, multi-object, multi-island, undo/redo, locks, shape keys, and save/reopen remain pending.
+3. Quickbar Dev_v1.5.0 source-reference UI will be patched separately and locally only.
+4. Full Quickbar overlay regression remains pending.
+5. Direct unpacked development source layout and source-derived registries remain pending.
+6. Final collar normals/manifold/print-fit inspection remains pending.
+7. Witch Core source import remains pending.
 
 ## Next exact implementation step
 
-Install Witch Tools Dev_v2.7.0 first, then local Quickbar Dev_v1.5.0. Test Figure A, Figure B, and two disconnected cavities in Blender 4.5, including undo/redo. Then test multi-object transforms, reference capture domains, locks, stale markers, shape-key cancellation, save/reopen, and Quickbar overlay regression.
+Install Witch Tools Dev_v2.7.1 and confirm the N-panel section renders fully. Test the Median/Active Element dropdown, Figure A, Figure B, and undo/redo. After Witch Tools passes, patch the local-only Quickbar reference-mode controls.
 
 ## Test status
 
 - Curvature Sync Blender 4.5: user-reported passed
-- Quickbar Dev_v1.4.0 Select workflow: user-reported passed
-- Align Selection static/core/synthetic tests: passed
-- Dev_v2.7.0 source snapshot reconstruction: passed
-- Align Selection Blender 4.5: pending
-- Quickbar Dev_v1.5.0 overlay/runtime: pending
+- Quickbar Align section rendering: user-reported passed
+- Witch Tools Dev_v2.7.0 Align N-panel: failed, empty box
+- Witch Tools Dev_v2.7.1 static/package/source-record checks: passed
+- Witch Tools Dev_v2.7.1 Blender 4.5: pending
+- Quickbar source updated on GitHub: no
 - Public branches/URLs modified: no
