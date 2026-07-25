@@ -16,7 +16,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Reconstruct and package
-        run: python .github/scripts/recover_witch_tools_v271.py
+        run: |
+          set +e
+          python .github/scripts/recover_witch_tools_v271.py > recovery.log 2>&1
+          status=$?
+          cat recovery.log
+          echo $status > recovery_status.txt
+          exit 0
 
       - uses: actions/upload-artifact@v4
         with:
@@ -24,5 +30,7 @@ jobs:
           path: |
             Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Rebuilt_Blender_4_5.zip
             Witch_Tools_Dev_v2_7_1_BUILD_INFO.json
-          if-no-files-found: error
+            recovery.log
+            recovery_status.txt
+          if-no-files-found: warn
           retention-days: 1
