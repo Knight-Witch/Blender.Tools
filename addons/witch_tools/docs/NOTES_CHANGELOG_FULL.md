@@ -7,7 +7,7 @@
 - Registered the missing persistent preference and changed the section icon from invalid/unverified `ALIGN` to valid `PIVOT_ACTIVE`.
 - Preserved all Align Selection backend behavior, operator IDs, scene-property contracts, and Quickbar integration.
 - Recorded that the user-tested replacement Dev_v2.7.0 ZIP, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`, differed from the earlier repository snapshot identity; Dev_v2.7.1 supersedes both.
-- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`.
+- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,053 bytes, SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
 - Static parse/compile, operator-ID, UI-state consistency, icon-reference, ZIP integrity, safe-path, package-hygiene, and source-patch checks passed.
 - Exact Blender 4.5 N-panel and runtime validation remains pending.
 - Quickbar source was not updated on GitHub.
@@ -20,9 +20,7 @@
 - Added Move Shape with Whole Selection and Per Selected Island grouping to preserve cavity dimensions and independently align multiple disconnected selections.
 - Added multi-object Edit Mode conversion between a shared world-space analysis frame and object-local coordinates.
 - Added strict preflight for unavailable or stale captures, island-anchor omissions, enabled Vertex Locks, multiple shape keys, and invalid transforms.
-- Added pure helper and synthetic planning tests for coordinate matching, component translation, distance preservation, and lock cancellation.
 - Added local-only Quickbar Dev_v1.5.0 exposure through thin Witch Tools operator/property calls.
-- Added the Align Selection feature packet and `ALIGN_SELECTION_QUICK_START.md`.
 - Blender 4.5 interactive/runtime validation remained pending.
 - No public compatibility surface changed.
 
@@ -49,7 +47,7 @@
 
 ## 2026-07-21 — Dev_v2.5.2 Curvature Sync column repair
 
-- Replaced 96 misaligned existing cross-edges and rebuilt canonical columns while preserving successful curvature coordinates.
+- Replaced misaligned existing cross-edges and rebuilt canonical columns while preserving successful curvature coordinates.
 
 ## 2026-07-21 — Dev_v2.5.1 Auto-Aligned Vertex Inject
 
