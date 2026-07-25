@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "component": "witch_tools",
+  "version": "Dev_v2.7.1",
+  "target_blender": "4.5.0",
+  "source_form": "development patch over Dev_v2.7.0",
+  "baseline": {
+    "artifact": "Witch_Tools_Dev_v2_7_0_Align_Selection_Blender_4_5.zip",
+    "size": 127760,
+    "sha256": "53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def",
+    "alternate_repository_snapshot_sha256": "426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45",
+    "resolution": "Dev_v2.7.1 supersedes both Dev_v2.7.0 identities; the runtime patch applies to the shared preferences and panel paths."
+  },
+  "artifact": {
+    "name": "Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip",
+    "size": 132763,
+    "sha256": "f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110"
+  },
+  "runtime_changes": [
+    "Witch_Tools_Dev/preferences.py",
+    "Witch_Tools_Dev/panel_edit_tools.py",
+    "Witch_Tools_Dev/state.py",
+    "Witch_Tools_Dev/__init__.py"
+  ],
+  "documentation_changes": [
+    "Witch_Tools_Dev/ALIGN_SELECTION_QUICK_START.md",
+    "Witch_Tools_Dev/CHANGELOG.md",
+    "Witch_Tools_Dev/NOTES_CHANGELOG.md",
+    "Witch_Tools_Dev/NOTES_CHANGELOG_FULL.md",
+    "Witch_Tools_Dev/Blender_Version_Compatability.md",
+    "Witch_Tools_Dev/README.md"
+  ],
+  "verification": {
+    "date": "2026-07-24",
+    "python_files_parsed_compiled": 47,
+    "operator_ids": 96,
+    "duplicate_operator_ids": 0,
+    "ui_state_consistency": "passed",
+    "invalid_align_icon_reference": "removed",
+    "zip_integrity": "passed",
+    "safe_paths": "passed",
+    "package_hygiene": "passed",
+    "blender_4_5_runtime": "pending"
+  }
+}
