@@ -8,7 +8,7 @@ Date: 2026-07-24
 - Diagnosed a missing `show_edit_align_selection` declaration in `WitchToolsPreferences`; the panel and UI-state registry referenced the property, causing the draw path to stop at the section header.
 - Added the missing persistent preference and replaced the invalid/unverified `ALIGN` icon with valid `PIVOT_ACTIVE`.
 - Preserved the Align Selection backend and Quickbar operator/property contract.
-- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,053 bytes, SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
+- Delivered `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,189 bytes, SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`.
 
 ## Baseline reconciliation
 
