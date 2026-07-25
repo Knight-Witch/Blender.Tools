@@ -15,35 +15,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Reconstruct and package
+      - name: Diagnose snapshot parts
         run: |
           python - <<'PY'
+          import hashlib, json
           from pathlib import Path
-          path = Path('.github/scripts/recover_witch_tools_v271.py')
-          text = path.read_text(encoding='utf-8')
-          old = '''if hashlib.sha256(archive).hexdigest() != manifest["archive_sha256"]:
-              raise RuntimeError("Snapshot archive hash mismatch")'''
-          new = '''actual_archive_sha = hashlib.sha256(archive).hexdigest()
-          if actual_archive_sha != manifest["archive_sha256"]:
-              print(f"WARNING: recorded snapshot archive hash {manifest['archive_sha256']} differs from reconstructed {actual_archive_sha}; continuing to archive and source validation")'''
-          if old not in text:
-              raise SystemExit('Could not patch archive hash guard')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          snapshot = Path('addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_7_0')
+          manifest = json.loads((snapshot / 'manifest.json').read_text())
+          expected = {item['file']: item for item in manifest['part_manifest']}
+          result = []
+          for name in manifest['part_files']:
+              path = snapshot / 'parts' / name
+              data = path.read_bytes()
+              item = expected[name]
+              result.append({
+                  'file': name,
+                  'actual_size': len(data),
+                  'expected_size': item['size'],
+                  'actual_sha256': hashlib.sha256(data).hexdigest(),
+                  'expected_sha256': item['sha256'],
+                  'match': len(data) == item['size'] and hashlib.sha256(data).hexdigest() == item['sha256'],
+                  'prefix': data[:32].decode('ascii', errors='replace'),
+                  'suffix': data[-32:].decode('ascii', errors='replace'),
+              })
+          Path('part_diagnostics.json').write_text(json.dumps(result, indent=2) + '\n')
+          print(json.dumps(result, indent=2))
           PY
-          set +e
-          python .github/scripts/recover_witch_tools_v271.py > recovery.log 2>&1
-          status=$?
-          cat recovery.log
-          echo $status > recovery_status.txt
-          exit 0
 
       - uses: actions/upload-artifact@v4
         with:
           name: Witch-Tools-Dev-v2-7-1-rebuilt
-          path: |
-            Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Rebuilt_Blender_4_5.zip
-            Witch_Tools_Dev_v2_7_1_BUILD_INFO.json
-            recovery.log
-            recovery_status.txt
-          if-no-files-found: warn
+          path: part_diagnostics.json
+          if-no-files-found: error
           retention-days: 1
