@@ -36,8 +36,8 @@ This registry records verified and candidate baselines. A build is not current m
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
 - Target Blender version: `4.5.0`
-- Size: 132,053 bytes
-- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
+- Size: 132,189 bytes
+- SHA-256: `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
 - Build date: `2026-07-24`
 - Supersedes: both Dev_v2.7.0 artifact identities
 - Python files: 47
@@ -58,7 +58,7 @@ This registry records verified and candidate baselines. A build is not current m
 
 - Path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
 - User-tested repair baseline: 127,760 bytes / SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
-- Build artifact: 132,053 bytes / SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
+- Delivered build artifact: 132,189 bytes / SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
 - Focused source patch and manifest: present
 - Static/compile/operator-ID/ZIP/safe-path/package-hygiene verification: passed
 - Full Dev_v2.7.1 source archive snapshot: deferred
