@@ -5,10 +5,11 @@
 - Status: passed locally on 2026-07-24.
 - Path: `patches/Dev_v2_7_1/`.
 - User-tested baseline: 127,760 bytes; SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`.
-- Build artifact: 132,763 bytes; SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`.
+- Build artifact: 132,053 bytes; SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
 - Focused source patch and manifest: present.
 - Python parse/compile: passed for 47 files.
 - Duplicate operator IDs: none across 96 identifiers.
+- UI-state registration and icon-reference checks: passed.
 - ZIP integrity, safe paths, single package root, and cache-file exclusion: passed.
 - Blender 4.5 runtime: pending.
 
