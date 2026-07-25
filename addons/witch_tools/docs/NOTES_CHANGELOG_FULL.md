@@ -1,5 +1,21 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-07-24 — Dev_v2.7.0 Align Selection
+
+- Added a canonical Witch Tools Align Selection backend and N-panel section.
+- Added persistent Source and Target Anchor capture for vertices, edges, faces, and mixed selections.
+- Added Match Coordinates on any X/Y/Z combination in world space.
+- Added Move Shape with Whole Selection and Per Selected Island grouping to preserve cavity dimensions and independently align multiple disconnected selections.
+- Added multi-object Edit Mode conversion between a shared world-space analysis frame and object-local coordinates.
+- Added strict preflight for unavailable or stale captures, island-anchor omissions, enabled Vertex Locks, multiple shape keys, and invalid transforms.
+- Added pure helper and synthetic planning tests for coordinate matching, component translation, distance preservation, and lock cancellation.
+- Added local-only Quickbar Dev_v1.5.0 exposure through thin Witch Tools operator/property calls.
+- Added the Align Selection feature packet and `ALIGN_SELECTION_QUICK_START.md`.
+- Produced `Witch_Tools_Dev_v2_7_0_Align_Selection_Blender_4_5.zip`, SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`.
+- Added and locally verified a reproducible Dev_v2.7.0 source snapshot.
+- Blender 4.5 interactive/runtime validation remains pending.
+- No public branch, package identity, update URL, footer URL, official source path, or release location changed.
+
 ## 2026-07-23 — Dev_v2.6.1 isolated source snapshot verification
 
 - Added the development-only snapshot manifest at `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/manifest.json`.
@@ -8,14 +24,13 @@
 - Recorded the reconstructed `.tar.xz` identity: 81,400 bytes, SHA-256 `33ee629982fc453cc357b2a8ae08c53f03865791fe6c3c0e37822e0c176334aa`.
 - Hardened `tools/restore_dev_snapshot.py` to verify the explicit ordered part list, every part size/hash, archive size/hash, safe extraction, package root, file count, byte count, and deterministic source-tree digest.
 - Final local reconstruction verification passed for package root `Witch_Tools_Dev`: 60 files, 383,270 bytes, source-tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
-- This update preserves source only; no Witch Tools runtime behavior changed.
-- Quickbar Dev_v1.4.0 isolated source snapshot/import remains pending.
-- No public branch, official source path, update URL, package identity, operator namespace, asset path, or release location changed.
+- This update preserved source only; no Witch Tools runtime behavior changed.
+- No public compatibility surface changed.
 
 ## 2026-07-21 — Dev_v2.6.1 Selection Slots N-panel expansion hotfix
 
 - User reported Quickbar Dev_v1.4.0 worked correctly in Blender 4.5, while Witch Tools Dev_v2.6.0 showed only the Selection Slots title bar and Clear All control.
-- Inspected the current Dev_v2.6.0 package and removed slot initialization from the N-panel draw path.
+- Removed slot initialization from the N-panel draw path.
 - Added a safe operator-driven empty-scene Slot 1 fallback.
 - Updated Add so empty initialization creates exactly Slot 1.
 - Made the Selection Slots title and disclosure arrow both clickable.
@@ -39,14 +54,13 @@
 - Produced `Witch_Tools_Dev_v2_6_0_Selection_Slots_Blender_4_5.zip`, SHA-256 `b4aa8d587f1fe1ed3e39161b1cd680bcd49130ab345693cc1a62a2380d9cc547`.
 - ZIP integrity, safe paths, 46-file Python syntax/compile, duplicate operator-ID, and package-hygiene checks passed.
 - Runtime result: Quickbar integration worked in the user test, but the Witch Tools N-panel body failed to expand and was superseded by Dev_v2.6.1.
-- Retained the user-validated Dev_v2.5.2 Curvature Sync workflow and preserved public branches, URLs, package identity, prior operator IDs, and asset paths.
+- Retained the user-validated Dev_v2.5.2 Curvature Sync workflow and preserved public compatibility surfaces.
 
 ## 2026-07-21 — Dev_v2.5.2 Blender 4.5 production collar validation
 
 - The user installed Dev_v2.5.2 in Blender 4.5 and reopened the supplied pre-curvature production collar file.
-- The saved A/M/Z anchors and curvature-chain selection were available.
 - Curvature Sync Analyze/Apply completed with **Replace Misaligned Column Edges** enabled.
-- The user reported that the result worked beautifully, confirming the intended curvature and visible same-slot column topology in the actual production workflow.
+- The user reported that the result worked beautifully, confirming the intended curvature and visible same-slot column topology.
 - Interactive undo/redo, formal normals/manifold inspection, and final print-fit/slicer validation remain pending.
 
 ## 2026-07-21 — Dev_v2.5.2 Curvature Sync column repair
