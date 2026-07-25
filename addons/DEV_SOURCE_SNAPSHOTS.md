@@ -6,7 +6,8 @@ This area stores development-only source records. It is isolated from the public
 
 - Witch Tools `Dev_v2.7.1` — current verified source patch:
   - path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`;
-  - build artifact SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`;
+  - build artifact: 132,053 bytes;
+  - build artifact SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`;
   - baseline: exact user-tested replacement Dev_v2.7.0 ZIP, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`;
   - focused patch and manifest: verified.
 - Witch Tools `Dev_v2.7.0` and `Dev_v2.6.1` — retained historical full snapshots.
