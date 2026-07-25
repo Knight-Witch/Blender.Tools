@@ -14,8 +14,8 @@ Last updated: 2026-07-24
 
 - Version: `Dev_v2.7.1`
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
-- Size: 132,053 bytes
-- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
+- Size: 132,189 bytes
+- SHA-256: `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
 - Supersedes: both recorded Dev_v2.7.0 artifact identities
 - Package folder: `Witch_Tools_Dev`
 - Declared target: Blender `4.5.0`
@@ -52,7 +52,7 @@ Quickbar remains local-only and unchanged for this patch:
 ## Development source record
 
 - Path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
-- Contains the focused runtime/version patch, manifest, and build identity.
+- Contains the focused runtime/version patch, manifest, and delivered build identity.
 - Static/compile, operator-ID, ZIP-integrity, safe-path, and package-hygiene verification: passed.
 - A full Dev_v2.7.1 archive snapshot is deferred; the verified patch is the current repository source record for this hotfix.
 
