@@ -15,36 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Diagnose snapshot parts
+      - name: Restore verified Witch Tools Dev v2.6.1 source
         run: |
-          python - <<'PY'
-          import hashlib, json
-          from pathlib import Path
-          snapshot = Path('addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_7_0')
-          manifest = json.loads((snapshot / 'manifest.json').read_text())
-          expected = {item['file']: item for item in manifest['part_manifest']}
-          result = []
-          for name in manifest['part_files']:
-              path = snapshot / 'parts' / name
-              data = path.read_bytes()
-              item = expected[name]
-              result.append({
-                  'file': name,
-                  'actual_size': len(data),
-                  'expected_size': item['size'],
-                  'actual_sha256': hashlib.sha256(data).hexdigest(),
-                  'expected_sha256': item['sha256'],
-                  'match': len(data) == item['size'] and hashlib.sha256(data).hexdigest() == item['sha256'],
-                  'prefix': data[:32].decode('ascii', errors='replace'),
-                  'suffix': data[-32:].decode('ascii', errors='replace'),
-              })
-          Path('part_diagnostics.json').write_text(json.dumps(result, indent=2) + '\n')
-          print(json.dumps(result, indent=2))
-          PY
+          python tools/restore_dev_snapshot.py addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1
+          cd addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/restored
+          zip -9 -r "$GITHUB_WORKSPACE/Witch_Tools_Dev_v2_6_1_Restored_Source.zip" Witch_Tools_Dev
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Witch-Tools-Dev-v2-7-1-rebuilt
-          path: part_diagnostics.json
+          name: Witch-Tools-Dev-v2-6-1-restored-source
+          path: Witch_Tools_Dev_v2_6_1_Restored_Source.zip
           if-no-files-found: error
           retention-days: 1
