@@ -16,18 +16,12 @@ This registry records verified and candidate baselines. A build is not current m
 ### Current local development delivery — Align Selection
 
 - Version: `Dev_v1.5.0`
-- Artifact: `witch_quickbar_dev_Dev_v1_5_0_Align_Selection_Blender_4_5.zip`
 - Package: `witch_quickbar_dev`
 - Target Blender version: `4.5.0`
 - Source status: local-only; GitHub Quickbar source intentionally not updated
 - Dependency: unchanged `mesh.wt_align_*` contract, compatible with Witch Tools Dev_v2.7.1
 - User finding: Align Selection controls render; source-reference dropdown is absent and deferred to a separate local-only patch
 - Blender runtime beyond presentation: pending
-
-### Previous development builds
-
-- `Dev_v1.4.0`: Selection Slots workflow user-reported passed
-- `Dev_v1.3.18`: SHA-256 `01fc12ee366c6484e209d1ee71519bd1f1ca711d4fc3c2710fec5e20b2ba2a1b`
 
 ## Witch Tools
 
@@ -42,7 +36,8 @@ This registry records verified and candidate baselines. A build is not current m
 - Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
 - Target Blender version: `4.5.0`
-- SHA-256: `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
+- Size: 132,053 bytes
+- SHA-256: `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
 - Build date: `2026-07-24`
 - Supersedes: both Dev_v2.7.0 artifact identities
 - Python files: 47
@@ -63,7 +58,7 @@ This registry records verified and candidate baselines. A build is not current m
 
 - Path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
 - User-tested repair baseline: 127,760 bytes / SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
-- Build artifact: 132,763 bytes / SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
+- Build artifact: 132,053 bytes / SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`
 - Focused source patch and manifest: present
 - Static/compile/operator-ID/ZIP/safe-path/package-hygiene verification: passed
 - Full Dev_v2.7.1 source archive snapshot: deferred
