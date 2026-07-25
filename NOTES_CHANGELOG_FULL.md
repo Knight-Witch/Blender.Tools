@@ -6,7 +6,7 @@
 - Diagnosed the missing `show_edit_align_selection` preference registration and the invalid/unverified `ALIGN` section icon.
 - Added the missing persistent preference and changed the icon to `PIVOT_ACTIVE` without changing geometry logic or the Quickbar contract.
 - Recorded the discrepancy between the earlier Dev_v2.7.0 snapshot identity and the exact user-tested replacement artifact; Dev_v2.7.1 supersedes both.
-- Produced `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,053 bytes, SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
+- Delivered `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,189 bytes, SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`.
 - Static/compile, operator-ID, UI-state, icon, ZIP, package-hygiene, and source-patch checks passed.
 - Blender 4.5 N-panel and runtime validation remains pending.
 - Quickbar source remained local-only and unchanged.
