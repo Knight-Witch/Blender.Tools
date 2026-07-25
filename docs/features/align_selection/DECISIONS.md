@@ -16,9 +16,9 @@ Accepted. Figure A intentionally assigns coordinates; Figure B requires one tran
 
 Accepted. Blender selection order is not a reliable persistent contract for arbitrary multi-domain and multi-object selections.
 
-## ADR-AS-005 — Arithmetic-mean reference positions
+## ADR-AS-005 — Median and Active Element source references
 
-Accepted for Dev_v2.7.0. Optional Active Element mode is deferred.
+Accepted for the current Witch Tools development build. Median supports arbitrary source sets; Active Element uses the active vertex, edge center, or face center. Quickbar exposure is a separate local-only UI task.
 
 ## ADR-AS-006 — Selected-edge connectivity defines islands
 
@@ -34,4 +34,8 @@ Accepted for the MVP. Topology changes may require recapture.
 
 ## ADR-AS-009 — Quickbar source remains local for this update
 
-Accepted per explicit user instruction. Witch Tools development source is updated on `Blender_Dev`; Quickbar Dev_v1.5.0 is delivered as a local ZIP only.
+Accepted per explicit user instruction. Witch Tools development source is updated on `Blender_Dev`; Quickbar Dev_v1.5.0 remains a local ZIP only.
+
+## ADR-AS-010 — Dev_v2.7.1 uses the exact user-tested replacement build as its patch baseline
+
+Accepted. The replacement Dev_v2.7.0 ZIP installed by the user had SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`, which differed from the earlier Dev_v2.7.0 snapshot identity recorded in repository documentation. Dev_v2.7.1 records this discrepancy, uses the exact failing package as the repair baseline, and supersedes both Dev_v2.7.0 identities rather than silently treating them as identical.
