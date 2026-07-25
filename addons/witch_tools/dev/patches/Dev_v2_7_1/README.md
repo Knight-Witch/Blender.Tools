@@ -6,6 +6,6 @@ The exact user-tested failing replacement ZIP was `Witch_Tools_Dev_v2_7_0_Align_
 
 The patch registers the missing `show_edit_align_selection` preference, replaces the invalid/unverified `ALIGN` section icon with `PIVOT_ACTIVE`, and bumps Witch Tools to Dev_v2.7.1. Align Selection operators and property contracts are unchanged.
 
-Build artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,763 bytes, SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`.
+Build artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,053 bytes, SHA-256 `d912536da3d6bd7681ce58a85c3a3099bffc17403fc0233fcb9f93551d67c9e9`.
 
 Target: Blender 4.5.0. Blender runtime validation remains pending.
