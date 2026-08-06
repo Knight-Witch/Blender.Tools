@@ -1,221 +1,270 @@
-# Align Selection Specification
+# Align Vertices / Edges / Faces Specification
+
+Feature ID: `WT-ALIGN-001`  
+Candidate implementation: Witch Tools `Dev_v2.8.0`  
+Target Blender: `4.5.0`
 
 ## 1. Scope
 
-Initial development scope:
+Current development scope:
 
-- Blender 4.5;
-- mesh Edit Mode;
-- vertex, edge, face, and mixed-domain source/anchor capture;
-- X, Y, and Z world-coordinate matching;
-- destructive coordinate matching for selected targets;
-- shape-preserving translation using a captured target anchor;
-- one or multiple selected connected islands;
-- one or multiple mesh objects in multi-object Edit Mode;
-- Witch Tools N-panel UI;
-- optional compact Witch Quickbar access through canonical Witch Tools operators.
+- Mesh Edit Mode.
+- Vertex, edge, face, and mixed-domain parent capture.
+- Active Element or Median parent reference.
+- Vertex, edge, face, and mixed subordinate selections.
+- World X/Y/Z matching with independently enabled components.
+- Arbitrary Custom Guide coordinate frame defined by editable start/end points.
+- Custom-frame component matching.
+- Projection to an arbitrary guide line.
+- Free-coordinate movement.
+- Movement constrained to explicitly captured straight mesh-edge rails.
+- One-parent-to-all and explicit paired-by-rail relationships.
+- Optional rigid relative-spacing/shape preservation.
+- Whole-selection and per-selected-island target grouping.
+- Multi-object Edit Mode world/local conversion.
+- Witch Tools N-panel UI.
+- Transaction-first failure behavior.
 
-Out of scope for Dev_v2.7.0:
+Out of current scope:
 
-- rotation or orientation matching;
-- scale matching;
-- nearest-point projection;
-- normal, tangent, or custom-axis alignment;
-- proportional falloff;
-- automatic discovery of the intended anchor wall;
-- Object Mode object alignment;
-- armature or UV-editor selections;
-- a duplicated Quickbar geometry backend.
+- Curved/polyline movement rails.
+- Rotation or scale matching.
+- Surface-normal, tangent, nearest-point, or arbitrary-surface projection.
+- Automatic parent/child guessing by nearest distance or vertex index.
+- Object Mode alignment.
+- Armatures, curves, UV selections, or non-mesh domains.
+- Duplicated geometry logic in Witch Dock/Quickbar.
 
 ## 2. Terminology
 
-### Source
+### Parent Anchor
 
-A captured mesh selection whose world-space vertex positions define the reference coordinate. A vertex is used directly. Edge, face, and mixed selections are converted to their unique participating vertices.
+A captured mesh selection defining the alignment reference. Vertex selections are used directly. Edges and faces resolve to their unique participating vertices.
 
-The Dev_v2.7.0 source coordinate is the arithmetic mean of all captured source vertices.
+- `Active Element`: uses the active captured vertex, edge endpoints, or face vertices.
+- `Median`: arithmetic mean of all captured parent vertices.
 
-### Target Anchor
+### Subordinates
 
-A captured mesh selection inside geometry that will be translated in **Move Shape** mode. Its arithmetic-mean world coordinate is compared with the source coordinate to calculate the translation.
+The vertices participating in the current selection when Analyze or Align is invoked, excluding captured parent vertices. Selected edges and faces participate through their vertices.
 
-### Current Selection
+### Alignment Frame
 
-The geometry selected when **Apply Align Selection** is invoked.
+The coordinate system in which components are matched.
 
-- In **Match Coordinates**, it is the set of target vertices to modify.
-- In **Move Shape**, it is the complete shape or shapes that must move while retaining their internal offsets.
+- `World XYZ`: Blender world coordinates.
+- `Custom Guide`: custom X follows Guide Start to Guide End; custom Y and Z are a stable perpendicular orthonormal basis.
 
 ### Match Coordinates
 
-Write the captured source coordinate directly onto every current target vertex on enabled axes. This intentionally flattens the targets on those axes.
+For every enabled component, change the subordinate coordinate to the reference coordinate. Disabled components remain unchanged.
 
-### Move Shape
+### Project to Guide Line
 
-Translate the current selection by the difference between the captured source and target-anchor coordinates. Relative distances among moved vertices remain unchanged.
+In Custom Guide mode, set custom Y and Z to zero while leaving custom X unchanged. This moves a point to the guide line without changing its distance along the line.
 
-### Per Selected Island
+### Slide Rail
 
-Partition the selected move vertices by connectivity through selected mesh edges. Each selected component uses the captured target-anchor vertices contained in that component and receives an independent translation.
+An explicitly captured existing mesh-edge component defining the only permitted movement line. Rails are movement constraints, not topology locks and not Protected Edit Zones.
 
-## 3. User workflows
+### One Anchor to All
 
-### Figure A: align one wall to a source coordinate
+Every subordinate group uses the same captured parent reference.
 
-1. Select the source vertex, edge, face, or set.
-2. Press **Capture Source**.
-3. Select the wall vertices/faces to align.
-4. Choose **Match Coordinates**.
-5. Enable X, Y, and/or Z.
-6. Press **Apply Align Selection**.
+### Paired by Rail
 
-Every selected target vertex receives the source coordinate on enabled axes. Disabled axes remain unchanged.
+Each subordinate island is paired to the one captured rail component it touches. Each paired rail component must contain exactly one captured parent vertex. No spatial guessing is permitted.
 
-### Figure B: move a complete cavity without collapsing it
+### Preserve Relative Spacing / Shape
 
-1. Select the source and press **Capture Source**.
-2. Select the cavity wall that must meet the source coordinate and press **Capture Target Anchor**.
-3. Select the complete cavity, including the opposite wall and connecting geometry.
-4. Choose **Move Shape**.
-5. Enable the required axes.
-6. Use **Whole Selection** for one common translation or **Per Selected Island** for multiple disconnected cavities.
-7. Press **Apply Align Selection**.
+Move every vertex in a target group by one identical world-space translation, preserving all intra-group offsets.
 
-The anchor wall reaches the source coordinate while subordinate geometry retains its relative distance from the anchor.
+## 3. User workflow
 
-## 4. Coordinate policy
+The UI must expose exactly four conceptual steps:
+
+1. **Capture Parent Anchor**
+2. **Choose Alignment Target**
+3. **Choose How Targets May Move**
+4. **Select Subordinates and Apply**
+
+Analyze must perform full planning without mutation. Align must use the same planning path and mutate only after all preflight passes.
+
+## 4. World-axis example
+
+For the user's horizontal collar row:
+
+1. select the red parent vertex and Capture Anchor;
+2. choose World XYZ;
+3. enable only Z;
+4. choose Free Coordinates;
+5. select the yellow subordinate vertices;
+6. Analyze, then Align.
+
+Every subordinate receives the parent's world Z. World X and Y remain unchanged, so the vertices move vertically without shifting sideways or in depth.
+
+## 5. Slide-along-edge example
+
+For targets that must remain on existing vertical edges:
+
+1. capture the parent anchor;
+2. choose Captured Rails;
+3. select the straight existing edges and Capture Rails;
+4. enable the coordinate to equalize;
+5. select the subordinate endpoints;
+6. Analyze, then Align.
+
+Each target must touch exactly one captured rail. The solution is computed as `p + t*d`. If enabled coordinate constraints imply different values of `t`, the operation cancels rather than moving off the rail.
+
+## 6. Parent/child series example
+
+For multiple red parent vertices and green subordinate endpoints:
+
+1. capture all red parent vertices;
+2. choose Paired by Rail;
+3. capture the disconnected edge components linking each parent to its subordinate;
+4. select subordinate endpoints or subordinate islands;
+5. Analyze, then Align.
+
+Each rail component must contain exactly one parent vertex and each subordinate island must touch exactly one rail component. These components define the mapping explicitly.
+
+## 7. Custom guide example
+
+For a 45-degree or arbitrary line:
+
+1. capture the parent;
+2. choose Custom Guide;
+3. enter Guide Start/End or capture either point from selected geometry;
+4. optionally copy the parent reference to Guide Start;
+5. choose:
+   - Match Anchor in Guide Frame, then enable custom X/Y/Z components; or
+   - Project to Guide Line;
+6. select subordinates, Analyze, and Align.
+
+Guide Start and Guide End must not coincide. The frame construction must remain deterministic for guide directions near world axes.
+
+## 8. Coordinate policy
 
 - Analysis is performed in world space.
-- Every participating object's local vertex position is converted through its object matrix.
-- Planned world-space results are converted back through the inverse object matrix before mutation.
-- The source and target-anchor reference positions are arithmetic means of unique participating vertices.
-- Source vertices are excluded from movement if they are also selected as targets.
-- Only enabled world axes are modified.
+- Object-local coordinates are transformed through `matrix_world`.
+- Planned results are converted back through the inverse matrix only after preflight succeeds.
+- Non-invertible transforms cancel before mutation.
+- Parent vertices are excluded from subordinate movement.
+- Disabled components remain exactly at their original planned value apart from floating-point conversion.
 
-## 5. Capture storage
+## 9. Capture storage
 
-Dev_v2.7.0 stores source and anchor membership using persistent integer vertex-domain custom-data markers:
+Persistent custom-data markers:
 
-- `wt_align_selection_source`
-- `wt_align_selection_anchor`
+- parent vertices: `wt_align_selection_source`
+- rail edges: `wt_align_selection_rail`
 
-Scene metadata stores the expected captured counts and capture state. Capture replaces the prior marker set for that role.
+Scene metadata stores expected parent and rail counts. Apply compares surviving markers with recorded counts. A mismatch caused by topology changes cancels and requires recapture.
 
-Because topology operations may delete or propagate custom data, Apply verifies that the surviving marker count equals the recorded count. A mismatch cancels the operation and requires recapture rather than guessing.
+Capture replaces the previous marker set for the same role and clears the current selection so the next workflow step starts cleanly.
 
-## 6. Match Coordinates behavior
+## 10. Free-coordinate behavior
 
-The operator must:
+Without shape preservation:
 
-1. require mesh Edit Mode;
-2. require at least one enabled axis;
-3. resolve a valid captured source;
-4. require at least one currently selected target vertex after excluding source vertices;
-5. calculate all result coordinates before mutation;
-6. set enabled world coordinates to the source coordinate;
-7. preserve disabled world coordinates;
-8. convert results back to each object's local space;
-9. update Edit Mode meshes in one undoable action.
+- each subordinate vertex is solved independently;
+- enabled frame components are matched;
+- disabled components are preserved.
 
-## 7. Move Shape behavior
+With shape preservation:
 
-The operator must:
+- each chosen target group receives one common translation;
+- target-group reference is the arithmetic mean of group vertices;
+- Whole Selection groups all subordinates on each object;
+- Per Selected Island groups disconnected selected topology independently.
 
-1. require a valid source and target anchor;
-2. require the complete move geometry to be currently selected;
-3. require every captured anchor vertex used for an island to be inside that island's move selection;
-4. calculate translation deltas before mutation;
-5. apply one common delta in Whole Selection mode;
-6. apply one independent delta per connected selected component in Per Selected Island mode;
-7. move all vertices in each planned component by the same enabled-axis delta;
-8. preserve all intra-component vertex offsets exactly apart from floating-point conversion;
-9. reject an island with no captured anchor instead of moving it by a guessed amount.
+## 11. Rail behavior
 
-## 8. Vertex Lock and shape-key rules
+- A rail is a disconnected component of captured mesh edges.
+- The candidate accepts only a straight line within `align_rail_straight_tolerance`.
+- Zero-length rails are rejected.
+- Targets must touch exactly one rail component.
+- A target touching no rails or multiple rails is rejected.
+- `Stay Within Captured Rail` clamps permissible `t` to the captured rail point extent and rejects a requested point beyond that extent.
+- Multiple enabled component constraints must solve to one consistent `t` within `align_solve_tolerance`.
 
-When **Respect Vertex Locks** is enabled:
+With rigid shape preservation, one common rail-compatible translation must satisfy the entire group. The system must not deform a group to make an impossible constraint pass.
 
-- any selected vertex marked by the current Witch Tools Vertex Lock system cancels the complete operation;
-- no partial island is moved.
+## 12. Paired-by-rail behavior
 
-The operator rejects meshes with more than one shape key in Dev_v2.7.0. Shape-key-relative coordinate handling is deferred.
+- Paired mode partitions subordinate selections into connected islands.
+- Each subordinate island must touch exactly one rail component.
+- Each paired rail component must contain exactly one captured parent vertex.
+- That parent vertex is the reference for that subordinate island.
+- Edge/face parent capture remains supported for One Anchor to All, but paired mode is deliberately vertex-parent oriented in the candidate.
 
-Protected Edit Zone behavior follows the existing Witch Tools protection contract where exposed by the current baseline. Any unresolved protection ambiguity must cancel before mutation.
+## 13. Safety and transaction rules
 
-## 9. Multi-object and multi-island behavior
+The complete operation cancels before mutation when:
 
-- Source, anchor, and move selections may span multiple mesh objects participating in multi-object Edit Mode.
-- World-space analysis provides one coordinate frame across objects with different transforms.
-- Whole Selection may translate all selected vertices together.
-- Per Selected Island computes connectivity per selected mesh topology; disconnected cavities may receive independent translations.
-- Linked objects sharing one Mesh datablock share marker layers and remain a documented limitation.
-
-## 10. UI
-
-### Witch Tools
-
-Location: **Edit Tools > Align Selection**, after Object Snap and before Vertex Inject.
-
-Controls:
-
-- Capture Source;
-- Capture Target Anchor;
-- Clear;
-- Match Coordinates / Move Shape;
-- X / Y / Z toggles;
-- Whole Selection / Per Selected Island;
-- Respect Vertex Locks;
-- Apply Align Selection.
-
-### Witch Quickbar
-
-Location: **Edit** tab.
-
-Quickbar provides a compact presentation of the same properties and invokes:
-
-- `mesh.wt_align_capture`;
-- `mesh.wt_align_clear`;
-- `mesh.wt_align_apply`.
-
-Quickbar must show a safe unavailable state when Witch Tools Dev_v2.7.0 or the required operator contract is absent. It must not contain a second geometry implementation.
-
-## 11. Failure and transaction rules
-
-The complete operation cancels before geometry mutation when:
-
-- no axis is enabled;
-- source or anchor capture is missing;
-- source or anchor marker counts no longer match their capture metadata;
-- no valid current target/move vertices remain;
-- an island lacks an anchor;
-- enabled locked vertices are present while lock protection is enabled;
-- an affected mesh has unsupported shape keys;
+- no required Match component is enabled;
+- parent capture is missing or stale;
+- rail capture is missing or stale when required;
+- no subordinate vertices remain;
+- a target has no rail or multiple rails;
+- paired mapping has zero or multiple parents on a rail;
+- a rail is curved beyond tolerance or zero length;
+- rail component constraints do not produce one parameter;
+- a clamped solution lies beyond captured rail extent;
+- an enabled Vertex Lock affects any target;
+- an affected mesh has multiple shape keys;
 - an object transform cannot be inverted;
-- required Edit Mode context is unavailable.
+- Edit Mode context is unavailable.
 
-No validation failure may leave a partial coordinate change.
+All planned local coordinates must be calculated before mutation. Unexpected Apply failure must attempt to restore original local coordinates. No preflight failure may leave partial movement.
 
-## 12. Acceptance criteria
+## 14. Multi-object behavior
 
-Dev_v2.7.0 is ready for user validation when:
+- Parent and subordinate geometry may span mesh objects participating in multi-object Edit Mode.
+- World-space analysis provides a shared coordinate frame.
+- Direct markers are stored on Mesh datablocks.
+- Linked objects sharing a Mesh datablock therefore share markers and remain a documented limitation.
+- Objects containing required markers must participate in the current Edit Mode operation; the candidate does not silently edit hidden/non-participating objects.
 
-- a source vertex can align a wall selection on X without changing target Y/Z;
-- a complete cavity can translate from an anchor wall without changing its width or shape;
-- two disconnected cavities can independently align their anchors to one source coordinate;
-- X/Y/Z combinations behave correctly in world space;
-- vertex, edge, face, and mixed source/anchor captures resolve to unique vertices;
-- multi-object results convert correctly between world and local space;
-- locked, stale, malformed, and unsupported selections cancel without partial mutation;
-- one undo restores all moved vertices;
-- Quickbar calls the Witch Tools operator contract and preserves overlay behavior;
-- package identities and public update URLs remain unchanged;
-- Blender 4.5 runtime results are recorded.
+## 15. UI and operator contract
 
-## 13. Known limitations
+Witch Tools location: **Edit Tools > Align Vertices / Edges / Faces**.
 
-- Reference positions use arithmetic means; Active Element reference mode is not included.
-- Marker identity is persistent custom data, not immutable topology identity.
-- Topology-changing operations may require source/anchor recapture.
-- Linked objects sharing a mesh datablock share marker layers.
-- No rotation, scale, normal, custom-axis, nearest-point, or projection alignment.
-- Blender runtime validation remains pending at delivery.
+Canonical operator IDs:
+
+- `mesh.wt_guided_align_capture_anchor`
+- `mesh.wt_guided_align_capture_rails`
+- `mesh.wt_guided_align_capture_guide_point`
+- `mesh.wt_guided_align_copy_anchor_to_guide_start`
+- `mesh.wt_guided_align_clear`
+- `mesh.wt_guided_align_analyze`
+- `mesh.wt_guided_align_apply`
+
+Witch Dock/Quickbar is deferred. A later wrapper must invoke this contract and must not contain a duplicate geometry backend.
+
+## 16. Acceptance criteria
+
+The candidate is accepted only after Blender 4.5 testing confirms:
+
+- world Z matching aligns the screenshot's yellow vertices to the red parent without changing X/Y;
+- captured rails slide those vertices along their existing straight edges;
+- multiple red parents correctly map to green children through disconnected rails;
+- arbitrary-angle custom-frame matching and line projection are correct;
+- rigid shape preservation retains all intra-group distances;
+- multiple selected islands receive correct independent movement;
+- edge, face, and mixed parent/subordinate selections resolve correctly;
+- multi-object transforms produce visible world alignment;
+- locks, stale markers, malformed rails, impossible constraints, shape keys, and invalid transforms cancel without partial mutation;
+- one undo restores all moved vertices and redo reapplies them;
+- save/reopen preserves valid captures or fails with a clear recapture requirement;
+- no topology, normals, face winding, materials, UVs, sharp/seam attributes, or unrelated data are changed.
+
+## 17. Known limitations
+
+- Straight rails only.
+- Paired rails require one parent vertex per rail component.
+- A target island touching multiple rails is ambiguous and rejected.
+- Multiple shape keys are unsupported.
+- Linked objects share marker data.
+- Topology edits may require recapture.
+- Runtime validation remains pending.

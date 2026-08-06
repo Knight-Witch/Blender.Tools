@@ -1,54 +1,69 @@
-# Align Selection Roadmap
+# Align Vertices / Edges / Faces Roadmap
 
 Statuses: `planned`, `active`, `deferred`, `research`, `complete`.
 
 ## Current development scope
 
-### WT-ALIGN-001 — World-axis Align Selection
+### WT-ALIGN-001 — Guided coordinate alignment
 
-- Status: active; Dev_v2.7.1 N-panel hotfix complete, Blender 4.5 validation pending
-- Includes source and target-anchor capture, Median/Active Element reference modes, Match Coordinates, Move Shape, X/Y/Z combinations, Whole Selection, Per Selected Island, multi-object conversion, Vertex Lock preflight, and local Quickbar thin integration.
+- Status: active candidate in Witch Tools Dev_v2.8.0
+- Includes parent capture, world/custom frames, component masks, free movement, straight slide rails, one-to-all and paired mapping, shape preservation, per-island grouping, multi-object conversion, and transactional preflight.
+- Static/source/package validation: complete.
+- Blender 4.5 runtime validation: pending.
 
-### WT-ALIGN-001A — N-panel rendering hotfix
+### WT-ALIGN-001A — Auditable source recovery
 
-- Status: complete in Dev_v2.7.1; user confirmation pending
-- Registered the missing `show_edit_align_selection` preference and replaced the invalid section icon identifier.
+- Status: complete on feature branch
+- Dev_v2.7.0 snapshot parts were confirmed truncated and non-reconstructable.
+- Dev_v2.8.0 was re-established from verified Dev_v2.6.1 source.
+- Direct source and reproducible patch record are present.
 
-## Next validation scope
+## Immediate validation scope
 
-### WT-ALIGN-002 — Blender runtime regression
+### WT-ALIGN-002 — Blender 4.5 runtime regression
 
 - Status: planned immediate
-- First confirm that Edit Tools displays the Align Selection title, disclosure control, reference dropdown, capture controls, axis controls, operation control, grouping control, Apply, and Clear.
-- Then test real vertex/edge/face capture, Figures A and B, two parallel/disconnected cavities, multi-object transforms, undo/redo, save/reopen, locks, stale captures, and shape keys.
+- Test panel rendering, parent/rail capture, world-axis free movement, rail sliding, paired rails, arbitrary guide, rigid shapes, multiple islands, multi-object transforms, locks, stale markers, malformed rails, impossible constraints, shape keys, undo/redo, and save/reopen.
 
-### WT-ALIGN-003 — Quickbar reference-mode controls
+### WT-ALIGN-003 — Witch Dock / Quickbar presentation
 
-- Status: planned local-only follow-up
-- Add Median/Active Element exposure and clarify Match versus Preserve Shape controls without changing the canonical Witch Tools backend.
-- Do not update Quickbar source on GitHub unless the user explicitly changes that instruction.
+- Status: deferred until WT-ALIGN-002 passes
+- Add a compact step-based presentation calling the canonical Witch Tools operators and scene properties.
+- Preserve the existing floating-overlay architecture and pass-through behavior.
+- Do not duplicate marker storage, coordinate math, rail solving, or pairing logic.
 
 ## Deferred and research
 
-### WT-ALIGN-004 — Custom coordinate frames
+### WT-ALIGN-004 — Curved/polyline rails
 
 - Status: research
+- Requires explicit arc-length, junction, rigid-body, and rotation/deformation decisions.
 
-### WT-ALIGN-005 — Rotation and scale matching
+### WT-ALIGN-005 — Rotation/orientation matching
 
 - Status: deferred
 
-### WT-ALIGN-006 — Projection and nearest-surface alignment
+### WT-ALIGN-006 — Scale matching
+
+- Status: deferred
+
+### WT-ALIGN-007 — Surface projection and nearest-point alignment
 
 - Status: research
 
-### WT-ALIGN-007 — Marker diagnostics and recapture assistance
+### WT-ALIGN-008 — Viewport preview and capture visualization
 
 - Status: planned after runtime validation
 
-## Rejected for current build
+### WT-ALIGN-009 — Marker diagnostics and guided recapture
 
-- Guessing the target anchor.
-- Moving islands with no captured anchor.
-- Duplicating geometry calculations in Quickbar.
-- Applying partial island changes when any component fails preflight.
+- Status: planned after runtime validation
+
+## Rejected for the current candidate
+
+- Guessing parent/child pairs by vertex order or nearest distance.
+- Silently choosing among multiple rails touching one target island.
+- Deforming a rigid target group to force an impossible rail constraint.
+- Editing non-participating hidden objects that happen to contain markers.
+- Moving some islands when another island fails preflight.
+- Duplicating the backend in Witch Dock/Quickbar.

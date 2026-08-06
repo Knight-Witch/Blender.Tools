@@ -1,70 +1,98 @@
 # Witch Tools Project State
 
-Last updated: 2026-07-24
+Last updated: 2026-08-05
 
 ## Identity
 
 - Add-on: Witch Tools
-- Canonical role: primary general-purpose N-panel toolkit and reusable operator backend
-- Development branch: `Blender_Dev`
+- Canonical role: primary general-purpose N-panel toolkit and reusable mesh-operator backend
+- Development branch: `feature/witch-tools-guided-align`
+- Intended integration branch: `Blender_Dev`
 - Development package: `Witch_Tools_Dev`
-- Default target Blender version: `4.5`
+- Default target Blender version: `4.5.0`
 
-## Current development build
+## Current candidate build
 
-- Version: `Dev_v2.7.1`
-- Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
-- Size: 132,189 bytes
-- SHA-256: `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
-- Supersedes: both recorded Dev_v2.7.0 artifact identities
+- Version: `Dev_v2.8.0`
+- Artifact: `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip`
+- Size: 138,473 bytes
+- SHA-256: `c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c`
 - Package folder: `Witch_Tools_Dev`
 - Declared target: Blender `4.5.0`
-- Python source files: 47
-- PNG assets: 6
+- Python source files: 48
+- Total packaged files: 63
 - Generated cache files: none
-- Blender runtime: N-panel hotfix pending user confirmation
+- Runtime status: static candidate; Blender 4.5 UI, geometry, undo/redo, and save/reopen validation pending
 
-## Baseline conflict resolved
+## Baseline and source recovery
 
-The Dev_v2.7.0 replacement ZIP actually installed and tested by the user had SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`. Earlier repository records also referenced a different Dev_v2.7.0 artifact, SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`.
+The repository's Dev_v2.7.0 snapshot cannot be reconstructed from the committed files. Its manifest records 20,000-byte source parts, while the committed parts are truncated to 5,000 bytes. The documented Dev_v2.7.1 patch only contains the narrow N-panel hotfix and is not a complete source tree.
 
-Dev_v2.7.1 uses the exact user-tested failing replacement package as its repair baseline and explicitly supersedes both identities.
+Dev_v2.8.0 therefore uses the last verified complete source baseline, Dev_v2.6.1, and re-establishes the newer alignment capability as an auditable direct source tree. This is an explicit recovery decision, not a claim that the incomplete Dev_v2.7.x snapshot was usable.
+
+Current direct source:
+
+- `addons/witch_tools/dev/Witch_Tools_Dev/`
+- feature patch record: `addons/witch_tools/dev/patches/Dev_v2_8_0/`
+- verified Dev_v2.6.1 snapshot: `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/`
 
 ## Current implementation
 
-Dev_v2.7.1 retains the Dev_v2.7.0 Align Selection backend, Selection Slots hotfix, user-validated Curvature Sync workflow, Replace Misaligned Column Edges, Auto-Aligned Vertex Inject, Object Snap, Vertex Locks/Protected Edit Zones, and existing Dev_v2.x tools.
+Dev_v2.8.0 adds **Edit Tools > Align Vertices / Edges / Faces** as a four-step workflow:
 
-The hotfix changes only N-panel presentation state:
+1. capture a parent anchor;
+2. choose a world or custom alignment target;
+3. choose free movement or captured straight slide rails;
+4. select subordinate geometry, Analyze, and Align.
 
-- registers the missing `show_edit_align_selection` persistent preference;
-- changes the section icon from invalid/unverified `ALIGN` to valid `PIVOT_ACTIVE`;
-- leaves `mesh.wt_align_*` operators and alignment properties unchanged.
+Implemented behavior:
 
-## Companion Quickbar build
+- parent anchor capture from selected vertices, edges, faces, or mixed selections;
+- Active Element or Median anchor reference;
+- world-space X/Y/Z coordinate matching with disabled coordinates preserved;
+- editable Custom Guide start/end points;
+- guide point capture from selected geometry and anchor-to-guide-start copy;
+- custom-frame coordinate matching;
+- projection onto an arbitrary guide line while preserving distance along the line;
+- free-coordinate movement;
+- straight captured slide-rail movement;
+- one-anchor-to-all and explicit paired-by-rail parent/child mapping;
+- rigid relative-spacing/shape preservation;
+- whole-selection and per-selected-island grouping;
+- optional clamp to captured rail extent;
+- Vertex Lock, stale marker, shape-key, ambiguous mapping, impossible constraint, and non-invertible transform preflight;
+- world/local conversion for multi-object Edit Mode;
+- transaction-first planning before coordinate mutation;
+- one Blender Undo operator boundary for Apply.
 
-Quickbar remains local-only and unchanged for this patch:
+The operator changes vertex coordinates only. It does not add, remove, weld, reconnect, or remesh topology.
 
-- Version: `Dev_v1.5.0`
-- Role: compact Edit-tab controls invoking Witch Tools
-- Known UI gap: source-reference dropdown is not exposed yet
-- Repository Quickbar source: intentionally unchanged per user instruction
+## UI location and order
 
-## Development source record
+Current `Edit Tools` order:
 
-- Path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
-- Contains the focused runtime/version patch, manifest, and delivered build identity.
-- Static/compile, operator-ID, ZIP-integrity, safe-path, and package-hygiene verification: passed.
-- A full Dev_v2.7.1 archive snapshot is deferred; the verified patch is the current repository source record for this hotfix.
+1. Vertex Snap
+2. Object Snap
+3. Edge / Vertex Inject
+4. Curvature Sync
+5. Align Vertices / Edges / Faces
+6. Selection Slots
+7. Vertex Locks / remaining Edit Tools controls
+
+## Witch Dock / Quickbar status
+
+Not modified in this pass. Witch Tools must remain the canonical geometry backend. A compact Witch Dock/Quickbar wrapper is deferred until the Dev_v2.8.0 backend is tested in Blender 4.5 and the final operator/property contract is accepted.
 
 ## Last completed work
 
-- Reproduced the user's empty Align Selection N-panel box from source inspection.
-- Identified the missing preference property that stopped panel drawing.
-- Identified the invalid/unverified section icon identifier.
-- Implemented and rebuilt Dev_v2.7.1.
-- Added a focused source patch and corrected manifest.
-- Updated feature state, decisions, roadmap, test plan, UI map, project state, build registry, and latest/full notes.
-- Did not modify Quickbar source or public branches.
+- Read repository, architecture, add-on, and feature rules before changing code.
+- Confirmed the current branch, documented versions, Blender target, and source-baseline conflict.
+- Reconstructed the verified Dev_v2.6.1 source.
+- Added the Guided Align math, operators, properties, registration, panel UI, tooltips, quick-start instructions, and package documentation.
+- Restored a direct unpacked development source tree on the feature branch.
+- Recorded the compressed source patch and manifest.
+- Ran static, pure-math, identifier, UI-state, and package validation.
+- Did not modify public branches or Witch Dock/Quickbar source.
 
 ## Current known-working state
 
@@ -72,44 +100,57 @@ Previously user-validated in Blender 4.5:
 
 - Dev_v2.5.2 Curvature Sync production collar workflow.
 - Quickbar Dev_v1.4.0 Selection Slots workflow.
-- Quickbar Dev_v1.5.0 Align Selection controls render.
 
-Dev_v2.7.1 validation outside Blender:
+Dev_v2.8.0 validation completed outside Blender:
 
-- 47 Python files parsed and compiled;
-- 96 operator IDs have no duplicates;
-- Align Selection disclosure property exists in preferences and the UI-state registry;
-- invalid `ALIGN` icon reference removed;
-- ZIP integrity, safe paths, package root, and package hygiene passed;
-- source patch manifest verified.
+- all 48 Python files parsed and compiled;
+- 99 operator/panel identifiers have no duplicates;
+- seven Guided Align operators are registered in source;
+- UI-state names referenced by the panel are declared in preferences;
+- seven pure constraint-math assertions passed;
+- patch dry-run and application against the verified baseline passed;
+- patched source tree matched the packaged candidate source;
+- ZIP integrity, safe paths, single package root, and cache exclusion passed.
 
-## Active problems
+## Active problems and limitations
 
-1. Dev_v2.7.1 N-panel rendering requires Blender 4.5 confirmation.
-2. Align Selection real-mesh execution, undo/redo, multi-object, multi-island, lock, stale-marker, shape-key, and save/reopen tests remain pending.
-3. Quickbar Dev_v1.5.0 does not expose Median/Active Element and will be handled in a separate local-only patch.
-4. Full Quickbar overlay regression remains pending.
-5. Direct unpacked development source layout and source-derived registries remain pending.
-6. Final collar normals/manifold/print-fit inspection remains pending independently.
+1. Blender 4.5 registration, panel rendering, operator execution, undo/redo, and save/reopen are untested.
+2. Captured slide rails must be straight within tolerance; curved/polyline rails are rejected.
+3. Paired-by-rail mode requires exactly one captured parent vertex in each disconnected rail component.
+4. A subordinate island touching multiple rail components is rejected as ambiguous.
+5. Multiple shape keys are unsupported.
+6. Linked objects sharing one Mesh datablock share marker data.
+7. Objects containing captured markers must participate in the current multi-object Edit Mode context.
+8. Topology edits can invalidate captured counts and require recapture.
+9. Witch Dock/Quickbar exposure is deferred.
 
 ## Next exact implementation step
 
-1. Install Dev_v2.7.1 over Dev_v2.7.0.
-2. Confirm the Align Selection N-panel header and controls render.
-3. Confirm the reference dropdown contains Median and Active Element.
-4. Test Match Coordinates on X and undo/redo.
-5. Test Preserve Shape on one cavity, then two disconnected cavities.
-6. After Witch Tools passes, patch the local-only Quickbar reference-mode UI.
+Install `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip` in Blender 4.5 and test, in order:
+
+1. panel registration, disclosure persistence, and all four UI steps;
+2. one red anchor plus yellow targets, world Z matching, free movement;
+3. the same geometry using captured vertical rails so targets slide only along existing edges;
+4. multiple red parents and green subordinates using disconnected paired rails;
+5. a 45-degree Custom Guide, both guide-frame matching and line projection;
+6. rigid shape preservation for a connected target region and multiple selected islands;
+7. Vertex Locks, stale captures, impossible constraints, shape keys, and ambiguous rails;
+8. multi-object Edit Mode with different transforms;
+9. undo, redo, save, reopen, and recapture behavior.
+
+Only after this passes should the Witch Dock/Quickbar wrapper be implemented.
 
 ## Test status
 
 - Python parse/compile: passed
-- Duplicate operator IDs: passed
+- Duplicate operator/panel IDs: passed
 - UI-state declaration consistency: passed
-- Invalid Align icon regression: passed by source inspection
+- Pure constraint math: passed
+- Source patch reconstruction: passed
 - ZIP integrity/safe paths/package hygiene: passed
-- Source patch/manifest verification: passed
-- Blender 4.5 N-panel rendering: pending
-- Blender 4.5 Align Selection runtime: pending
-- Quickbar source updated on GitHub: no
-- Public branches/URLs modified: no
+- Blender 4.5 registration and panel rendering: not performed
+- Blender 4.5 real-mesh execution: not performed
+- Undo/redo: not performed
+- Save/reopen: not performed
+- Witch Dock/Quickbar updated: no
+- Public branches or release URLs modified: no

@@ -1,34 +1,44 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-08-05 — Dev_v2.8.0 Align Vertices / Edges / Faces
+
+- Added a four-step Guided Align workflow under Edit Tools.
+- Added persistent parent-anchor capture from vertex, edge, face, and mixed selections with Active Element and Median references.
+- Added world X/Y/Z matching with disabled coordinates preserved.
+- Added editable arbitrary-angle Custom Guide points, selection capture, parent-to-start copy, custom-frame matching, and line projection.
+- Added free movement, straight captured rails, one-to-all and paired-by-rail mapping, rigid shape preservation, whole/per-island grouping, rail clamping, and Vertex Lock safety.
+- Added non-mutating Analyze and transaction-first Apply.
+- Added strict cancellation for stale captures, curved/zero rails, impossible constraints, ambiguous rail pairing, multiple shape keys, locked targets, and invalid transforms.
+- Re-established direct unpacked development source from the verified Dev_v2.6.1 snapshot because the committed Dev_v2.7.0 parts are truncated and cannot reconstruct the documented Dev_v2.7.1 source.
+- Recorded artifact `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip`, 138,473 bytes, SHA-256 `c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c`.
+- Python parse/compile, identifier uniqueness, UI-state consistency, pure constraint math, patch reconstruction, and ZIP/package validation passed.
+- Blender 4.5 UI, real-mesh execution, undo/redo, and persistence remain pending.
+- Witch Dock/Quickbar source was not modified.
+
 ## 2026-07-24 — Dev_v2.7.1 Align Selection N-panel rendering hotfix
 
 - User test showed an empty box at the Align Selection position in Witch Tools while the local Quickbar controls rendered.
 - Diagnosed a missing `show_edit_align_selection` Boolean declaration in `WitchToolsPreferences`; the property existed in the UI-state registry and panel, causing the draw path to stop at the disclosure header.
 - Registered the missing persistent preference and changed the section icon from invalid/unverified `ALIGN` to valid `PIVOT_ACTIVE`.
 - Preserved all Align Selection backend behavior, operator IDs, scene-property contracts, and Quickbar integration.
-- Recorded that the user-tested replacement Dev_v2.7.0 ZIP, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`, differed from the earlier repository snapshot identity; Dev_v2.7.1 supersedes both.
-- Delivered `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,189 bytes, SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`.
+- Recorded that the user-tested replacement Dev_v2.7.0 ZIP differed from the earlier repository snapshot identity; Dev_v2.7.1 superseded both documented artifact identities.
 - Static parse/compile, operator-ID, UI-state consistency, icon-reference, ZIP integrity, safe-path, package-hygiene, and source-patch checks passed.
-- Exact Blender 4.5 N-panel and runtime validation remains pending.
+- Exact Blender 4.5 N-panel and runtime validation remained pending.
 - Quickbar source was not updated on GitHub.
 
 ## 2026-07-24 — Dev_v2.7.0 Align Selection
 
-- Added a canonical Witch Tools Align Selection backend and N-panel section.
-- Added persistent Source and Target Anchor capture for vertices, edges, faces, and mixed selections.
-- Added Match Coordinates on any X/Y/Z combination in world space.
-- Added Move Shape with Whole Selection and Per Selected Island grouping to preserve cavity dimensions and independently align multiple disconnected selections.
-- Added multi-object Edit Mode conversion between a shared world-space analysis frame and object-local coordinates.
-- Added strict preflight for unavailable or stale captures, island-anchor omissions, enabled Vertex Locks, multiple shape keys, and invalid transforms.
-- Added local-only Quickbar Dev_v1.5.0 exposure through thin Witch Tools operator/property calls.
-- Blender 4.5 interactive/runtime validation remained pending.
-- No public compatibility surface changed.
+- Added a canonical Witch Tools Align Selection backend and N-panel section in the delivered development artifact.
+- Added persistent Source and Target Anchor capture, world-axis coordinate matching, and shape-preserving translation.
+- Added whole-selection/per-island and multi-object planning.
+- Blender 4.5 runtime validation remained pending.
+- Later source audit found the committed snapshot parts were truncated and could not reconstruct this source tree.
 
 ## 2026-07-23 — Dev_v2.6.1 isolated source snapshot verification
 
 - Added the development-only snapshot manifest and hardened reconstruction verification.
-- Final local reconstruction passed for 60 files, 383,270 bytes, source-tree SHA-256 `8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3`.
-- No public compatibility surface changed.
+- Final local reconstruction passed for the verified complete source tree.
+- This became the recovery baseline for Dev_v2.8.0.
 
 ## 2026-07-21 — Dev_v2.6.1 Selection Slots N-panel expansion hotfix
 

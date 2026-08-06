@@ -1,31 +1,49 @@
 # Witch Tools Notes Changelog — Latest Update
 
-Date: 2026-07-24
+Date: 2026-08-05
 
-## Dev_v2.7.1 — Align Selection N-panel Rendering Hotfix
+## Dev_v2.8.0 — Align Vertices / Edges / Faces
 
-- User test showed an empty box at the Align Selection position in Witch Tools while the local Quickbar controls rendered.
-- Diagnosed the missing `show_edit_align_selection` Boolean property in `WitchToolsPreferences`; the panel and UI-state registry referenced it, so drawing stopped at the section header.
-- Registered the missing persistent preference with a default expanded state.
-- Replaced the invalid/unverified `ALIGN` section icon with valid `PIVOT_ACTIVE`.
-- Preserved all Align Selection geometry logic, operator IDs, property contracts, and Quickbar integration.
-- Delivered `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`, 132,189 bytes, SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`.
+- Added **Edit Tools > Align Vertices / Edges / Faces** as a four-step workflow: capture parent, choose alignment target, choose permitted movement, select subordinates and apply.
+- Added parent capture from vertices, edges, faces, and mixed selections with Active Element or Median reference.
+- Added explicit world X/Y/Z matching. Coordinates left disabled remain unchanged.
+- Added editable arbitrary-angle Custom Guide start/end coordinates, selection capture, parent-to-start copy, custom-frame matching, and projection to the guide line.
+- Added free-coordinate movement and straight captured slide rails.
+- Added one-parent-to-all and explicit paired-by-rail parent/child mapping.
+- Added rigid relative-spacing/shape preservation, whole-selection/per-island grouping, rail extent clamping, and Vertex Lock preflight.
+- Added non-mutating Analyze and transaction-first Apply behavior.
+- Added failures for stale captures, curved/zero rails, impossible multi-axis rail constraints, out-of-range clamped solutions, ambiguous pairing, multiple shape keys, locked targets, and non-invertible transforms.
+- Witch Dock/Quickbar was deliberately not modified; it remains a later thin-wrapper task after backend validation.
 
-## Baseline record
+## Source recovery
 
-- The exact user-tested replacement Dev_v2.7.0 ZIP had SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`, differing from the earlier Dev_v2.7.0 snapshot identity.
-- Dev_v2.7.1 explicitly supersedes both Dev_v2.7.0 identities.
+- The committed Dev_v2.7.0 snapshot parts are truncated and do not match their manifest, so the documented Dev_v2.7.1 source cannot be reconstructed from the repository snapshot.
+- Dev_v2.8.0 was implemented from the last verified complete Dev_v2.6.1 source baseline.
+- Added the direct unpacked source at `addons/witch_tools/dev/Witch_Tools_Dev/` and a reproducible patch record at `addons/witch_tools/dev/patches/Dev_v2_8_0/`.
+
+## Candidate artifact
+
+- File: `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip`
+- Size: 138,473 bytes
+- SHA-256: `c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c`
+- Target Blender: `4.5.0`
 
 ## Testing
 
-- 47 Python files parsed and compiled.
-- 96 operator IDs had no duplicates.
-- UI-state preference/registry consistency passed.
-- Invalid Align icon regression check passed.
-- ZIP integrity, safe paths, package hygiene, and source patch manifest checks passed.
-- Exact Blender 4.5 N-panel rendering and Align Selection runtime remain pending.
+Passed:
 
-## Preserved state
+- 48 Python files parsed and compiled;
+- duplicate scan across 99 operator/panel identifiers;
+- seven expected Guided Align operator IDs;
+- UI-state preference declaration consistency;
+- seven pure constraint-math assertions;
+- source patch dry-run/application and source-tree equality;
+- ZIP integrity, safe paths, package root, and cache exclusion.
 
-- Quickbar Dev_v1.5.0 is unchanged and remains local-only.
-- Public branches, package identity, update URLs, inherited assets, and official release locations remain unchanged.
+Not performed:
+
+- Blender 4.5 registration or panel rendering;
+- real BMesh alignment cases;
+- undo/redo;
+- save/reopen;
+- Witch Dock/Quickbar regression.
