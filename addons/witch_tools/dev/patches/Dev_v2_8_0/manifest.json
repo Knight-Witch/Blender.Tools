@@ -1,0 +1,43 @@
+{
+  "addon": "Witch Tools",
+  "version": "Dev_v2.8.0",
+  "target_blender": "4.5.0",
+  "package": "Witch_Tools_Dev",
+  "feature": "Align Vertices / Edges / Faces (Guided Align)",
+  "implementation_baseline": {
+    "source": "verified Dev_v2.6.1 reconstructed source tree",
+    "snapshot_path": "addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1",
+    "source_tree_sha256": "8729d11c0f8d47125ce945204353bec7c11c398ae704b2b293fd64f3af5e51a3",
+    "reason": "The committed Dev_v2.7.0 snapshot parts do not match their manifest and cannot reconstruct the documented Dev_v2.7.1 source. Dev_v2.8.0 therefore re-establishes the feature on the last verified complete source baseline rather than pretending the incomplete snapshot is usable."
+  },
+  "source_patch": {
+    "encoding": "base64(xz(unified-diff))",
+    "path": "Witch_Tools_Dev_v2_8_0_Guided_Align.patch.xz.b64",
+    "decoded_patch_sha256": "8cc8f07360d06658668640f41d59c7bac1ecca1139d969e8f1c5140471af3a9d",
+    "xz_sha256": "ceb1dcba3f0628e8ed4b7860e2ddd8d4e47ad5fd0920ffdd5620df262ed2a4be",
+    "base64_file_sha256": "91c90e203fb5c0cdb357e649356ed76cea7b4fcb1c92aa6d67c91dfcdced57e5"
+  },
+  "candidate_artifact": {
+    "filename": "Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip",
+    "size_bytes": 138473,
+    "sha256": "c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c",
+    "source_tree_sha256": "076912ce5d84115adb803ebfa793e04117053fe9af45d459cd4cbdb7be853504",
+    "python_files": 48,
+    "total_files": 63,
+    "generated_cache_files": 0
+  },
+  "validation": {
+    "python_parse_compile": "passed",
+    "duplicate_bl_idname_scan": "passed (99 identifiers)",
+    "guided_align_operator_count": 7,
+    "ui_state_preference_consistency": "passed",
+    "pure_constraint_math": "passed (7 assertions)",
+    "zip_integrity_safe_paths_package_hygiene": "passed",
+    "blender_4_5_runtime": "not performed"
+  },
+  "scope": {
+    "witch_tools": "implemented candidate",
+    "witch_quickbar_or_dock": "deferred until Witch Tools backend validation",
+    "public_release": "not changed"
+  }
+}
