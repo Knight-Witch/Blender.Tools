@@ -2,69 +2,96 @@
 
 Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `complete`.
 
-## Current development release
+## Current development candidate
 
-### WT-ALIGN-001 — Align Selection
+### WT-ALIGN-001 — Align Vertices / Edges / Faces
 
-- Status: active; Dev_v2.7.1 N-panel hotfix complete, Blender 4.5 validation pending
+- Status: active candidate in Witch Tools `Dev_v2.8.0`; Blender 4.5 validation pending
 - Priority: urgent/high
 - Feature packet: `/docs/features/align_selection/`
-- Current build: `Dev_v2.7.1`
+- Target Blender: `4.5.0`
+- Candidate artifact SHA-256: `c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c`
 - Implemented:
-  - persistent Source and Target Anchor capture;
-  - vertex, edge, face, and mixed reference selections;
-  - Median and Active Element source references;
-  - world-space X/Y/Z Match Coordinates;
-  - shape-preserving Move Shape;
-  - Whole Selection and Per Selected Island;
-  - multiple disconnected cavity alignment;
-  - multi-object Edit Mode conversion;
-  - Vertex Lock, stale-capture, missing-anchor, shape-key, and transform preflight;
-  - Witch Tools N-panel and local Quickbar thin integration.
-- Dev_v2.7.1 correction:
-  - registered missing `show_edit_align_selection` preference;
-  - replaced invalid/unverified `ALIGN` section icon with `PIVOT_ACTIVE`.
+  - parent anchor capture from vertex, edge, face, and mixed selections;
+  - Active Element and Median references;
+  - world X/Y/Z matching with explicit coordinate masks;
+  - arbitrary Custom Guide start/end coordinates;
+  - custom-frame matching and projection to guide line;
+  - free movement and straight captured slide rails;
+  - one-to-all and explicit paired-by-rail relationships;
+  - rigid relative-shape preservation;
+  - whole-selection and per-island grouping;
+  - rail extent clamping;
+  - multi-object world/local coordinate conversion;
+  - Vertex Lock, stale capture, shape-key, transform, rail, and ambiguity preflight;
+  - non-mutating Analyze and transaction-first Apply.
 - Remaining:
-  - Blender 4.5 N-panel confirmation;
-  - Figure A and Figure B production tests;
-  - multi-cavity, multi-object, save/reopen, and undo/redo tests;
-  - protected-zone runtime confirmation;
-  - local-only Quickbar reference-mode UI.
+  - Blender 4.5 UI and registration validation;
+  - screenshot-case geometry tests;
+  - undo/redo and save/reopen;
+  - multi-object and failure-rollback tests;
+  - final operator/property contract acceptance.
+
+### WT-ALIGN-002 — Blender 4.5 production validation
+
+- Status: planned immediate
+- Test the world-axis free-move case, slide-rail case, paired parent/child case, arbitrary-angle guide, rigid shape preservation, malformed selections, locks, transforms, undo/redo, and persistence.
+- Record exact Blender version, operating system, geometry setup, before/after measurements, and failures.
+
+### WT-ALIGN-003 — Witch Dock / Quickbar thin wrapper
+
+- Status: deferred until WT-ALIGN-002 passes
+- Witch Dock/Quickbar may expose the canonical Witch Tools operator/property contract only.
+- It must not duplicate alignment math, marker storage, rail solving, or pairing logic.
+- Preserve overlay drawing, event routing, dragging, resizing, locking, persistence, assets, and pass-through behavior.
+
+### WT-ALIGN-004 — Curved/polyline movement rails
+
+- Status: research
+- Current candidate intentionally accepts straight rails only.
+- A future design requires arc-length parameterization, junction handling, and explicit behavior when a rigid group cannot follow a curved path without rotation/deformation.
+
+### WT-ALIGN-005 — Rotation and scale matching
+
+- Status: deferred
+- Requires a separate operator contract and safety plan; not part of Dev_v2.8.0.
+
+### WT-ALIGN-006 — Surface projection and nearest-point modes
+
+- Status: research
+- Not part of current scope.
+
+### WT-ALIGN-007 — Capture diagnostics and viewport visualization
+
+- Status: planned after runtime validation
+- Potential future work: marker overlays, rail direction display, target previews, and recapture assistance.
 
 ## Baseline preservation
 
-### WT-BASE-001 — Preserve latest Witch Tools development baseline
+### WT-BASE-001 — Restore auditable direct Witch Tools source
 
-- Status: complete for Dev_v2.7.1 verified source patch; full archive snapshot deferred
-- Patch: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
-- Source baseline: exact user-tested replacement Dev_v2.7.0 artifact, SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
-- Build artifact: SHA-256 `f4783b620325e6c40c156d9aa05e2479ca0e0159b06f4177138b46bbfbc4c110`
-- Changed-file patch and manifest: verified
+- Status: complete on `feature/witch-tools-guided-align`
+- Dev_v2.7.0 snapshot conflict: committed parts are truncated and do not match the manifest.
+- Recovery baseline: verified complete Dev_v2.6.1 snapshot.
+- Current direct source: `addons/witch_tools/dev/Witch_Tools_Dev/`
+- Dev_v2.8.0 patch record: `addons/witch_tools/dev/patches/Dev_v2_8_0/`
 - Public branches and official release paths remain unchanged.
-- Remaining:
-  - decide direct unpacked development source layout;
-  - build source-derived UI/operator registries;
-  - create a full archive snapshot during the next broader source import/rebuild pass;
-  - audit eventual public integration.
 
-### WT-BASE-002 — Build current UI and operator registries
+### WT-BASE-002 — Audit integration into `Blender_Dev`
 
-- Status: planned
-- Dependency: approved direct unpacked development source layout
+- Status: planned after Blender runtime validation
+- Compare feature branch against `Blender_Dev`, resolve documentation/build-registry conflicts, then merge only an accepted source and test record.
 
 ### WT-BASE-003 — Audit public/update compatibility
 
-- Status: planned before official integration
+- Status: planned before any official release
 
 ## Selection infrastructure
 
 ### WT-SEL-001 — Persistent mesh Selection Slots
 
-- Status: active; Dev_v2.6.1 hotfix retained in Dev_v2.7.1
-- Remaining:
-  - Blender 4.5 N-panel confirmation;
-  - save/reopen, multi-object, topology propagation, and undo/redo;
-  - marker diagnostics.
+- Status: active; Dev_v2.6.1 implementation retained in Dev_v2.8.0
+- Remaining: Blender 4.5 N-panel confirmation, save/reopen, multi-object restore, topology marker propagation, and undo/redo.
 
 ### WT-SEL-002 — Selection Slot diagnostics
 
@@ -74,59 +101,20 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 - Status: deferred
 
-## Align Selection follow-up
-
-### WT-ALIGN-002 — Quickbar reference-mode UI
-
-- Status: planned local-only next step
-
-### WT-ALIGN-003 — Custom/local/normal coordinate frames
-
-- Status: research
-
-### WT-ALIGN-004 — Rotation and scale matching
-
-- Status: deferred; requires separate contract
-
-### WT-ALIGN-005 — Projection and nearest-surface alignment
-
-- Status: research
-
-### WT-ALIGN-006 — Capture diagnostics and recapture assistance
-
-- Status: planned after runtime validation
-
 ## Topology development
 
 ### WT-VINJ-001 — Auto-Aligned Vertex Inject
 
-- Status: active MVP; retained in Dev_v2.7.1
+- Status: active MVP; retained in Dev_v2.8.0
 
 ### WT-VINJ-002 — Manual Vertex Inject
 
 - Status: deferred
 
-### WT-VINJ-003 — Bulk Missing Correspondence Injection
-
-- Status: partially implemented inside Curvature Sync
-
 ### WT-CURV-001 — Curvature Sync circular multi-chain prototype
 
 - Status: active MVP; primary production workflow user-validated in Blender 4.5
-- Current build: retained in Dev_v2.7.1
-- Remaining: undo/redo report, formal normals/manifold/print-fit validation, missing-Middle and surplus-topology improvements
-
-### WT-CURV-002 — Cross-object column synchronization
-
-- Status: MVP implemented; production collar user-validated
-
-### WT-CURV-004 — Misaligned existing column replacement
-
-- Status: MVP implemented and user-validated
-
-### WT-CURV-003 — Generic spline/non-circular mode
-
-- Status: research
+- Remaining: formal undo/redo, normals/manifold/print-fit validation, and broader missing/surplus topology support.
 
 ### WT-CLEAN-001 — Resolve Embedded Edges / Repair Unsplit Faces
 
@@ -134,18 +122,18 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 
 ## Protection infrastructure
 
-### WT-PROT-001 — Audit existing Vertex Lock implementation
+### WT-PROT-001 — Existing Vertex Lock integration
 
-- Status: complete for current MVPs
+- Status: implemented for Guided Align preflight; Blender runtime validation pending
 
 ### WT-PROT-002 — Protected/ignored zone permissions
 
-- Status: active partial implementation
+- Status: active partial implementation outside Guided Align
 
 ## Immediate next step
 
-User-test Witch Tools Dev_v2.7.1 in Blender 4.5. First confirm the Align Selection N-panel renders fully. Then test Figures A and B, two disconnected cavities, multi-object transforms, undo/redo, locks, stale captures, and save/reopen. Patch the local Quickbar reference-mode controls only after the Witch Tools panel is confirmed.
+User-test Witch Tools Dev_v2.8.0 in Blender 4.5. Do not begin Witch Dock/Quickbar integration until the backend's real mesh behavior and final workflow are accepted.
 
 ## Scope policy
 
-No discussed feature is automatically official-release scope. Dev_v2.7.1 and local Quickbar Dev_v1.5.0 remain development builds.
+No discussed feature automatically enters an official release. Dev_v2.8.0 remains a development candidate. Curved rails, rotation/scale, projection to arbitrary surfaces, viewport overlays, and Witch Dock/Quickbar integration are separate follow-up scopes.
