@@ -2,7 +2,7 @@
 
 This registry records verified and candidate baselines. A build is not current merely because it was generated recently or discussed in chat.
 
-## Witch Quickbar
+## Witch Quickbar / Witch Dock
 
 ### Public baseline — verified in repository
 
@@ -13,15 +13,11 @@ This registry records verified and candidate baselines. A build is not current m
 - Intended Blender target: `4.5.0`
 - Status: unchanged public compatibility baseline
 
-### Current local development delivery — Align Selection
+### Development status for Guided Align
 
-- Version: `Dev_v1.5.0`
-- Package: `witch_quickbar_dev`
-- Target Blender version: `4.5.0`
-- Source status: local-only; GitHub Quickbar source intentionally not updated
-- Dependency: unchanged `mesh.wt_align_*` contract, compatible with Witch Tools Dev_v2.7.1
-- User finding: Align Selection controls render; source-reference dropdown is absent and deferred to a separate local-only patch
-- Blender runtime beyond presentation: pending
+- No Guided Align source change in this pass.
+- The prior local development Quickbar artifacts are not treated as the Dev_v2.8.0 integration baseline.
+- Next scope: build a thin wrapper only after Witch Tools Dev_v2.8.0 passes Blender 4.5 validation.
 
 ## Witch Tools
 
@@ -30,46 +26,58 @@ This registry records verified and candidate baselines. A build is not current m
 - No verified public code baseline found on `Witch_Main_Tools`.
 - Public compatibility surface remains unchanged.
 
-### Current development build — Align Selection N-panel hotfix
+### Current development candidate — Guided Align
 
-- Version: `Dev_v2.7.1`
-- Artifact: `Witch_Tools_Dev_v2_7_1_Align_Selection_NPanel_Hotfix_Blender_4_5.zip`
+- Version: `Dev_v2.8.0`
+- Artifact: `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip`
 - Package: `Witch_Tools_Dev`
 - Target Blender version: `4.5.0`
-- Size: 132,189 bytes
-- SHA-256: `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
-- Build date: `2026-07-24`
-- Supersedes: both Dev_v2.7.0 artifact identities
-- Python files: 47
-- PNG assets: 6
+- Size: 138,473 bytes
+- SHA-256: `c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c`
+- Source-tree SHA-256: `076912ce5d84115adb803ebfa793e04117053fe9af45d459cd4cbdb7be853504`
+- Build date: `2026-08-05`
+- Python files: 48
+- Total files: 63
 - Generated cache files: none
+- Feature branch: `feature/witch-tools-guided-align`
 - Changes:
-  - registers missing `show_edit_align_selection` persistent preference;
-  - replaces invalid/unverified `ALIGN` header icon with `PIVOT_ACTIVE`;
-  - retains all `mesh.wt_align_*` operators and alignment properties unchanged.
+  - four-step Align Vertices / Edges / Faces workflow;
+  - parent capture from vertex/edge/face/mixed selections;
+  - Active Element and Median references;
+  - world and custom-guide coordinate matching;
+  - projection to arbitrary guide line;
+  - free movement and straight captured rails;
+  - one-to-all and paired-by-rail mapping;
+  - rigid shape preservation and per-island grouping;
+  - rail clamping and safety preflight;
+  - non-mutating Analyze and transaction-first Apply.
 - Static syntax/compile: passed
-- Duplicate operator IDs: passed, 96 identifiers
-- UI-state and icon regression checks: passed
+- Duplicate operator/panel identifiers: passed, 99 identifiers
+- Guided Align operator count: passed, 7
+- UI-state consistency: passed
+- Pure constraint math: passed, 7 assertions
+- Patch reconstruction/source-tree comparison: passed
 - ZIP/package verification: passed
-- Blender 4.5 runtime: pending user validation
-- Package identity/footer/public URLs: unchanged
+- Blender 4.5 runtime: pending
+- Witch Dock/Quickbar updated: no
+- Public branches/update URLs: unchanged
 
-### Verified Dev_v2.7.1 source patch
+### Dev_v2.8.0 source record
 
-- Path: `addons/witch_tools/dev/patches/Dev_v2_7_1/`
-- User-tested repair baseline: 127,760 bytes / SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
-- Delivered build artifact: 132,189 bytes / SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
-- Focused source patch and manifest: present
-- Static/compile/operator-ID/ZIP/safe-path/package-hygiene verification: passed
-- Full Dev_v2.7.1 source archive snapshot: deferred
-- Scope: development-only source record
+- Direct source: `addons/witch_tools/dev/Witch_Tools_Dev/`
+- Patch path: `addons/witch_tools/dev/patches/Dev_v2_8_0/`
+- Patch encoding: `base64(xz(unified diff))`
+- Decoded patch SHA-256: `8cc8f07360d06658668640f41d59c7bac1ecca1139d969e8f1c5140471af3a9d`
+- Implementation baseline: verified Dev_v2.6.1 source snapshot
+- Reason: the committed Dev_v2.7.0 source parts are truncated and do not match their manifest.
 
-### Superseded/conflicting Dev_v2.7.0 records
+### Superseded/conflicting Dev_v2.7.x records
 
-- Earlier repository snapshot artifact: SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`
-- User-tested replacement artifact: SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
-- Runtime finding on replacement artifact: empty Align Selection N-panel box
-- Resolution: both superseded by Dev_v2.7.1; discrepancy preserved rather than silently reconciled
+- Earlier repository Dev_v2.7.0 artifact identity: SHA-256 `426b1a881b96d73922b18cba1a97f18fa944854d88dc1669d193b8b640093d45`
+- User-tested replacement Dev_v2.7.0 identity: SHA-256 `53381952406a39d23ab457dd8db3b5a577c53ec55c8fb06597a6275559693def`
+- Dev_v2.7.1 delivered hotfix identity: SHA-256 `e68cf22a2db2ab426781bf8acfc2bfdbb8d6f1c8f62c42e1ccf166d30d6b467f`
+- Source status: documented artifacts existed, but the committed Dev_v2.7.0 snapshot parts are incomplete and cannot reconstruct the full source.
+- Resolution: Dev_v2.8.0 explicitly rebuilds from the verified complete Dev_v2.6.1 source rather than silently trusting the broken snapshot.
 
 ### Historical builds
 
