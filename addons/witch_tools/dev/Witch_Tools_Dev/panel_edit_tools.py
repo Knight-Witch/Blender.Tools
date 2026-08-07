@@ -2,6 +2,7 @@ from bpy.types import Panel
 
 from .operators_vertex_locks import _active_group, _active_mesh, _selection_toggle_label
 from .panel_base import WTHeaderPanelMixin
+from .panel_precision_edit import draw_coordinate_copy, draw_inject_new, draw_planar_edit
 from .state import PANEL_CATEGORY, PANEL_ORDERS
 from .ui_helpers import (
     draw_fullwidth_operator,
@@ -22,15 +23,19 @@ class VIEW3D_PT_wt_edit_tools(WTHeaderPanelMixin, Panel):
     panel_title = 'Edit Tools'
     panel_icon = 'EDITMODE_HLT'
     bl_options = {'DEFAULT_CLOSED'}
-    bl_description = 'Vertex Snap, Object Snap, topology repair, saved selections, protected edit-zone, and vertex-lock tools.'
+    bl_description = 'Coordinate Copy, Planar Edit, Vertex Snap, Inject New, Object Snap, topology repair, saved selections, protected edit-zone, and vertex-lock tools.'
 
     def draw(self, context):
         props = context.scene.witch_tools
+        precision = context.scene.wt_precision_edit
         ui = ui_state_owner(context)
         layout = self.layout
 
         if getattr(ui, 'ui_minimal_mode', False):
             return
+
+        draw_coordinate_copy(layout, context, precision)
+        draw_planar_edit(layout, context, precision)
 
         snap = layout.box()
         if draw_section_toggle(
@@ -43,6 +48,8 @@ class VIEW3D_PT_wt_edit_tools(WTHeaderPanelMixin, Panel):
         ):
             draw_fullwidth_operator(snap, 'mesh.vertex_snap_global', 'Snap Vertices')
             draw_shortcut_hint(snap, 'mesh.vertex_snap_global')
+
+        draw_inject_new(layout, context, precision, props)
 
         object_snap = layout.box()
         if draw_section_toggle(
