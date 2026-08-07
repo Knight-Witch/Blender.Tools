@@ -1,3 +1,13 @@
+## 2026-08-07 — Dev_v2.9.0 Precision Edit
+
+- Added Coordinate Copy with Global/Local space, XYZ masks, Location/Rotation/Scale geometry-frame behavior, exact source capture, independent target application, multi-object world conversion, protection preflight, and `Ctrl+Shift+C` Apply.
+- Added Planar Edit with persistent object-local Plane Lock axes and exact per-target world-space Level.
+- Added Inject New with Solo/Branch/Slide, global XYZ movement, captured straight Rail endpoints, Vertex/Edge/Face Solo/Branch sources, and vertex-only edge-splitting Slide.
+- Preserved the existing A/B/C Edge / Vertex Inject repair workflow as a separate tool.
+- Added protection-system coordination, step-based compact UI, hover help, Precision Edit quick start, repository feature packet, acceptance criteria, roadmap/state, and Blender 4.5 test plan.
+- Bumped development metadata to Dev_v2.9.0 targeting Blender 4.5.
+- Runtime Blender 4.5 UI/mesh/modal/undo/save-reopen validation remains pending; no Blender executable was available in the implementation environment.
+
 ## Dev_v2.8.0 — Guided Align
 
 - Added the step-based **Align Vertices / Edges / Faces** Edit Tools section.
