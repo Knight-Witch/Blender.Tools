@@ -1,12 +1,12 @@
 # Witch Tools Notes Changelog — Latest Update
 
-## 2026-08-05 — Dev_v2.8.0 Guided Align
+## 2026-08-07 — Dev_v2.9.0 Precision Edit
 
-- Added **Edit Tools > Align Vertices / Edges / Faces** as a four-step guided workflow.
-- Added persistent parent-anchor and straight slide-rail captures for vertex, edge, face, and mixed selections.
-- Added world XYZ matching with explicit coordinate toggles; disabled coordinates remain unchanged.
-- Added arbitrary Custom Guide start/end coordinates, selection capture, anchor-to-start copy, custom-frame matching, and guide-line projection.
-- Added free-coordinate movement, captured-rail sliding, one-anchor and paired-by-rail mapping, rigid shape preservation, whole-selection/per-island grouping, rail clamping, and Vertex Lock preflight.
-- Added transactional Analyze planning and clear failures for stale captures, impossible rail intersections, ambiguous pairing, curved rails, locked targets, multiple shape keys, and non-invertible transforms.
-- Re-established an auditable unpacked development source from the verified Dev_v2.6.1 snapshot because the repository's Dev_v2.7.0 source snapshot is incomplete and cannot be reconstructed from its committed parts.
-- Target Blender: 4.5. Python parsing, pure constraint-math tests, operator-ID checks, and package validation passed. Blender 4.5 runtime/UI/undo testing remains pending.
+- Added **Coordinate Copy** above Vertex Snap with Global/Local space, X/Y/Z masks, Location/Rotation/Scale controls, exact source capture, independent target application, multi-object world conversion, and default `Ctrl+Shift+C` Apply shortcut.
+- Added **Planar Edit** with persistent per-vertex object-local Plane Lock axes and exact world-space Level targets.
+- Added **Inject New** below Vertex Snap with Solo/Branch/Slide, global X/Y/Z placement, captured straight Rail endpoints, Vertex/Edge/Face Solo/Branch sources, and vertex-only edge-splitting Slide.
+- Preserved the existing A/B/C **Edge / Vertex Inject** repair workflow as a separate tool.
+- Added protection-system coordination so Coordinate Copy/Level preflight Vertex Locks and Plane Locks, while Inject New suspends/restores guards around modal topology changes.
+- Added step-based compact UI, hover help, `PRECISION_EDIT_QUICK_START.md`, and the repository `precision_edit` feature packet/test plan.
+- Bumped development metadata to `Dev_v2.9.0`, target Blender 4.5.
+- Static/source checks were performed during implementation. Blender 4.5 registration, UI, real-mesh/modal topology behavior, undo/redo, and save/reopen remain untested in this environment.
