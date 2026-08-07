@@ -1,12 +1,48 @@
 # Witch Tools
 
-**Witch Tools Dev_v2.8.0** is the current Blender add-on development build for Knight Witch workflow tools.
+**Witch Tools Dev_v2.9.0** is the current Blender add-on development candidate for Knight Witch workflow tools.
 
 Target build context: **Blender 4.5**
 
+## Dev_v2.9.0 — Precision Edit
+
+Edit Tools now adds three precision-edit workflows while retaining the existing tools and Guided Align backend.
+
+### Coordinate Copy
+
+Copy exact source coordinates from one vertex, edge, or face to one or more targets.
+
+- Global or Local coordinate space.
+- X/Y/Z masks.
+- Location, Rotation, and Scale geometry-frame controls.
+- Global multi-object support for meshes with different origins/transforms.
+- Independent targets instead of one selection-wide median.
+- Default Apply shortcut: `Ctrl+Shift+C`.
+
+### Planar Edit
+
+- **Plane Lock** freezes selected geometry on chosen object-local X/Y/Z coordinates while unlocked coordinates remain editable.
+- **Level** captures one source point and sets every target vertex to its exact world coordinate on enabled axes.
+
+### Inject New
+
+- **Solo**: duplicate one selected Vertex/Edge/Face without connecting it to the source.
+- **Branch**: duplicate and add corresponding source-to-copy branch edges.
+- **Slide**: insert one new vertex into exactly one selected edge and place it along that edge.
+- Solo/Branch placement supports global X/Y/Z or a captured straight Rail endpoint.
+- Left-click/Enter commits; Esc/right-click cancels.
+
+The existing **Edge / Vertex Inject** A/B/C auto-aligned repair tool remains separate.
+
+See `PRECISION_EDIT_QUICK_START.md` for the workflow and current candidate limits.
+
+### Validation status
+
+Dev_v2.9.0 is intended for Blender 4.5. Source/static checks have been performed during implementation, but Blender 4.5 registration, panel rendering, Coordinate Copy real-mesh behavior, Plane Lock guard behavior, Inject New modal/topology behavior, undo/redo, and save/reopen have not yet been run in the implementation environment.
+
 ## Dev_v2.8.0 — Align Vertices / Edges / Faces
 
-Edit Tools now includes a guided parent/subordinate alignment workflow. It can match selected world or custom-frame coordinates, preserve the selected shape as a rigid group, slide targets along explicitly captured straight edge rails, and map multiple parent/subordinate pairs through separate rail components. A Custom Guide can be entered numerically or captured from selected geometry for arbitrary-angle alignment.
+Edit Tools includes a guided parent/subordinate alignment workflow. It can match selected world or custom-frame coordinates, preserve the selected shape as a rigid group, slide targets along explicitly captured straight edge rails, and map multiple parent/subordinate pairs through separate rail components. A Custom Guide can be entered numerically or captured from selected geometry for arbitrary-angle alignment.
 
 See `ALIGN_SELECTION_QUICK_START.md` for the exact workflow and current safety limits.
 
@@ -16,7 +52,7 @@ The Selection Slots backend and workflow remain the same as Dev_v2.6.0. This hot
 
 ## Dev_v2.6.0 — Selection Slots
 
-Edit Tools now includes **Selection Slots** immediately below Curvature Sync. Slots can save and restore vertex, edge, face, or combined mesh selections across one or several objects in multi-object Edit Mode.
+Edit Tools includes **Selection Slots**. Slots can save and restore vertex, edge, face, or combined mesh selections across one or several objects in multi-object Edit Mode.
 
 - Starts with one renameable slot.
 - Adds up to 20 slots with the final-row `+` button.
@@ -32,7 +68,7 @@ See `SELECTION_SLOTS_QUICK_START.md`.
 
 See `CURVATURE_SYNC_QUICK_START.md` for the collar-focused selection and execution workflow.
 
-Edit Tools now includes **Curvature Sync**, a constrained circular topology-repair workflow for selected open edge chains. It is designed for aligned parallel curves on one object, multiple mesh islands, or multiple objects such as matching upper and lower 3D-print parts.
+Edit Tools includes **Curvature Sync**, a constrained circular topology-repair workflow for selected open edge chains. It is designed for aligned parallel curves on one object, multiple mesh islands, or multiple objects such as matching upper and lower 3D-print parts.
 
 ### Core workflow
 
@@ -67,10 +103,9 @@ Edit Tools now includes **Curvature Sync**, a constrained circular topology-repa
 - Missing column edges are created only where Blender can safely connect the corresponding vertices through a shared face.
 - Misaligned edges carrying Seam, Sharp, Crease, bevel, custom edge data, mixed materials, or mixed smoothing abort before mutation.
 
-
 ## Dev_v2.4.0
 
-Edit Tools now includes a dedicated **Object Snap** section using Blender's `AREA_JOIN_DOWN` icon.
+Edit Tools includes a dedicated **Object Snap** section using Blender's `AREA_JOIN_DOWN` icon.
 
 Object Snap supports:
 - Vertex anchors: translate the full target object or disconnected mesh island so the target vertex meets the source vertex.
@@ -104,4 +139,4 @@ First-install behavior:
 
 ## Edge / Vertex Inject
 
-Dev_v2.5.2 retains **Edit Tools > Edge / Vertex Inject** from Dev_v2.5.1. Select A, then B, then C individually; the operator projects the missing D relation onto the inferred parallel target chain, splits the target edge, and optionally connects C-D through the shared face. See `VERTEX_INJECT_QUICK_START.md`.
+Dev_v2.9.0 retains **Edit Tools > Edge / Vertex Inject** from Dev_v2.5.1. Select A, then B, then C individually; the operator projects the missing D relation onto the inferred parallel target chain, splits the target edge, and optionally connects C-D through the shared face. See `VERTEX_INJECT_QUICK_START.md`.
