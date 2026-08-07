@@ -1,3 +1,11 @@
+## Dev_v2.9.0
+- Target authoring version: Blender 4.5
+- Additional Blender versions tested for this candidate: none
+- Static/source validation: performed during implementation
+- Runtime verification: not performed; no Blender executable is available in the implementation environment
+- Known limitations: Coordinate Copy edge/face Rotation/Scale, Plane Lock transform enforcement/persistence, Inject New modal placement/cancel rollback/topology attributes/manifold behavior, undo/redo, and save/reopen require Blender 4.5 validation
+- Notes: Added Coordinate Copy, Planar Edit, and Inject New while retaining the Dev_v2.8.0 Guided Align candidate and existing Edit Tools.
+
 ## Dev_v2.6.1
 - Target authoring version: Blender 4.5
 - Static package validation: passed
@@ -65,15 +73,17 @@
 
 ## Current release
 
-- Release: **Dev_v2.8.0**
+- Release: **Dev_v2.9.0**
 - Target authoring version: **Blender 4.5**
-- Confirmed working versions: **No Blender runtime confirmation in this build environment**
-- Notes: Guided Align implementation; Python/static/pure-math/package checks passed. Interactive Blender 4.5 UI, geometry, undo/redo, and multi-object validation remain pending.
+- Confirmed working versions for this candidate: **No Blender runtime confirmation in this implementation environment**
+- Additional Blender versions tested: **None**
+- Notes: Precision Edit source candidate adds Coordinate Copy, Planar Edit, and Inject New. Blender 4.5 registration, UI, real-mesh geometry, modal topology, undo/redo, and save/reopen validation remain pending.
 
 ## Release history
 
 | Release | Target authoring version | Confirmed working versions | Notes |
 |---|---|---|---|
+| Dev_v2.9.0 | Blender 4.5 | Static/source checks only; Blender runtime pending | Added Coordinate Copy, Plane Lock/Level, and Inject New Solo/Branch/Slide; retained Guided Align and earlier tools. |
 | Dev_v2.8.0 | Blender 4.5 | Static and pure-math checks only; Blender runtime pending | Added Guided Align with world/custom frames, straight slide rails, paired parent mapping, and rigid shape preservation. |
 | Dev_v2.6.0 | Blender 4.5 | Quickbar user-reported working; Witch Tools N-panel body failed to expand | Initial Selection Slots build; superseded by Dev_v2.6.1 N-panel hotfix. |
 | Dev_v2.5.2 | Blender 4.5 | Blender Python 5.2.0 LTS test runtime; exact 4.5 pending | Added safe replacement of misaligned interior column edges and canonical same-slot reconstruction; actual collar regression passed. |
@@ -107,11 +117,8 @@
 | Dev_v2.0.0 | Blender 4.5 | Not yet runtime-confirmed by user | Refactor baseline promoted to dev versioning. Added per-tool collapsible sections inside multi-tool modules and a footer version row with a preferences link. |
 
 - Dev_v2.2.3 — Target: Blender 4.5 — Adjusted Vertex Locks Name and Max Match Distance field sizing.
-
 - Dev_v2.2.5 — Target: Blender 4.5 — Rebuilt Vertex Locks Name and Max Match Distance rows to use fixed-width field cells so the labels remain fully visible.
-
 - Dev_v2.2.7 — Target: Blender 4.5 — Updated Head Tools button icons/text and moved Fix Armature & Ears plus Fix Head Seam Normals into Editing.
-
 
 ## Dev_v2.2.8
 - Target authoring version: Blender 4.5
@@ -131,7 +138,6 @@
 - Target authoring version: Blender 4.5
 - Confirmed working versions: Blender 4.5 (not runtime-tested in container; packaged for user testing)
 - Notes: Footer social buttons enlarged, Patreon custom icon added, embossed hover state enabled.
-
 
 ## Dev_v2.3.7
 - Target authoring version: Blender 4.5
