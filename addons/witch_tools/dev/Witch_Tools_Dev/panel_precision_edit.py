@@ -110,7 +110,7 @@ def draw_planar_edit(layout, context, state):
     _report_row(box, state.planar_edit_last_report)
 
 
-def draw_inject_new(layout, context, state, legacy_props):
+def draw_inject_new(layout, context, state, _legacy_props):
     box = layout.box()
     if not draw_section_toggle(
         box,
@@ -173,27 +173,3 @@ def draw_inject_new(layout, context, state, legacy_props):
         step4.label(text='Select exactly one source vertex, edge, or face matching Step 3.')
     step4.operator('mesh.wt_inject_new', text='Inject New', icon='MOD_EDGESPLIT')
     _report_row(box, state.inject_new_last_report)
-
-    legacy = box.box()
-    if draw_section_toggle(
-        legacy,
-        state,
-        'show_auto_aligned_inject',
-        'Auto-Aligned Repair',
-        section_icon='MOD_EDGESPLIT',
-        help_topic='vertex_inject_title',
-    ):
-        legacy.label(text='Existing A-B-C → D repair workflow.')
-        legacy.label(text='Click A, then B, then C; C must be active last.')
-        legacy.prop(legacy_props, 'vertex_inject_connect_split', toggle=True)
-        tolerance = legacy.row(align=True)
-        tolerance.label(text='Projection Tolerance')
-        tolerance.prop(legacy_props, 'vertex_inject_tolerance_ratio', text='')
-        merge = legacy.row(align=True)
-        merge.label(text='Existing Vertex Tolerance')
-        merge.prop(legacy_props, 'vertex_inject_merge_ratio', text='')
-        legacy.operator(
-            'mesh.wt_vertex_inject_auto_aligned',
-            text='Inject Auto-Aligned Vertex',
-            icon='MOD_EDGESPLIT',
-        )
