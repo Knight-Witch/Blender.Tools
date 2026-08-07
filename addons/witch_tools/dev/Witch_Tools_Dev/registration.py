@@ -1,7 +1,7 @@
 import bpy
 from bpy.props import PointerProperty, StringProperty
 
-from . import operators_curvature_sync, operators_guided_align, operators_vertex_inject, operators_selection_slots, operators_head_editing, operators_head_finishing, operators_head_prep, operators_vertex_locks
+from . import operators_coordinate_copy, operators_curvature_sync, operators_guided_align, operators_inject_new, operators_planar_edit, operators_vertex_inject, operators_selection_slots, operators_head_editing, operators_head_finishing, operators_head_prep, operators_vertex_locks, precision_edit_props
 from .custom_icons import register_custom_icons, unregister_custom_icons
 from .handlers import register_handlers, unregister_handlers
 from .keymaps import register_default_keymaps, unregister_keymaps
@@ -38,6 +38,7 @@ CORE_CLASSES = (
     operators_selection_slots.WTSelectionSlotObjectRef,
     operators_selection_slots.WTSelectionSlotItem,
     WitchToolsProperties,
+    *precision_edit_props.CLASSES,
     WITCHTOOLS_OT_help_tooltip,
     WITCHTOOLS_OT_open_preferences,
     WITCHTOOLS_OT_open_link,
@@ -85,6 +86,9 @@ CORE_CLASSES = (
     *operators_selection_slots.CLASSES[2:],
     *operators_curvature_sync.CLASSES,
     *operators_guided_align.CLASSES,
+    *operators_coordinate_copy.CLASSES,
+    *operators_planar_edit.CLASSES,
+    *operators_inject_new.CLASSES,
     *PANELS,
 )
 
@@ -95,6 +99,7 @@ def register():
         bpy.utils.register_class(cls)
 
     bpy.types.Scene.witch_tools = PointerProperty(type=WitchToolsProperties)
+    bpy.types.Scene.wt_precision_edit = PointerProperty(type=precision_edit_props.WTPrecisionEditProperties)
     bpy.types.WindowManager.wt_return_object_name = StringProperty(default='')
     bpy.types.WindowManager.wt_return_mode = StringProperty(default='OBJECT')
     bpy.types.WindowManager.wt_return_workspace_name = StringProperty(default='')
@@ -105,6 +110,7 @@ def register():
     bpy.types.WindowManager.wt_last_switcher_mode = StringProperty(default='OBJECT')
 
     operators_vertex_locks.register_rna()
+    operators_planar_edit.register_planar_guard()
 
     if bpy.context and getattr(bpy.context, 'scene', None) and hasattr(bpy.context.scene, 'witch_tools'):
         bpy.context.scene.witch_tools.wtm_mirror_tolerance = prefs_mirror_tolerance()
@@ -122,6 +128,7 @@ def _safe_delete(owner, name):
 def unregister():
     unregister_handlers()
     unregister_keymaps()
+    operators_planar_edit.unregister_planar_guard()
     operators_vertex_locks.unregister_rna()
 
     _safe_delete(bpy.types.WindowManager, 'wt_last_switcher_mode')
@@ -132,6 +139,7 @@ def unregister():
     _safe_delete(bpy.types.WindowManager, 'wt_return_workspace_name')
     _safe_delete(bpy.types.WindowManager, 'wt_return_mode')
     _safe_delete(bpy.types.WindowManager, 'wt_return_object_name')
+    _safe_delete(bpy.types.Scene, 'wt_precision_edit')
     _safe_delete(bpy.types.Scene, 'witch_tools')
 
     for cls in reversed(CORE_CLASSES):
