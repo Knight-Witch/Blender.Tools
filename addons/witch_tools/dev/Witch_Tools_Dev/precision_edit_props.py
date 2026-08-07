@@ -1,6 +1,10 @@
-import bpy
-from bpy.props import BoolProperty, EnumProperty, FloatVectorProperty, PointerProperty, StringProperty
+from bpy.props import BoolProperty, EnumProperty, FloatVectorProperty, StringProperty
 from bpy.types import PropertyGroup
+
+
+def _sync_inject_mode(self, _context):
+    if self.inject_new_mode == 'SLIDE':
+        self.inject_new_element_type = 'VERT'
 
 
 class WTPrecisionEditProperties(PropertyGroup):
@@ -8,7 +12,6 @@ class WTPrecisionEditProperties(PropertyGroup):
     show_coordinate_copy: BoolProperty(name='Coordinate Copy', default=True)
     show_planar_edit: BoolProperty(name='Planar Edit', default=True)
     show_inject_new: BoolProperty(name='Inject New', default=True)
-    show_auto_aligned_inject: BoolProperty(name='Auto-Aligned Repair', default=False)
 
     # Coordinate Copy
     coordinate_copy_space: EnumProperty(
@@ -76,6 +79,7 @@ class WTPrecisionEditProperties(PropertyGroup):
             ('SLIDE', 'Slide', 'Insert one new vertex into exactly one selected source edge; the new vertex becomes part of that edge'),
         ],
         default='SOLO',
+        update=_sync_inject_mode,
     )
     inject_new_move: EnumProperty(
         name='Move Along',
