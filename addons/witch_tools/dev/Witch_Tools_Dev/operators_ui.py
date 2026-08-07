@@ -23,8 +23,31 @@ def _tag_redraw_all(context):
                 pass
 
 
-
 HELP_TOPICS = {
+    'coordinate_copy_title': (
+        'Copy exact coordinates from one source vertex, edge, or face to one or more independent targets.\n\n'
+        '1. Choose Global or Local space\n'
+        '2. Enable X/Y/Z and Location, Rotation, and/or Scale\n'
+        '3. Select exactly one source and Capture Source\n'
+        '4. Select target geometry and Apply\n\n'
+        'Global converts through world space, so targets on different mesh objects can line up even when their object origins differ. '
+        'Vertices are applied individually; connected selected edge/face regions are applied as independent groups, never as one global median.'
+    ),
+    'planar_edit_title': (
+        'Plane Lock and Level are absolute precision-edit helpers.\n\n'
+        'Plane Lock freezes the enabled object-local X/Y/Z coordinates of selected vertices while leaving other axes editable. '
+        'Edges and faces lock their vertices.\n\n'
+        'Level captures one source point in world space, then sets every selected target vertex to the source coordinate on the enabled axes. '
+        'This levels each target exactly rather than moving the selection median.'
+    ),
+    'inject_new_title': (
+        'Create and place new topology with a predictable source-to-new relationship.\n\n'
+        'Solo: duplicate the selected vertex, edge, or face with no connection.\n'
+        'Branch: duplicate it and add source-to-copy branch edges.\n'
+        'Slide: select one edge and insert a new vertex directly into that edge.\n\n'
+        'Solo/Branch can move along global X/Y/Z or between the source and a captured Rail endpoint. '
+        'Move the mouse, then left-click or Enter to place; Esc/right-click cancels.'
+    ),
     'weight_transfer_single': 'Transfer weights from one source mesh to one target mesh.',
     'weight_transfer_batch': 'Transfer weights across stored source and target sets by matching base names.',
     'vertex_snap_title': (
@@ -46,6 +69,13 @@ HELP_TOPICS = {
         '3. For separate objects, keep the target mesh active\n'
         '4. Press Vertex, Edge, or Face\n\n'
         'Edge and Face can optionally match orientation. Opposing normals is the default.'
+    ),
+    'vertex_inject_title': (
+        'Auto-aligned A/B/C topology repair.\n\n'
+        '1. Select A, then B, then C individually; C must be active last\n'
+        '2. A-B defines the source column relationship\n'
+        '3. B-C defines the row direction\n'
+        '4. The tool projects the missing D position onto the inferred target chain and can connect/split the shared face.'
     ),
     'guided_align_title': (
         'Align selected vertices, edges, or faces without guessing transform pivots.\n\n'
@@ -150,8 +180,6 @@ class WITCHTOOLS_OT_open_link(Operator):
             return {'FINISHED'}
         except Exception:
             return {'CANCELLED'}
-
-
 
 
 def _capture_ui_state(owner):
