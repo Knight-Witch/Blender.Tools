@@ -1,98 +1,137 @@
 # Witch Tools Project State
 
-Last updated: 2026-08-05
+Last updated: 2026-08-07
 
 ## Identity
 
 - Add-on: Witch Tools
 - Canonical role: primary general-purpose N-panel toolkit and reusable mesh-operator backend
-- Development branch: `feature/witch-tools-guided-align`
+- Development branch: `feature/witch-tools-precision-edit`
+- Parent development baseline: `feature/witch-tools-guided-align` at commit `fc94b7c27d0b850699e79b973a0548a2193eb525`
 - Intended integration branch: `Blender_Dev`
 - Development package: `Witch_Tools_Dev`
 - Default target Blender version: `4.5.0`
 
-## Current candidate build
+## Current candidate
 
-- Version: `Dev_v2.8.0`
-- Artifact: `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip`
-- Size: 138,473 bytes
-- SHA-256: `c24ae0b7b4ffc398a80b914a574f0d7118668a85a803b0b6d3bf18c3efb5217c`
+- Version: `Dev_v2.9.0`
+- Scope: Coordinate Copy, Planar Edit, Inject New, plus retained Dev_v2.8.0 Guided Align and earlier Witch Tools functionality
 - Package folder: `Witch_Tools_Dev`
 - Declared target: Blender `4.5.0`
-- Python source files: 48
-- Total packaged files: 63
-- Generated cache files: none
-- Runtime status: static candidate; Blender 4.5 UI, geometry, undo/redo, and save/reopen validation pending
+- Runtime status: source candidate; Blender 4.5 registration, panel, mesh, modal, undo/redo, and save/reopen validation pending
+- Installable ZIP: not cut from this branch yet
+- Public/release branches modified: no
 
 ## Baseline and source recovery
 
-The repository's Dev_v2.7.0 snapshot cannot be reconstructed from the committed files. Its manifest records 20,000-byte source parts, while the committed parts are truncated to 5,000 bytes. The documented Dev_v2.7.1 patch only contains the narrow N-panel hotfix and is not a complete source tree.
+The repository's older Dev_v2.7.0 snapshot cannot be reconstructed from the committed files because its source parts are truncated relative to their manifest. Dev_v2.8.0 re-established an auditable direct source tree from the verified Dev_v2.6.1 baseline and added Guided Align.
 
-Dev_v2.8.0 therefore uses the last verified complete source baseline, Dev_v2.6.1, and re-establishes the newer alignment capability as an auditable direct source tree. This is an explicit recovery decision, not a claim that the incomplete Dev_v2.7.x snapshot was usable.
+This Dev_v2.9.0 work branches directly from the verified Dev_v2.8.0 Guided Align source commit:
+
+- `fc94b7c27d0b850699e79b973a0548a2193eb525`
 
 Current direct source:
 
 - `addons/witch_tools/dev/Witch_Tools_Dev/`
-- feature patch record: `addons/witch_tools/dev/patches/Dev_v2_8_0/`
-- verified Dev_v2.6.1 snapshot: `addons/witch_tools/dev/snapshots/Witch_Tools_Dev_v2_6_1/`
+
+The public/default release path remains unchanged.
 
 ## Current implementation
 
-Dev_v2.8.0 adds **Edit Tools > Align Vertices / Edges / Faces** as a four-step workflow:
+### Coordinate Copy
 
-1. capture a parent anchor;
-2. choose a world or custom alignment target;
-3. choose free movement or captured straight slide rails;
-4. select subordinate geometry, Analyze, and Align.
+Edit Tools now begins with **Coordinate Copy**.
 
-Implemented behavior:
+Implemented source behavior:
 
-- parent anchor capture from selected vertices, edges, faces, or mixed selections;
-- Active Element or Median anchor reference;
-- world-space X/Y/Z coordinate matching with disabled coordinates preserved;
-- editable Custom Guide start/end points;
-- guide point capture from selected geometry and anchor-to-guide-start copy;
-- custom-frame coordinate matching;
-- projection onto an arbitrary guide line while preserving distance along the line;
-- free-coordinate movement;
-- straight captured slide-rail movement;
-- one-anchor-to-all and explicit paired-by-rail parent/child mapping;
-- rigid relative-spacing/shape preservation;
-- whole-selection and per-selected-island grouping;
-- optional clamp to captured rail extent;
-- Vertex Lock, stale marker, shape-key, ambiguous mapping, impossible constraint, and non-invertible transform preflight;
-- world/local conversion for multi-object Edit Mode;
-- transaction-first planning before coordinate mutation;
-- one Blender Undo operator boundary for Apply.
+- Global / Local coordinate type;
+- X/Y/Z masks;
+- Location / Rotation / Scale toggles;
+- exact one-element source capture for vertex, edge, or face;
+- source selection clears after capture;
+- Global converts through world space per object, allowing different object origins/transforms;
+- Local copies numeric object-local values;
+- vertices apply independently;
+- disconnected selected edge or face components apply independently;
+- no selection-wide target median;
+- geometry-frame Rotation/Scale semantics for mesh elements;
+- transaction-first target planning;
+- existing Vertex Lock and new Plane Lock preflight;
+- default Mesh keymap shortcut `Ctrl+Shift+C` for Apply.
 
-The operator changes vertex coordinates only. It does not add, remove, weld, reconnect, or remesh topology.
+### Planar Edit
 
-## UI location and order
+**Plane Lock**:
 
-Current `Edit Tools` order:
+- stores X/Y/Z lock masks and values in persistent BMesh custom layers;
+- locks selected vertices directly; edge/face selections therefore lock participating vertices;
+- supports combined axes, partial unlock, and clear all;
+- uses a lightweight Edit Mode guard to restore locked object-local coordinates.
 
-1. Vertex Snap
-2. Object Snap
-3. Edge / Vertex Inject
-4. Curvature Sync
-5. Align Vertices / Edges / Faces
-6. Selection Slots
-7. Vertex Locks / remaining Edit Tools controls
+**Level**:
+
+- captures one source vertex coordinate, edge midpoint, or face center in world space;
+- applies exact source world X/Y/Z coordinates to every selected target vertex independently;
+- converts each result back into the target object's local mesh coordinates;
+- supports multi-object Edit Mode;
+- preflights Vertex Locks and Plane Locks before mutation.
+
+### Inject New
+
+Edit Tools now contains **Inject New** immediately below Vertex Snap.
+
+Implemented source behavior:
+
+- Setup: Solo / Branch / Slide;
+- Solo: duplicate one selected vertex, edge, or face with no connection back to source;
+- Branch: duplicate one selected vertex, edge, or face and create source-to-copy branch edges;
+- Slide: split exactly one selected edge and insert one new vertex into that edge;
+- Solo/Branch movement: global X, Y, Z, or a captured straight Rail endpoint;
+- Rail endpoint capture accepts a vertex, edge midpoint, or face center;
+- Slide uses the selected source edge itself as its rail;
+- modal mouse placement with left-click/Enter commit and Esc/right-click cancel;
+- existing Vertex Lock references are snapshotted/restored across topology changes;
+- Vertex Lock and Plane Lock guards are suspended during the modal topology operation, then restored;
+- newly created vertices do not inherit Plane Lock masks;
+- shape-key meshes with multiple keys are rejected;
+- finish checks for zero-area faces.
+
+Slide is intentionally vertex-only. Branch creates branch edges, not extrusion side faces.
+
+### Existing auto-aligned inject
+
+The previous **Edge / Vertex Inject** A/B/C → D repair workflow remains a separate existing section and operator. It is not replaced or duplicated by Inject New.
+
+## Current Edit Tools UI order
+
+1. Coordinate Copy
+2. Planar Edit
+3. Vertex Snap
+4. Inject New
+5. Object Snap
+6. Edge / Vertex Inject
+7. Curvature Sync
+8. Align Vertices / Edges / Faces
+9. Selection Slots
+10. Vertex Locks / remaining Edit Tools controls
 
 ## Witch Dock / Quickbar status
 
-Not modified in this pass. Witch Tools must remain the canonical geometry backend. A compact Witch Dock/Quickbar wrapper is deferred until the Dev_v2.8.0 backend is tested in Blender 4.5 and the final operator/property contract is accepted.
+Not modified in this pass. Witch Tools remains the canonical backend. Thin Witch Dock / Quickbar exposure is deferred until Dev_v2.9.0 behavior is accepted in Blender 4.5.
 
 ## Last completed work
 
-- Read repository, architecture, add-on, and feature rules before changing code.
-- Confirmed the current branch, documented versions, Blender target, and source-baseline conflict.
-- Reconstructed the verified Dev_v2.6.1 source.
-- Added the Guided Align math, operators, properties, registration, panel UI, tooltips, quick-start instructions, and package documentation.
-- Restored a direct unpacked development source tree on the feature branch.
-- Recorded the compressed source patch and manifest.
-- Ran static, pure-math, identifier, UI-state, and package validation.
-- Did not modify public branches or Witch Dock/Quickbar source.
+- Read root repository rules, architecture docs, add-on-local rules, current project state/roadmap, baseline source, current version, target Blender, and relevant existing Edit Tools operators before implementation.
+- Confirmed Dev_v2.8.0 Guided Align commit `fc94b7c...` as the direct parent baseline.
+- Created `feature/witch-tools-precision-edit` without modifying the Guided Align branch or public release branches.
+- Added modular property, common math/protection, geometry-frame, Coordinate Copy, Planar Edit, Inject New, and panel modules.
+- Registered the new operator/property families and Plane Lock guard.
+- Added `Ctrl+Shift+C` Coordinate Copy Apply default keymap.
+- Added compact step-based UI and hover help.
+- Bumped development metadata to `Dev_v2.9.0` targeting Blender 4.5.
+- Created `/docs/features/precision_edit/` with specification, decisions, state, roadmap, and a topology-aware Blender 4.5 test plan.
+- Updated UI map and roadmap for the new candidate.
+- Compared the branch against the exact parent baseline; the branch is strictly ahead and contains only the intended source/docs candidate work.
 
 ## Current known-working state
 
@@ -101,56 +140,89 @@ Previously user-validated in Blender 4.5:
 - Dev_v2.5.2 Curvature Sync production collar workflow.
 - Quickbar Dev_v1.4.0 Selection Slots workflow.
 
-Dev_v2.8.0 validation completed outside Blender:
+Dev_v2.9.0 validation completed in this implementation environment:
 
-- all 48 Python files parsed and compiled;
-- 99 operator/panel identifiers have no duplicates;
-- seven Guided Align operators are registered in source;
-- UI-state names referenced by the panel are declared in preferences;
-- seven pure constraint-math assertions passed;
-- patch dry-run and application against the verified baseline passed;
-- patched source tree matched the packaged candidate source;
-- ZIP integrity, safe paths, single package root, and cache exclusion passed.
+- branch starts from the exact Dev_v2.8.0 candidate commit;
+- branch compare reports no behind commits relative to that baseline;
+- authored new precision-edit Python modules parsed/compiled during implementation;
+- source operator/property/UI contracts were reviewed while wiring registration and panel calls;
+- no Blender executable is available in this environment.
+
+Do not infer runtime success from the static checks above.
 
 ## Active problems and limitations
 
-1. Blender 4.5 registration, panel rendering, operator execution, undo/redo, and save/reopen are untested.
-2. Captured slide rails must be straight within tolerance; curved/polyline rails are rejected.
-3. Paired-by-rail mode requires exactly one captured parent vertex in each disconnected rail component.
-4. A subordinate island touching multiple rail components is rejected as ambiguous.
-5. Multiple shape keys are unsupported.
-6. Linked objects sharing one Mesh datablock share marker data.
-7. Objects containing captured markers must participate in the current multi-object Edit Mode context.
-8. Topology edits can invalidate captured counts and require recapture.
-9. Witch Dock/Quickbar exposure is deferred.
+1. Blender 4.5 registration and panel rendering are untested.
+2. Coordinate Copy edge/face Rotation/Scale geometry-frame behavior requires real-mesh acceptance testing, especially under mirrored/non-uniform object transforms.
+3. Plane Lock timer enforcement must be validated during actual Blender transforms and save/reopen.
+4. Level multi-object behavior must be measured in Blender with differently transformed objects.
+5. Inject New modal mouse projection requires camera-angle testing.
+6. Inject New cancel rollback, especially Slide edge reconstruction, must be proven in Blender.
+7. Inject New operates on one active mesh at a time.
+8. Rail is a straight source-to-end segment only.
+9. Branch creates loose branch edges rather than side faces and therefore does not promise a manifold result.
+10. Slide topology must be tested for normals/winding, material/edge attributes, zero-length edges, zero-area faces, duplicate topology, and manifold safety.
+11. Undo/redo and save/reopen are untested for the new systems.
+12. `Ctrl+Shift+C` must be checked against the user's Blender keymap for conflicts.
+13. No additional Blender version has been tested or verified for Dev_v2.9.0.
+14. Inherited documentation conflict: the Dev_v2.8.0 roadmap references `/docs/features/align_selection/`, but that directory is absent on the branch. This pass records the gap and does not fabricate historical files.
+15. Witch Dock / Quickbar exposure is deferred.
 
 ## Next exact implementation step
 
-Install `Witch_Tools_Dev_v2_8_0_Guided_Align_Blender_4_5.zip` in Blender 4.5 and test, in order:
+Install the Dev_v2.9.0 source candidate in Blender 4.5 and execute `/addons/witch_tools/docs/features/precision_edit/TEST_PLAN.md` in order:
 
-1. panel registration, disclosure persistence, and all four UI steps;
-2. one red anchor plus yellow targets, world Z matching, free movement;
-3. the same geometry using captured vertical rails so targets slide only along existing edges;
-4. multiple red parents and green subordinates using disconnected paired rails;
-5. a 45-degree Custom Guide, both guide-frame matching and line projection;
-6. rigid shape preservation for a connected target region and multiple selected islands;
-7. Vertex Locks, stale captures, impossible constraints, shape keys, and ambiguous rails;
-8. multi-object Edit Mode with different transforms;
-9. undo, redo, save, reopen, and recapture behavior.
+1. registration/unregistration and Edit Tools panel rendering/order;
+2. Coordinate Copy Global Location with multiple target vertices;
+3. Coordinate Copy multi-object Global vs Local with different object transforms;
+4. Coordinate Copy Edge/Face Rotation/Scale;
+5. Plane Lock axis combinations, unlock, clear, transform guard, and persistence;
+6. Level on same-object and multi-object targets;
+7. Inject New Solo Vertex/Edge/Face on X/Y/Z and Rail;
+8. Inject New Branch Vertex/Edge/Face on X/Y/Z and Rail;
+9. Inject New Slide on boundary/interior/loose/special-data edges;
+10. cancel rollback, malformed selections, Vertex Locks, Plane Locks, and shape keys;
+11. undo/redo, save/reopen, normals/winding, attributes, zero geometry, and manifold checks.
 
-Only after this passes should the Witch Dock/Quickbar wrapper be implemented.
+Fix only failures found in that validation pass. Do not broaden scope into curved rails, extrusion side faces, world-frame Plane Lock, multi-object topology Inject, viewport previews, or Witch Dock/Quickbar integration unless explicitly promoted.
+
+## Files changed for Dev_v2.9.0 source candidate
+
+New source modules:
+
+- `precision_edit_props.py`
+- `precision_edit_common.py`
+- `precision_edit_frames.py`
+- `operators_coordinate_copy.py`
+- `operators_planar_edit.py`
+- `operators_inject_new.py`
+- `panel_precision_edit.py`
+
+Modified source modules:
+
+- `__init__.py`
+- `state.py`
+- `registration.py`
+- `keymaps.py`
+- `operators_ui.py`
+- `panel_edit_tools.py`
+
+Documentation additions/updates are tracked in `NOTES_CHANGELOG.md` and `NOTES_CHANGELOG_FULL.md`.
 
 ## Test status
 
-- Python parse/compile: passed
-- Duplicate operator/panel IDs: passed
-- UI-state declaration consistency: passed
-- Pure constraint math: passed
-- Source patch reconstruction: passed
-- ZIP integrity/safe paths/package hygiene: passed
-- Blender 4.5 registration and panel rendering: not performed
-- Blender 4.5 real-mesh execution: not performed
+- Parent baseline/branch ancestry: passed
+- Authored new-module Python parse/compile: passed during implementation
+- Source registration/panel/operator contract review: performed
+- Blender executable in implementation environment: unavailable
+- Blender 4.5 registration/unregistration: not performed
+- Blender 4.5 panel rendering/icons/tooltips: not performed
+- Coordinate Copy real-mesh execution: not performed
+- Plane Lock real transform enforcement: not performed
+- Level real-mesh execution: not performed
+- Inject New real modal/topology execution: not performed
 - Undo/redo: not performed
 - Save/reopen: not performed
+- Additional Blender versions: not tested
 - Witch Dock/Quickbar updated: no
-- Public branches or release URLs modified: no
+- Public release branches/URLs modified: no
