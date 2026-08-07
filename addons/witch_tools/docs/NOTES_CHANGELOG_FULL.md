@@ -1,5 +1,18 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-08-07 — Dev_v2.9.0 Precision Edit
+
+- Added Coordinate Copy, Planar Edit, and Inject New source candidate documentation.
+- Added a full `precision_edit` feature packet with specification, decisions, state, roadmap, acceptance criteria, and Blender 4.5 topology-aware test plan.
+- Documented Coordinate Copy Global/Local conversion, XYZ masks, independent target behavior, geometry-frame Location/Rotation/Scale semantics, multi-object support, protection preflight, and default `Ctrl+Shift+C` Apply shortcut.
+- Documented Plane Lock persistent object-local axis constraints and Level exact per-target world coordinate assignment.
+- Documented Inject New Solo/Branch/Slide behavior, global XYZ movement, straight captured Rail endpoints, vertex-only Slide edge insertion, Branch edge-only connections, modal commit/cancel, and protection-system coordination.
+- Preserved the existing A/B/C Auto-Aligned Edge / Vertex Inject as a separate repair workflow.
+- Updated the Edit Tools runtime order and the top-level Witch Tools roadmap/project state.
+- Recorded that Witch Dock/Quickbar remains deferred until the canonical Witch Tools backend passes Blender 4.5 validation.
+- Recorded an inherited documentation gap: the Dev_v2.8.0 roadmap references `/docs/features/align_selection/`, but that directory is absent on the source branch. No historical files were fabricated.
+- Target Blender remains 4.5. Blender runtime/UI/modal/undo/save-reopen validation is pending because no Blender executable is available in the implementation environment.
+
 ## 2026-08-05 — Dev_v2.8.0 Align Vertices / Edges / Faces
 
 - Added a four-step Guided Align workflow under Edit Tools.
