@@ -9,6 +9,7 @@
 - Documented Inject New Solo/Branch/Slide behavior, global XYZ movement, straight captured Rail endpoints, vertex-only Slide edge insertion, Branch edge-only connections, modal commit/cancel, and protection-system coordination.
 - Preserved the existing A/B/C Auto-Aligned Edge / Vertex Inject as a separate repair workflow.
 - Updated the Edit Tools runtime order and the top-level Witch Tools roadmap/project state.
+- Completed the final source-contract audit for registration/property/operator/UI/keymap identifier wiring and feature-branch ancestry/diff scope; no reviewed identifier mismatch was found.
 - Recorded that Witch Dock/Quickbar remains deferred until the canonical Witch Tools backend passes Blender 4.5 validation.
 - Recorded an inherited documentation gap: the Dev_v2.8.0 roadmap references `/docs/features/align_selection/`, but that directory is absent on the source branch. No historical files were fabricated.
 - Target Blender remains 4.5. Blender runtime/UI/modal/undo/save-reopen validation is pending because no Blender executable is available in the implementation environment.
