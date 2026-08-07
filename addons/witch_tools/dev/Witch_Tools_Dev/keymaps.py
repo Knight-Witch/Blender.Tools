@@ -44,6 +44,7 @@ def unregister_keymaps():
 def register_default_keymaps():
     defaults = [
         ('Mesh', 'EMPTY', 'mesh.vertex_snap_global', 'V', 'PRESS', True, True, False),
+        ('Mesh', 'EMPTY', 'mesh.wt_coordinate_copy_apply', 'C', 'PRESS', True, True, False),
         ('3D View', 'VIEW_3D', 'wtm.switch_edit_mode', 'Q', 'PRESS', True, False, False),
         ('3D View', 'VIEW_3D', 'wtm.switch_object_mode', 'W', 'PRESS', True, False, False),
         ('3D View', 'VIEW_3D', 'wtm.toggle_weight_paint', 'E', 'PRESS', True, False, False),
