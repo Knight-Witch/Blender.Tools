@@ -1,3 +1,16 @@
+## Dev_v2.9.0 — Precision Edit
+
+- Added **Edit Tools > Coordinate Copy** above Vertex Snap with Global/Local coordinate type, X/Y/Z masks, Location/Rotation/Scale toggles, vertex/edge/face source capture, exact independent target application, and multi-object world-space conversion for meshes with different origins/transforms.
+- Added default `Ctrl+Shift+C` Mesh keymap shortcut for **Apply Copied Coordinates** while retaining Blender-native keymap reassignment.
+- Added **Edit Tools > Planar Edit** with persistent per-vertex Plane Lock axis constraints and exact per-target world-space Level behavior.
+- Added **Edit Tools > Inject New** directly below Vertex Snap with Solo, Branch, and Slide setup modes; global X/Y/Z placement; arbitrary straight Rail endpoint capture; Vertex/Edge/Face source icons for Solo/Branch; and vertex-only subdivide-like Slide.
+- Branch creates corresponding source-to-copy branch edges but does not auto-generate extrusion side faces.
+- Preserved the existing **Edge / Vertex Inject** A/B/C auto-aligned repair workflow as a separate tool.
+- Added integration with existing Vertex Locks and new Plane Locks so Coordinate Copy/Level preflight protected targets and Inject New suspends/restores guards around modal topology changes.
+- Added hover help, step-numbered UI, status/error lines, quick-start documentation, feature specification/decisions/state/roadmap, and a Blender 4.5 topology-aware test plan.
+- Development metadata is now `Dev_v2.9.0`, intended for Blender `4.5.0`.
+- Source/static validation has been performed during implementation, but Blender 4.5 registration, panel rendering, modal interaction, real-mesh topology behavior, undo/redo, and save/reopen remain untested in the implementation environment.
+
 ## Dev_v2.8.0 — Guided Align
 
 - Added the step-based **Align Vertices / Edges / Faces** Edit Tools section.
