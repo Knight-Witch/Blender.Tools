@@ -2,6 +2,7 @@ import rna_keymap_ui
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, StringProperty
 from bpy.types import AddonPreferences
 
+from .operators_edit_tool_order import DEFAULT_EDIT_TOOL_ORDER
 from .state import ADDON_PACKAGE, BUILD_TARGET_LABEL, MODE_CYCLE_ITEMS, VERSION_LABEL, addon_keymaps
 
 
@@ -40,6 +41,17 @@ class WitchToolsPreferences(AddonPreferences):
 
     ui_minimal_mode: BoolProperty(name='Minimal View', default=False)
     ui_state_snapshot: StringProperty(default='')
+    edit_tool_reorder_mode: BoolProperty(
+        name='Reorder Tools',
+        description='Show compact draggable rows for changing the persistent Edit Tools section order',
+        default=False,
+    )
+    edit_tool_order: StringProperty(
+        name='Edit Tool Order',
+        description='Persistent Witch Tools Edit Tools order',
+        default=','.join(DEFAULT_EDIT_TOOL_ORDER),
+        options={'HIDDEN'},
+    )
 
     show_modifier_shrinkwrap: BoolProperty(name='Shrinkwrap', default=True)
     show_modifier_batch_tools: BoolProperty(name='Batch Object Tools', default=False)
@@ -48,6 +60,10 @@ class WitchToolsPreferences(AddonPreferences):
     show_edit_vertex_inject: BoolProperty(name='Edge / Vertex Inject', default=True)
     show_edit_curvature_sync: BoolProperty(name='Curvature Sync', default=True)
     show_edit_guided_align: BoolProperty(name='Align Vertices / Edges / Faces', default=True)
+    show_edit_edge_doctor: BoolProperty(name='Edge Doctor', default=True)
+    show_edge_doctor_inject: BoolProperty(name='Missing Vertex / Edge Injector', default=True)
+    show_edge_doctor_alignment: BoolProperty(name='Alignment Fixer', default=True)
+    show_edge_doctor_curvature: BoolProperty(name='Curvature Sync', default=True)
     show_edit_selection_slots: BoolProperty(name='Selection Slots', default=True)
     show_edit_vertex_locks: BoolProperty(name='Vertex Locks', default=False)
     show_vertex_locks_core: BoolProperty(name='Vertex Locks Core', default=True)
@@ -91,6 +107,11 @@ class WitchToolsPreferences(AddonPreferences):
         for _mode, prop_name, _label, icon in MODE_CYCLE_ITEMS:
             row.prop(self, prop_name, text='', icon=icon, toggle=True)
 
+    def _draw_edit_tools_section(self, layout):
+        box = self._section_box(layout, 'Edit Tools', 'EDITMODE_HLT', 'EDIT_TOOLS')
+        box.prop(self, 'edit_tool_reorder_mode', toggle=True)
+        box.label(text='Tool order is edited directly from the Edit Tools N-panel.')
+
     def _draw_weight_tools_section(self, layout):
         box = self._section_box(layout, 'Weight Tools', 'WPAINT_HLT', 'WEIGHT_TOOLS')
         box.prop(self, 'mirror_tolerance')
@@ -108,7 +129,7 @@ class WitchToolsPreferences(AddonPreferences):
         layout = self.layout
         self._draw_general_section(layout)
         self._draw_mode_switcher_section(layout)
-        self._section_box(layout, 'Edit Tools', 'EDITMODE_HLT', 'EDIT_TOOLS')
+        self._draw_edit_tools_section(layout)
         self._draw_weight_tools_section(layout)
         self._section_box(layout, 'Quick Modifiers', 'MODIFIER', 'MODIFIER_TOOL')
         self._section_box(layout, 'Head Tools', 'USER', 'HEAD_TOOLS')
