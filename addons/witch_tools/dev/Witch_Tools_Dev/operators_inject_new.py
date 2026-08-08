@@ -1,11 +1,12 @@
 import bpy
 import bmesh
 from bpy.types import Operator
-from bpy_extras import view3d_utils
 from mathutils import Vector
 
 from . import operators_planar_edit, operators_vertex_locks
 from . import precision_edit_common as precision_edit
+from . import precision_edit_drag as drag
+from . import precision_edit_topology as topology
 from .operators_curvature_sync import _restore_lock_references, _snapshot_lock_references
 
 
@@ -23,102 +24,16 @@ def _active_edit_mesh(context):
     return obj
 
 
-def _prepare_bmesh(obj):
-    bm = bmesh.from_edit_mesh(obj.data)
-    bm.verts.ensure_lookup_table()
-    bm.edges.ensure_lookup_table()
-    bm.faces.ensure_lookup_table()
-    bm.verts.index_update()
-    bm.edges.index_update()
-    bm.faces.index_update()
-    bm.normal_update()
-    return bm
-
-
-def _selected_source_element(bm, element_type):
-    if element_type == 'VERT':
-        elements = [vert for vert in bm.verts if vert.select]
-        label = 'vertex'
-    elif element_type == 'EDGE':
-        elements = [edge for edge in bm.edges if edge.select]
-        label = 'edge'
-    else:
-        elements = [face for face in bm.faces if face.select]
-        label = 'face'
-    if len(elements) != 1:
-        raise InjectNewError(f'Select exactly one source {label}.')
-    return elements[0]
-
-
-def _source_closure(element_type, element):
-    if element_type == 'VERT':
-        return [element], [element]
-    if element_type == 'EDGE':
-        return [*element.verts, element], list(element.verts)
-    geom = [*element.verts, *element.edges, element]
-    return geom, list(element.verts)
-
-
-def _world_point(obj, element_type, element):
-    if element_type == 'VERT':
-        local = element.co
-    elif element_type == 'EDGE':
-        local = (element.verts[0].co + element.verts[1].co) * 0.5
-    else:
-        local = element.calc_center_median()
-    return obj.matrix_world @ local
-
-
-def _match_duplicate_verts(source_verts, duplicate_verts):
-    mapping = {}
-    unused = set(duplicate_verts)
-    for source in source_verts:
-        best = None
-        best_distance = None
-        for duplicate in unused:
-            distance = (duplicate.co - source.co).length_squared
-            if best is None or distance < best_distance:
-                best = duplicate
-                best_distance = distance
-        if best is None:
-            raise InjectNewError('Could not map duplicated vertices back to the source geometry.')
-        mapping[source] = best
-        unused.remove(best)
-    return mapping
-
-
-def _project_axis_parameter(region, rv3d, anchor_world, axis_world, mouse_xy):
-    p0 = view3d_utils.location_3d_to_region_2d(region, rv3d, anchor_world)
-    p1 = view3d_utils.location_3d_to_region_2d(region, rv3d, anchor_world + axis_world)
-    if p0 is None or p1 is None:
-        raise InjectNewError('The source is not projectable in the current 3D view.')
-    screen_axis = p1 - p0
-    denom = screen_axis.length_squared
-    if denom <= 1.0e-8:
-        raise InjectNewError('The chosen axis points almost directly at the camera. Orbit the view slightly and try again.')
-    mouse = Vector(mouse_xy)
-    return (mouse - p0).dot(screen_axis) / denom
-
-
-def _project_rail_factor(region, rv3d, start_world, end_world, mouse_xy):
-    p0 = view3d_utils.location_3d_to_region_2d(region, rv3d, start_world)
-    p1 = view3d_utils.location_3d_to_region_2d(region, rv3d, end_world)
-    if p0 is None or p1 is None:
-        raise InjectNewError('The rail is not projectable in the current 3D view.')
-    screen_rail = p1 - p0
-    denom = screen_rail.length_squared
-    if denom <= 1.0e-8:
-        raise InjectNewError('The rail points almost directly at the camera. Orbit the view slightly and try again.')
-    mouse = Vector(mouse_xy)
-    return (mouse - p0).dot(screen_rail) / denom
+def _axis_mask(props):
+    return drag.axis_mask(props.inject_new_axis_x, props.inject_new_axis_y, props.inject_new_axis_z)
 
 
 class WT_OT_inject_new_capture_rail_end(Operator):
     bl_idname = 'mesh.wt_inject_new_capture_rail_end'
     bl_label = 'Capture Rail End'
     bl_description = (
-        'Capture one vertex, edge midpoint, or face center as the Rail endpoint. '
-        'For Solo/Branch, the injected copy slides between the source and this point.'
+        'Capture one vertex, edge midpoint, or face center as a straight Rail endpoint. '
+        'Rail placement remains constrained to that exact source-to-end line.'
     )
     bl_options = {'REGISTER'}
 
@@ -155,8 +70,8 @@ class WT_OT_inject_new_clear_rail(Operator):
     def execute(self, context):
         props = context.scene.wt_precision_edit
         props.inject_new_rail_end_set = False
-        props.inject_new_rail_target_label = 'No rail end captured'
-        props.inject_new_last_report = 'Rail end cleared.'
+        props.inject_new_rail_target_label = 'No rail endpoint captured'
+        props.inject_new_last_report = 'Rail endpoint cleared.'
         return {'FINISHED'}
 
 
@@ -164,30 +79,40 @@ class WT_OT_inject_new(Operator):
     bl_idname = 'mesh.wt_inject_new'
     bl_label = 'Inject New'
     bl_description = (
-        'Create a new editable copy and place it interactively. Solo leaves it disconnected; Branch adds source-to-copy edges; '
-        'Slide inserts one new vertex into exactly one selected edge. Move the mouse and left-click/Enter to place; Esc/right-click cancels.'
+        'Create new topology and place it with the mouse. Solo leaves the copy disconnected; '
+        'Branch connects source-to-copy vertices; Slide inserts one or more vertices into selected edges. '
+        'Magnetic Snap can lock placement to hovered vertices, edges, or faces.'
     )
     bl_options = {'REGISTER', 'UNDO', 'BLOCKING'}
 
     _obj = None
     _bm = None
     _created_verts = None
+    _created_edges = None
+    _created_faces = None
     _created_geom = None
     _source_verts = None
+    _source_element = None
     _branch_edges = None
     _initial_local = None
+    _initial_world = None
     _anchor_world = None
     _rail_start_world = None
     _rail_end_world = None
-    _slide_vert = None
-    _slide_edge_verts = None
+    _slide_records = None
+    _slide_driver_index = 0
     _lock_snapshot = None
     _old_vertex_guard_suspended = False
     _old_planar_guard_suspended = False
     _mode = None
-    _move = None
+    _element_type = None
     _region = None
     _rv3d = None
+    _highlighter = None
+    _snap_target = None
+    _snap_contacts = None
+    _orbiting = False
+    _finished = False
 
     @classmethod
     def poll(cls, context):
@@ -209,6 +134,17 @@ class WT_OT_inject_new(Operator):
         operators_vertex_locks._GUARD_SUSPENDED = self._old_vertex_guard_suspended
         operators_planar_edit._GUARD_SUSPENDED = self._old_planar_guard_suspended
 
+    def _stop_visuals(self, context):
+        if self._highlighter is not None:
+            self._highlighter.stop()
+            self._highlighter = None
+        if context.area:
+            try:
+                context.area.header_text_set(None)
+                context.area.tag_redraw()
+            except Exception:
+                pass
+
     def _validate_common(self, context):
         obj = _active_edit_mesh(context)
         if obj.data.shape_keys and len(obj.data.shape_keys.key_blocks) > 1:
@@ -219,177 +155,338 @@ class WT_OT_inject_new(Operator):
         self._rv3d = getattr(context.space_data, 'region_3d', None)
         if self._region is None or self._rv3d is None:
             raise InjectNewError('The active 3D View has no usable window region.')
+        props = context.scene.wt_precision_edit
+        if props.inject_new_mode != 'SLIDE' and not props.inject_new_use_rail and not any(_axis_mask(props)):
+            raise InjectNewError('Enable at least one X/Y/Z movement axis.')
         return obj
 
-    def _setup_slide(self, context, obj, bm):
+    def _clear_new_plane_locks(self, verts):
+        precision_edit.clear_planar_lock_on_vertices(self._bm, verts)
+
+    def _setup_slide(self, context):
         props = context.scene.wt_precision_edit
         if props.inject_new_element_type != 'VERT':
-            raise InjectNewError('Slide injects a new vertex, so choose the Vertex element icon.')
-        edges = [edge for edge in bm.edges if edge.select]
-        if len(edges) != 1:
-            raise InjectNewError('Slide mode requires exactly one selected source edge.')
-        edge = edges[0]
-        start_vert, end_vert = edge.verts
-        start_world = obj.matrix_world @ start_vert.co
-        end_world = obj.matrix_world @ end_vert.co
-        if (end_world - start_world).length <= _EPSILON:
-            raise InjectNewError('The selected slide edge has zero length.')
+            raise InjectNewError('Slide injects vertices, so the new element is Vertex.')
+        edges = [edge for edge in self._bm.edges if edge.select and edge.is_valid and not edge.hide]
+        if not edges:
+            raise InjectNewError('Slide mode requires one or more selected source edges.')
 
-        _new_edge, new_vert = bmesh.utils.edge_split(edge, start_vert, 0.5)
-        precision_edit.clear_planar_lock_on_vertices(bm, [new_vert])
+        reference_start = self._obj.matrix_world @ edges[0].verts[0].co
+        reference_end = self._obj.matrix_world @ edges[0].verts[1].co
+        reference_direction = reference_end - reference_start
+        if reference_direction.length <= _EPSILON:
+            raise InjectNewError('A selected slide edge has zero length.')
+        reference_direction.normalize()
 
-        self._created_verts = [new_vert]
-        self._created_geom = [new_vert]
-        self._slide_vert = new_vert
-        self._slide_edge_verts = (start_vert, end_vert)
-        self._rail_start_world = start_world
-        self._rail_end_world = end_world
-        self._anchor_world = (start_world + end_world) * 0.5
-        self._initial_local = {new_vert: new_vert.co.copy()}
-        self._move = 'RAIL'
+        records = []
+        created = []
+        for edge in edges:
+            first, second = edge.verts
+            first_world = self._obj.matrix_world @ first.co
+            second_world = self._obj.matrix_world @ second.co
+            direction = second_world - first_world
+            if direction.length <= _EPSILON:
+                raise InjectNewError('A selected slide edge has zero length.')
+            if direction.normalized().dot(reference_direction) < 0.0:
+                first, second = second, first
+                first_world, second_world = second_world, first_world
+
+            _new_edge, new_vert = bmesh.utils.edge_split(edge, first, 0.5)
+            self._clear_new_plane_locks([new_vert])
+            records.append({
+                'new_vert': new_vert,
+                'start_vert': first,
+                'end_vert': second,
+                'start_world': first_world,
+                'end_world': second_world,
+            })
+            created.append(new_vert)
+
+        self._slide_records = records
+        self._created_verts = created
+        self._created_edges = []
+        self._created_faces = []
+        self._created_geom = list(created)
+        self._source_verts = [record['start_vert'] for record in records] + [record['end_vert'] for record in records]
+        self._initial_local = {vert: vert.co.copy() for vert in created}
+        self._initial_world = {vert: self._obj.matrix_world @ vert.co for vert in created}
+        self._anchor_world = sum((self._obj.matrix_world @ vert.co for vert in created), Vector()) / len(created)
         self._mode = 'SLIDE'
+        self._element_type = 'VERT'
 
-    def _setup_duplicate(self, context, obj, bm):
+    def _setup_duplicate(self, context):
         props = context.scene.wt_precision_edit
         element_type = props.inject_new_element_type
-        element = _selected_source_element(bm, element_type)
-        source_geom, source_verts = _source_closure(element_type, element)
-        anchor_world = _world_point(obj, element_type, element)
+        element = topology.source_element_from_selection(self._bm, element_type)
+        anchor_world = topology.world_point(self._obj, element_type, element)
 
-        rail_end = None
-        if props.inject_new_move == 'RAIL':
+        if props.inject_new_use_rail:
             if not props.inject_new_rail_end_set:
-                raise InjectNewError('Capture a Rail endpoint before using Rail movement.')
+                raise InjectNewError('Capture a Rail endpoint before enabling Rail.')
             rail_end = Vector(props.inject_new_rail_end)
             if (rail_end - anchor_world).length <= _EPSILON:
                 raise InjectNewError('The captured Rail endpoint is the same as the source point.')
-
-        result = bmesh.ops.duplicate(bm, geom=source_geom)
-        duplicate_geom = [item for item in result.get('geom', ()) if getattr(item, 'is_valid', False)]
-        duplicate_verts = [item for item in duplicate_geom if isinstance(item, bmesh.types.BMVert)]
-        if len(duplicate_verts) != len(source_verts):
-            raise InjectNewError('Blender did not create the expected number of duplicated vertices.')
-
-        vert_map = result.get('vert_map') or result.get('isovert_map') or {}
-        mapped = {source: vert_map.get(source) for source in source_verts if vert_map.get(source) in duplicate_verts}
-        if len(mapped) != len(source_verts):
-            mapped = _match_duplicate_verts(source_verts, duplicate_verts)
-
-        precision_edit.clear_planar_lock_on_vertices(bm, duplicate_verts)
-
-        branch_edges = []
-        if props.inject_new_mode == 'BRANCH':
-            for source in source_verts:
-                duplicate = mapped[source]
-                existing = bm.edges.get((source, duplicate))
-                if existing is None:
-                    try:
-                        existing = bm.edges.new((source, duplicate))
-                    except ValueError:
-                        existing = bm.edges.get((source, duplicate))
-                if existing is not None:
-                    branch_edges.append(existing)
-
-        self._created_verts = duplicate_verts
-        self._created_geom = duplicate_geom
-        self._source_verts = source_verts
-        self._branch_edges = branch_edges
-        self._initial_local = {vert: vert.co.copy() for vert in duplicate_verts}
-        self._anchor_world = anchor_world
-        self._mode = props.inject_new_mode
-        self._move = props.inject_new_move
-
-        if self._move == 'RAIL':
             self._rail_start_world = anchor_world.copy()
             self._rail_end_world = rail_end
+
+        result = topology.duplicate_source(
+            self._bm,
+            element_type,
+            element,
+            make_branch=props.inject_new_mode == 'BRANCH',
+        )
+        self._clear_new_plane_locks(result['created_verts'])
+        self._source_element = element
+        self._source_verts = result['source_verts']
+        self._created_verts = result['created_verts']
+        self._created_edges = result['created_edges']
+        self._created_faces = result['created_faces']
+        self._created_geom = result['created_geom']
+        self._branch_edges = result['branch_edges']
+        self._initial_local = {vert: vert.co.copy() for vert in self._created_verts}
+        self._initial_world = {vert: self._obj.matrix_world @ vert.co for vert in self._created_verts}
+        self._anchor_world = anchor_world
+        self._mode = props.inject_new_mode
+        self._element_type = element_type
+
+    def _reset_created(self):
+        if self._mode == 'SLIDE':
+            return
+        for vert, local in self._initial_local.items():
+            if vert.is_valid:
+                vert.co = local.copy()
 
     def _set_duplicate_world_delta(self, delta_world):
         inverse = self._obj.matrix_world.inverted_safe()
         for vert in self._created_verts:
-            initial_world = self._obj.matrix_world @ self._initial_local[vert]
+            if not vert.is_valid:
+                continue
+            initial_world = self._initial_world[vert]
             vert.co = inverse @ (initial_world + delta_world)
 
-    def _update_from_mouse(self, context, event):
-        mouse_xy = (event.mouse_x - self._region.x, event.mouse_y - self._region.y)
-        if self._mode == 'SLIDE' or self._move == 'RAIL':
-            factor = _project_rail_factor(
+    def _current_center_world(self):
+        points = [self._obj.matrix_world @ vert.co for vert in (self._created_verts or ()) if vert.is_valid]
+        if not points:
+            return self._anchor_world
+        return sum(points, Vector()) / len(points)
+
+    def _pick_target(self, mouse):
+        exclude_verts = set(self._created_verts or ()) | set(self._source_verts or ())
+        exclude_edges = set(self._created_edges or ()) | set(self._branch_edges or ())
+        exclude_faces = set(self._created_faces or ())
+        return drag.pick_mesh_element(
+            self._obj,
+            self._bm,
+            self._region,
+            self._rv3d,
+            mouse,
+            allowed=('VERT', 'EDGE', 'FACE'),
+            exclude_verts=exclude_verts,
+            exclude_edges=exclude_edges,
+            exclude_faces=exclude_faces,
+        )
+
+    def _target_protection_reason(self, target):
+        if target is None or target.element is None:
+            return None
+        verts = [target.element] if target.kind == 'VERT' else list(target.element.verts)
+        locked = set(operators_vertex_locks._locked_indices(self._obj, only_enabled=True))
+        if any(vert.index in locked for vert in verts if vert.is_valid):
+            return 'Vertex Locks protect the magnetic merge target.'
+        mask_layer, _x, _y, _z = precision_edit._planar_layers(self._bm, create=False)
+        if mask_layer is not None and any(int(vert[mask_layer]) for vert in verts if vert.is_valid):
+            return 'Plane Lock protects the magnetic merge target.'
+        return None
+
+    def _update_slide(self, mouse):
+        best = None
+        factor = 0.5
+        for index, record in enumerate(self._slide_records):
+            p0 = drag._screen_point(self._region, self._rv3d, record['start_world'])
+            p1 = drag._screen_point(self._region, self._rv3d, record['end_world'])
+            if p0 is None or p1 is None:
+                continue
+            _closest, candidate_factor, distance = drag._point_segment_2d(Vector(mouse), p0, p1)
+            if best is None or distance < best[0]:
+                best = (distance, index, candidate_factor)
+        if best is not None:
+            _distance, self._slide_driver_index, factor = best
+        else:
+            record = self._slide_records[self._slide_driver_index]
+            factor = drag.project_rail_factor(
+                self._region,
+                self._rv3d,
+                record['start_world'],
+                record['end_world'],
+                mouse,
+            )
+
+        factor = max(0.001, min(0.999, factor))
+        inverse = self._obj.matrix_world.inverted_safe()
+        for record in self._slide_records:
+            target_world = record['start_world'].lerp(record['end_world'], factor)
+            record['new_vert'].co = inverse @ target_world
+
+        driver = self._slide_records[self._slide_driver_index]
+        self._highlighter.set_target(None)
+        self._highlighter.set_virtual_lines([(driver['start_world'], driver['end_world'])])
+        self._snap_target = None
+        self._snap_contacts = None
+
+    def _update_duplicate(self, context, mouse):
+        props = context.scene.wt_precision_edit
+        self._reset_created()
+        self._highlighter.set_virtual_lines(())
+
+        if props.inject_new_use_rail:
+            factor = drag.project_rail_factor(
                 self._region,
                 self._rv3d,
                 self._rail_start_world,
                 self._rail_end_world,
-                mouse_xy,
+                mouse,
             )
-            if self._mode == 'SLIDE':
-                factor = max(0.001, min(0.999, factor))
-                target_world = self._rail_start_world.lerp(self._rail_end_world, factor)
-                self._slide_vert.co = self._obj.matrix_world.inverted_safe() @ target_world
-            else:
-                factor = max(0.0, min(1.0, factor))
-                target_anchor = self._rail_start_world.lerp(self._rail_end_world, factor)
-                self._set_duplicate_world_delta(target_anchor - self._anchor_world)
+            factor = max(0.0, min(1.0, factor))
+            target_anchor = self._rail_start_world.lerp(self._rail_end_world, factor)
+            base_delta = target_anchor - self._anchor_world
         else:
-            axis_index = {'X': 0, 'Y': 1, 'Z': 2}[self._move]
-            axis = Vector((1.0 if axis_index == 0 else 0.0, 1.0 if axis_index == 1 else 0.0, 1.0 if axis_index == 2 else 0.0))
-            distance = _project_axis_parameter(
+            target_anchor = drag.project_mouse_anchor(
                 self._region,
                 self._rv3d,
                 self._anchor_world,
-                axis,
-                mouse_xy,
+                mouse,
+                _axis_mask(props),
             )
-            self._set_duplicate_world_delta(axis * distance)
+            base_delta = target_anchor - self._anchor_world
 
+        self._set_duplicate_world_delta(base_delta)
+        target = self._pick_target(mouse) if props.inject_new_magnetic_snap else None
+        self._snap_target = target
+        self._highlighter.set_target(target)
+        self._snap_contacts = None
+
+        if target is None or props.inject_new_use_rail:
+            return
+
+        mask = _axis_mask(props)
+        if target.kind in {'VERT', 'EDGE'}:
+            snap_delta, contacts = drag.rigid_snap_delta(self._obj, self._created_verts, target, mask)
+            if snap_delta is not None:
+                self._set_duplicate_world_delta(base_delta + snap_delta)
+                self._snap_contacts = contacts
+            return
+
+        direction = drag.masked_vector(target.point_world - self._anchor_world, mask)
+        if direction.length <= _EPSILON:
+            direction = base_delta
+        hits = drag.face_travel_hits(self._obj, target.element, self._initial_world, direction)
+        if not hits:
+            return
+        inverse = self._obj.matrix_world.inverted_safe()
+        contacts = []
+        for vert, point in hits.items():
+            if vert.is_valid:
+                vert.co = inverse @ point
+                kind, element, contact_point = drag.boundary_contact(
+                    self._obj,
+                    target.element,
+                    point,
+                    tolerance=1.0e-5,
+                )
+                contacts.append((vert, kind, element, contact_point))
+        self._snap_contacts = contacts
+
+    def _update_from_mouse(self, context, event):
+        mouse = drag.mouse_xy(event, self._region)
+        if self._mode == 'SLIDE':
+            self._update_slide(mouse)
+        else:
+            self._update_duplicate(context, mouse)
         self._bm.normal_update()
         bmesh.update_edit_mesh(self._obj.data, loop_triangles=True, destructive=False)
+        if context.area:
+            context.area.tag_redraw()
 
-    def _select_created(self):
+    def _select_survivors(self):
         for vert in self._bm.verts:
             vert.select_set(False)
         for edge in self._bm.edges:
             edge.select_set(False)
         for face in self._bm.faces:
             face.select_set(False)
+
+        selected_any = False
         for item in self._created_geom or ():
             if getattr(item, 'is_valid', False):
                 try:
                     item.select_set(True)
+                    selected_any = True
                 except Exception:
                     pass
-        if self._slide_vert and self._slide_vert.is_valid:
-            self._slide_vert.select_set(True)
+        if not selected_any and self._snap_contacts:
+            for _created, kind, element, _point in self._snap_contacts:
+                if kind == 'VERT' and getattr(element, 'is_valid', False):
+                    element.select_set(True)
+                elif kind == 'EDGE' and getattr(element, 'is_valid', False):
+                    for vert in element.verts:
+                        vert.select_set(True)
+
+    def _apply_auto_merge(self, context):
+        props = context.scene.wt_precision_edit
+        if self._mode != 'BRANCH' or not props.inject_new_auto_merge or not self._snap_contacts:
+            return
+        reason = self._target_protection_reason(self._snap_target)
+        if reason:
+            raise InjectNewError(reason)
+        face_target = self._snap_target.element if self._snap_target and self._snap_target.kind == 'FACE' else None
+        drag.weld_contacts(
+            self._bm,
+            self._obj,
+            self._snap_contacts,
+            face_target=face_target,
+            tolerance=1.0e-6,
+        )
 
     def _finish(self, context):
+        self._apply_auto_merge(context)
         self._bm.normal_update()
-        for face in self._bm.faces:
-            if face.is_valid and face.calc_area() <= 1.0e-16:
-                raise InjectNewError('The operation would leave a zero-area face.')
+        topology.validate_no_zero_geometry(self._bm)
         _restore_lock_references(self._obj, self._bm, self._lock_snapshot)
-        self._select_created()
+        self._select_survivors()
         self._bm.verts.index_update()
         self._bm.edges.index_update()
         self._bm.faces.index_update()
         bmesh.update_edit_mesh(self._obj.data, loop_triangles=True, destructive=True)
         self._restore_guards()
-        context.scene.wt_precision_edit.inject_new_last_report = (
-            'Injected vertex on the selected edge.'
-            if self._mode == 'SLIDE'
-            else f'Injected {context.scene.wt_precision_edit.inject_new_element_type.title()} in {self._mode.title()} mode.'
-        )
-        self.report({'INFO'}, context.scene.wt_precision_edit.inject_new_last_report)
-        if context.area:
-            context.area.header_text_set(None)
+        self._stop_visuals(context)
+        self._finished = True
+
+        props = context.scene.wt_precision_edit
+        if self._mode == 'SLIDE':
+            count = len(self._slide_records or ())
+            props.inject_new_last_report = f'Injected {count} slide vertex{"es" if count != 1 else ""} at a shared rail position.'
+        else:
+            snap_label = ''
+            if self._snap_target is not None:
+                snap_label = f' • snapped to {self._snap_target.kind.title()}'
+            if self._mode == 'BRANCH' and props.inject_new_auto_merge and self._snap_contacts:
+                snap_label += ' • auto-merged'
+            props.inject_new_last_report = f'Injected {self._element_type.title()} in {self._mode.title()} mode{snap_label}.'
+        self.report({'INFO'}, props.inject_new_last_report)
         return {'FINISHED'}
 
     def _cancel(self, context, message=None):
         try:
             if self._mode == 'SLIDE':
-                if self._slide_vert and self._slide_vert.is_valid:
-                    bmesh.ops.dissolve_verts(
-                        self._bm,
-                        verts=[self._slide_vert],
-                        use_face_split=False,
-                        use_boundary_tear=False,
-                    )
+                for record in reversed(self._slide_records or ()):
+                    vert = record['new_vert']
+                    if vert and vert.is_valid:
+                        bmesh.ops.dissolve_verts(
+                            self._bm,
+                            verts=[vert],
+                            use_face_split=False,
+                            use_boundary_tear=False,
+                        )
             else:
                 valid_new = [vert for vert in (self._created_verts or ()) if vert.is_valid]
                 if valid_new:
@@ -400,35 +497,48 @@ class WT_OT_inject_new(Operator):
         except Exception:
             pass
         self._restore_guards()
-        if context.area:
-            context.area.header_text_set(None)
+        self._stop_visuals(context)
+        props = context.scene.wt_precision_edit
         if message:
-            context.scene.wt_precision_edit.inject_new_last_report = f'Blocked: {message}'
+            props.inject_new_last_report = f'Blocked: {message}'
             self.report({'ERROR'}, message)
         else:
-            context.scene.wt_precision_edit.inject_new_last_report = 'Inject New cancelled.'
+            props.inject_new_last_report = 'Inject New cancelled.'
         return {'CANCELLED'}
 
     def invoke(self, context, event):
         props = context.scene.wt_precision_edit
+        self._created_verts = []
+        self._created_edges = []
+        self._created_faces = []
+        self._created_geom = []
+        self._source_verts = []
+        self._branch_edges = []
+        self._slide_records = []
+        self._snap_contacts = None
+        self._snap_target = None
+        self._finished = False
+        self._orbiting = False
         try:
             self._obj = self._validate_common(context)
-            self._bm = _prepare_bmesh(self._obj)
+            self._bm = topology.prepare_bmesh(self._obj)
             self._lock_snapshot = _snapshot_lock_references(self._obj, self._bm)
             self._suspend_guards()
-
             if props.inject_new_mode == 'SLIDE':
-                self._setup_slide(context, self._obj, self._bm)
+                self._setup_slide(context)
             else:
-                self._setup_duplicate(context, self._obj, self._bm)
+                self._setup_duplicate(context)
 
+            self._highlighter = drag.HoverHighlighter()
+            self._highlighter.start()
             self._bm.normal_update()
             bmesh.update_edit_mesh(self._obj.data, loop_triangles=True, destructive=True)
             self._update_from_mouse(context, event)
-        except (InjectNewError, precision_edit.PrecisionEditError) as error:
+        except (InjectNewError, precision_edit.PrecisionEditError, topology.PrecisionTopologyError, drag.DragSnapError) as error:
             if self._bm is not None and self._created_verts:
                 return self._cancel(context, str(error))
             self._restore_guards()
+            self._stop_visuals(context)
             props.inject_new_last_report = f'Blocked: {error}'
             self.report({'ERROR'}, str(error))
             return {'CANCELLED'}
@@ -436,23 +546,38 @@ class WT_OT_inject_new(Operator):
             if self._bm is not None and self._created_verts:
                 return self._cancel(context, f'Inject New failed: {error}')
             self._restore_guards()
+            self._stop_visuals(context)
             props.inject_new_last_report = f'Blocked: Inject New failed: {error}'
             self.report({'ERROR'}, f'Inject New failed: {error}')
             return {'CANCELLED'}
 
         context.window_manager.modal_handler_add(self)
         if context.area:
-            context.area.header_text_set('Inject New: move mouse to place • Left Click/Enter confirm • Esc/Right Click cancel')
+            context.area.header_text_set(
+                'Inject New: move to place • Magnetic target highlights • MMB orbit around injection • '
+                'Left Click/Enter confirm • Esc/Right Click cancel'
+            )
         return {'RUNNING_MODAL'}
 
     def modal(self, context, event):
+        if event.type == 'MIDDLEMOUSE':
+            if event.value == 'PRESS':
+                self._orbiting = True
+                drag.set_orbit_pivot(self._rv3d, self._current_center_world())
+                return {'PASS_THROUGH'}
+            if event.value == 'RELEASE':
+                self._orbiting = False
+                return {'PASS_THROUGH'}
+        if self._orbiting:
+            return {'PASS_THROUGH'}
+
         if event.type in {'ESC', 'RIGHTMOUSE'} and event.value == 'PRESS':
             return self._cancel(context)
 
         if event.type in {'LEFTMOUSE', 'RET', 'NUMPAD_ENTER'} and event.value == 'PRESS':
             try:
                 return self._finish(context)
-            except InjectNewError as error:
+            except (InjectNewError, topology.PrecisionTopologyError, drag.DragSnapError) as error:
                 return self._cancel(context, str(error))
             except Exception as error:
                 return self._cancel(context, f'Inject New failed: {error}')
@@ -460,13 +585,17 @@ class WT_OT_inject_new(Operator):
         if event.type == 'MOUSEMOVE':
             try:
                 self._update_from_mouse(context, event)
-            except InjectNewError as error:
+            except (InjectNewError, topology.PrecisionTopologyError, drag.DragSnapError) as error:
                 return self._cancel(context, str(error))
             except Exception as error:
                 return self._cancel(context, f'Inject New failed: {error}')
             return {'RUNNING_MODAL'}
 
         return {'RUNNING_MODAL'}
+
+    def cancel(self, context):
+        if not self._finished:
+            self._cancel(context)
 
 
 CLASSES = (
