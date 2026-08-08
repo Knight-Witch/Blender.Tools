@@ -5,6 +5,7 @@ from bpy.types import PropertyGroup
 def _sync_inject_mode(self, _context):
     if self.inject_new_mode == 'SLIDE':
         self.inject_new_element_type = 'VERT'
+        self.inject_new_use_rail = False
 
 
 class WTPrecisionEditProperties(PropertyGroup):
@@ -12,6 +13,7 @@ class WTPrecisionEditProperties(PropertyGroup):
     show_coordinate_copy: BoolProperty(name='Coordinate Copy', default=True)
     show_planar_edit: BoolProperty(name='Planar Edit', default=True)
     show_inject_new: BoolProperty(name='Inject New', default=True)
+    show_magic_branch: BoolProperty(name='Magic Branch', default=True)
 
     # Coordinate Copy
     coordinate_copy_space: EnumProperty(
@@ -26,9 +28,7 @@ class WTPrecisionEditProperties(PropertyGroup):
     coordinate_copy_axis_x: BoolProperty(name='X', description='Copy the enabled transform components on X', default=True)
     coordinate_copy_axis_y: BoolProperty(name='Y', description='Copy the enabled transform components on Y', default=True)
     coordinate_copy_axis_z: BoolProperty(name='Z', description='Copy the enabled transform components on Z', default=True)
-    coordinate_copy_use_location: BoolProperty(
-        name='Location', description='Copy source position on the enabled X/Y/Z axes', default=True
-    )
+    coordinate_copy_use_location: BoolProperty(name='Location', description='Copy source position on the enabled X/Y/Z axes', default=True)
     coordinate_copy_use_rotation: BoolProperty(
         name='Rotation',
         description='Match the source geometry frame rotation on the enabled X/Y/Z components. Vertices use their normal; edges/faces use deterministic geometry frames',
@@ -50,15 +50,9 @@ class WTPrecisionEditProperties(PropertyGroup):
     coordinate_copy_last_report: StringProperty(default='Select one source element and Capture Source.')
 
     # Planar Edit — Plane Lock
-    planar_lock_axis_x: BoolProperty(
-        name='X', description='Freeze selected vertices at their current object-local X coordinate', default=False
-    )
-    planar_lock_axis_y: BoolProperty(
-        name='Y', description='Freeze selected vertices at their current object-local Y coordinate', default=False
-    )
-    planar_lock_axis_z: BoolProperty(
-        name='Z', description='Freeze selected vertices at their current object-local Z coordinate', default=True
-    )
+    planar_lock_axis_x: BoolProperty(name='X', description='Freeze selected vertices at their current object-local X coordinate', default=False)
+    planar_lock_axis_y: BoolProperty(name='Y', description='Freeze selected vertices at their current object-local Y coordinate', default=False)
+    planar_lock_axis_z: BoolProperty(name='Z', description='Freeze selected vertices at their current object-local Z coordinate', default=True)
 
     # Planar Edit — Level
     planar_level_axis_x: BoolProperty(name='X', description='Set every target to the source world X coordinate', default=False)
@@ -76,25 +70,38 @@ class WTPrecisionEditProperties(PropertyGroup):
         items=[
             ('SOLO', 'Solo', 'Duplicate the source without creating any connection back to it'),
             ('BRANCH', 'Branch', 'Duplicate the source and create source-to-copy branch edges'),
-            ('SLIDE', 'Slide', 'Insert one new vertex into exactly one selected source edge; the new vertex becomes part of that edge'),
+            ('SLIDE', 'Slide', 'Insert a new vertex into every selected source edge; all inserted vertices share one relative slide position'),
         ],
         default='SOLO',
         update=_sync_inject_mode,
     )
     inject_new_move: EnumProperty(
-        name='Move Along',
-        description='Choose the movement constraint used while placing Solo or Branch geometry',
-        items=[
-            ('X', 'X', 'Move the new geometry only along global X'),
-            ('Y', 'Y', 'Move the new geometry only along global Y'),
-            ('Z', 'Z', 'Move the new geometry only along global Z'),
-            ('RAIL', 'Rail', 'Move only between the source point and a captured endpoint at any angle'),
-        ],
+        name='Legacy Move Along',
+        items=[('X', 'X', ''), ('Y', 'Y', ''), ('Z', 'Z', ''), ('RAIL', 'Rail', '')],
         default='X',
+        options={'HIDDEN'},
+    )
+    inject_new_axis_x: BoolProperty(name='X', description='Allow mouse placement to move on global X', default=True)
+    inject_new_axis_y: BoolProperty(name='Y', description='Allow mouse placement to move on global Y', default=False)
+    inject_new_axis_z: BoolProperty(name='Z', description='Allow mouse placement to move on global Z', default=False)
+    inject_new_use_rail: BoolProperty(
+        name='Rail',
+        description='Use the captured straight source-to-end rail instead of free XYZ mouse movement',
+        default=False,
+    )
+    inject_new_magnetic_snap: BoolProperty(
+        name='Magnetic Snap',
+        description='Highlight hovered vertices, edges, and faces and magnetically align the new injection to the hovered target',
+        default=True,
+    )
+    inject_new_auto_merge: BoolProperty(
+        name='Auto-Merge',
+        description='In Branch mode, weld magnetic vertex/edge contacts into the target topology on commit. A vertex branch dropped on an existing vertex becomes a direct source-to-target edge',
+        default=False,
     )
     inject_new_element_type: EnumProperty(
         name='Element',
-        description='Geometry type to duplicate in Solo or Branch mode. Slide is vertex-only and uses one selected source edge',
+        description='Geometry type to duplicate in Solo or Branch mode. Slide always injects vertices into the selected edges',
         items=[
             ('VERT', 'Vertex', 'Duplicate one selected vertex'),
             ('EDGE', 'Edge', 'Duplicate one selected edge and its endpoints'),
@@ -106,6 +113,44 @@ class WTPrecisionEditProperties(PropertyGroup):
     inject_new_rail_end_set: BoolProperty(default=False, options={'HIDDEN'})
     inject_new_rail_target_label: StringProperty(default='No rail endpoint captured')
     inject_new_last_report: StringProperty(default='Choose Setup, movement, and element type; then select a source.')
+
+    # Magic Branch
+    magic_branch_persistent: BoolProperty(
+        name='Persistent',
+        description='Stay armed after each completed branch so another click-drag can immediately create the next branch. Turn off for one branch then exit',
+        default=False,
+    )
+    magic_branch_element_type: EnumProperty(
+        name='Branch Element',
+        items=[
+            ('VERT', 'Vertex', 'Click-drag a source vertex to branch a new edge'),
+            ('EDGE', 'Edge', 'Click-drag a source edge to branch a copied edge with source-to-copy connections'),
+            ('FACE', 'Face', 'Click-drag a source face to grow adjacent face geometry from the edge nearest the drag direction'),
+        ],
+        default='VERT',
+    )
+    magic_branch_axis_x: BoolProperty(name='X', description='Allow Magic Branch movement on global X', default=True)
+    magic_branch_axis_y: BoolProperty(name='Y', description='Allow Magic Branch movement on global Y', default=True)
+    magic_branch_axis_z: BoolProperty(name='Z', description='Allow Magic Branch movement on global Z', default=True)
+    magic_branch_magnetic_snap: BoolProperty(
+        name='Magnetic Snap',
+        description='Highlight hovered mesh elements and magnetically align the live branch to them',
+        default=True,
+    )
+    magic_branch_auto_merge: BoolProperty(
+        name='Auto-Merge',
+        description='On commit, weld compatible magnetic vertex/edge contacts into the existing topology',
+        default=False,
+    )
+    magic_branch_face_mode: EnumProperty(
+        name='Face Build',
+        items=[
+            ('PAVER', 'Paver', 'Repeat equal-size face tiles outward from the source edge as the mouse travels'),
+            ('ORGANIC', 'Organic', 'Create one connected face whose outer edge follows the mouse and magnetic target'),
+        ],
+        default='PAVER',
+    )
+    magic_branch_last_report: StringProperty(default='Configure Magic Branch, then press Start and click-drag geometry in the viewport.')
 
 
 CLASSES = (WTPrecisionEditProperties,)
