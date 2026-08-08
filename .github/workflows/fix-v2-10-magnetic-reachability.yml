@@ -29,15 +29,15 @@ jobs:
               'def rigid_snap_delta(obj, created_verts, target, mask, tolerance=1.0e-5):',
           )
           s = s.replace(
-              "        (_score, vert, delta, point) = best\n        return delta, [(vert, 'VERT', target.element, point)]",
-              "        (score, vert, delta, point) = best\n        if score[0] > tolerance:\n            return None, None\n        return delta, [(vert, 'VERT', target.element, point)]",
+              "        _score, vert, delta, point = best\n        return delta, [(vert, 'VERT', target.element, point)]",
+              "        score, vert, delta, point = best\n        if score[0] > tolerance:\n            return None, None\n        return delta, [(vert, 'VERT', target.element, point)]",
           )
           s = s.replace(
-              "    (_score, vert, delta, point) = best\n    return delta, [(vert, 'EDGE', edge, point)]",
-              "    (score, vert, delta, point) = best\n    if score[0] > tolerance:\n        return None, None\n    return delta, [(vert, 'EDGE', edge, point)]",
+              "    _score, vert, delta, point = best\n    return delta, [(vert, 'EDGE', edge, point)]",
+              "    score, vert, delta, point = best\n    if score[0] > tolerance:\n        return None, None\n    return delta, [(vert, 'EDGE', edge, point)]",
           )
-          if 'if score[0] > tolerance:' not in s:
-              raise SystemExit('Reachability guard patch did not apply')
+          if s.count('if score[0] > tolerance:') != 2:
+              raise SystemExit('Reachability guard patch did not apply twice')
           compile(s, str(p), 'exec')
           p.write_text(s, encoding='utf-8')
           Path('.github/workflows/fix-v2-10-magnetic-reachability.yml').unlink(missing_ok=True)
