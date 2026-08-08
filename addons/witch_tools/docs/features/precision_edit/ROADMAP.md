@@ -68,3 +68,11 @@ Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `c
 ## Scope policy
 
 None of the follow-up ideas above are part of Dev_v2.9.0 unless explicitly promoted after runtime validation. The candidate scope is the three requested Edit Tools sections and their current backend contracts only.
+
+
+## Dev_v2.10.0 promotion
+- Inject New Magnetic Snap / Auto-Merge / multi-axis / multi-edge Slide / MMB: active candidate.
+- Shared drag/topology backend with Magic Branch: active candidate.
+- Blender 4.5 runtime acceptance: immediate next step.
+- Dynamic hover addition of unselected Slide fan edges: deferred.
+- Arbitrary face-interior Auto-Merge retopology: research/deferred.

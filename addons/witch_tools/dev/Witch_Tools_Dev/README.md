@@ -1,44 +1,22 @@
 # Witch Tools
 
-**Witch Tools Dev_v2.9.0** is the current Blender add-on development candidate for Knight Witch workflow tools.
+**Witch Tools Dev_v2.10.0** is the current Blender add-on development candidate for Knight Witch workflow tools.
 
 Target build context: **Blender 4.5**
 
-## Dev_v2.9.0 — Precision Edit
+## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
 
-Edit Tools now adds three precision-edit workflows while retaining the existing tools and Guided Align backend.
+Dev_v2.10.0 retains Coordinate Copy and Planar Edit, expands Inject New with multi-axis Magnetic Snap/Auto-Merge/multi-edge Slide/MMB navigation, and adds Magic Branch for persistent click-drag mesh building.
 
-### Coordinate Copy
+Edit Tools default order is Coordinate Copy, Planar Edit, Vertex Snap, Object Snap, Inject New, Magic Branch, Edge Doctor, Vertex Lock, Selection Slots. Top-level sections can be reordered and the preference persists outside individual `.blend` files.
 
-Copy exact source coordinates from one vertex, edge, or face to one or more targets.
+Edge Doctor contains Missing Vertex / Edge Injector, Alignment Fixer, and Curvature Sync. The old A/B/C injector backend remains intact and now also supports two selected edges forming an L.
 
-- Global or Local coordinate space.
-- X/Y/Z masks.
-- Location, Rotation, and Scale geometry-frame controls.
-- Global multi-object support for meshes with different origins/transforms.
-- Independent targets instead of one selection-wide median.
-- Default Apply shortcut: `Ctrl+Shift+C`.
-
-### Planar Edit
-
-- **Plane Lock** freezes selected geometry on chosen object-local X/Y/Z coordinates while unlocked coordinates remain editable.
-- **Level** captures one source point and sets every target vertex to its exact world coordinate on enabled axes.
-
-### Inject New
-
-- **Solo**: duplicate one selected Vertex/Edge/Face without connecting it to the source.
-- **Branch**: duplicate and add corresponding source-to-copy branch edges.
-- **Slide**: insert one new vertex into exactly one selected edge and place it along that edge.
-- Solo/Branch placement supports global X/Y/Z or a captured straight Rail endpoint.
-- Left-click/Enter commits; Esc/right-click cancels.
-
-The existing **Edge / Vertex Inject** A/B/C auto-aligned repair tool remains separate.
-
-See `PRECISION_EDIT_QUICK_START.md` for the workflow and current candidate limits.
+See `PRECISION_EDIT_QUICK_START.md` and `MAGIC_BRANCH_QUICK_START.md`.
 
 ### Validation status
 
-Dev_v2.9.0 is intended for Blender 4.5. Source/static checks have been performed during implementation, but Blender 4.5 registration, panel rendering, Coordinate Copy real-mesh behavior, Plane Lock guard behavior, Inject New modal/topology behavior, undo/redo, and save/reopen have not yet been run in the implementation environment.
+Dev_v2.10.0 targets Blender 4.5. Static Python compilation passed for the authored candidate modules. Blender 4.5 registration, GPU highlighting, magnetic placement, Auto-Merge topology, MMB pivot/resume, Persistent Undo, reorder dragging, full Undo/Redo, and save/reopen remain runtime-unverified.
 
 ## Dev_v2.8.0 — Align Vertices / Edges / Faces
 

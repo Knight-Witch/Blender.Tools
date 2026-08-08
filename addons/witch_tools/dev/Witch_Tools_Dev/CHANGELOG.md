@@ -1,3 +1,13 @@
+## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
+
+- Expanded Inject New with independent multi-axis X/Y/Z placement, Magnetic Snap vertex/edge/face highlighting, Branch Auto-Merge, multi-edge Slide, and MMB orbit around live injection geometry.
+- Added shared drag/snap and topology backends used by both Inject New and Magic Branch.
+- Added Magic Branch with Single/Persistent, Vertex/Edge/Face, Paver/Organic, magnetic placement, Auto-Merge, and a dedicated hotkeyable Persistent toggle.
+- Reorganized repair tools under Edge Doctor: Missing Vertex / Edge Injector, Alignment Fixer, and Curvature Sync. Added two-edge L repair while preserving the existing A/B/C solver.
+- Added persistent preference-backed Edit Tools reordering with drag grip, arrow fallback, and Reset Default.
+- Added Dev_v2.10.0 packaging configuration for Blender 4.5.
+- Static Python compilation passed for authored candidate modules. Blender 4.5 registration, GPU hover drawing, modal interaction, topology/attribute behavior, MMB pivot, Persistent Undo, reorder dragging, Undo/Redo, and save/reopen remain untested in the implementation environment.
+
 ## Dev_v2.9.0 — Precision Edit
 
 - Added **Edit Tools > Coordinate Copy** above Vertex Snap with Global/Local coordinate type, X/Y/Z masks, Location/Rotation/Scale toggles, vertex/edge/face source capture, exact independent target application, and multi-object world-space conversion for meshes with different origins/transforms.

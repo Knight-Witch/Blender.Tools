@@ -1,6 +1,6 @@
 # Precision Edit — Blender 4.5 Test Plan
 
-Candidate: `Witch Tools Dev_v2.9.0`  
+Candidate: `Witch Tools Dev_v2.10.0`  
 Target: Blender `4.5.0`
 
 No item in this plan is considered passed until executed in Blender and recorded with the exact Blender version/build.
@@ -10,7 +10,7 @@ No item in this plan is considered passed until executed in Blender and recorded
 1. Install/enable the add-on in Blender 4.5.
 2. Confirm no registration traceback.
 3. Open View3D Sidebar > Witch Tools > Edit Tools.
-4. Confirm order: Coordinate Copy, Planar Edit, Vertex Snap, Inject New, Object Snap, Edge / Vertex Inject, Curvature Sync, Guided Align, Selection Slots, Vertex Locks.
+4. Confirm default order: Coordinate Copy, Planar Edit, Vertex Snap, Object Snap, Inject New, Magic Branch, Edge Doctor, Vertex Lock, Selection Slots; confirm custom reorder persistence.
 5. Expand/collapse each new section repeatedly.
 6. Hover section headers and individual properties/operators; verify useful tooltips.
 7. Confirm Vertex/Edge/Face icons render in Inject New.
@@ -89,7 +89,7 @@ For each of Edge and Face mode:
 For Vertex, Edge, Face:
 
 1. Select exactly one source of the chosen type.
-2. Use X, Y, Z movement separately.
+2. Test X/Y/Z singly, in pairs, and XYZ together; also test Rail.
 3. Move mouse, commit with left-click; verify duplicate is disconnected and selected.
 4. Repeat commit with Enter.
 5. Repeat and cancel with Esc and right-click; topology/counts must match pre-operation state.
@@ -101,7 +101,7 @@ For Vertex, Edge, Face:
 
 For Vertex, Edge, Face:
 
-1. Repeat X/Y/Z and Rail placement.
+1. Repeat single/pair/triple X/Y/Z and Rail placement; exercise Magnetic Snap and Auto-Merge.
 2. Confirm the source geometry remains.
 3. Confirm corresponding source vertices have branch edges to their duplicate vertices.
 4. Confirm no unintended side faces are created.
@@ -113,7 +113,7 @@ Branch intentionally creates loose/non-manifold branch geometry; therefore globa
 
 ## H. Inject New — Slide
 
-1. Select exactly one edge on a manifold quad/grid and choose Slide.
+1. Select one edge, then multiple parallel edges, on a manifold quad/grid and choose Slide.
 2. Move mouse from one end to the other; verify the inserted vertex remains on the original edge segment.
 3. Commit and confirm the original edge is divided into two edges with no stale overlapping original edge.
 4. Verify face winding and normals remain correct.
@@ -122,7 +122,7 @@ Branch intentionally creates loose/non-manifold branch geometry; therefore globa
 7. Cancel at several positions; verify exact topology/count restoration.
 8. Undo/redo committed split.
 9. Test boundary edge, interior manifold edge, loose edge, and an edge carrying Seam/Sharp/Crease/bevel/custom attributes; record preservation behavior.
-10. Test malformed selection: zero edges, two edges, face-only selection. All must fail without partial topology.
+10. Test malformed selection: zero edges and face-only selection must fail without partial topology; two or more selected edges are valid multi-edge Slide input.
 
 ## I. Protection / topology-change interactions
 
@@ -166,3 +166,7 @@ For every failure record:
 - before/after coordinates and topology counts;
 - traceback/report text;
 - whether Undo restored the original state.
+
+## Dev_v2.10.0 magnetic / Magic Branch extension
+
+Execute `/docs/features/magic_branch/TEST_PLAN.md` in full for Magnetic Snap, Auto-Merge, MMB orbit, multi-edge Slide, Magic Branch, Edge Doctor L repair, topology attributes, cancellation, Persistent Undo, and reorder UI validation.

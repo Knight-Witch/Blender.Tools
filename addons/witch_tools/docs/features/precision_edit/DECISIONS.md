@@ -57,3 +57,12 @@ No Blender executable is available in the implementation environment. Source/sta
 ## Inherited documentation conflict
 
 The pre-existing Dev_v2.8.0 roadmap references `/docs/features/align_selection/`, but that directory is not present on the current source branch. This is an inherited documentation gap, not evidence that the feature did not exist. This Precision Edit work does not fabricate the missing historical packet; the gap is recorded for later baseline cleanup.
+
+
+## Dev_v2.10.0 addendum
+- Inject New and Magic Branch share `precision_edit_drag.py` and `precision_edit_topology.py` as canonical drag/snap/topology layers.
+- Magnetic priority is vertex > edge > face.
+- Face placement uses per-endpoint travel lines, not one target median.
+- Auto-Merge is conservative; arbitrary face-interior retopology is deferred.
+- Multi-edge Slide operates on the preselected edge set; cursor hover chooses the driver among those selected rails.
+- MMB navigation is passed through to Blender after assigning live geometry as the pivot candidate; runtime behavior must be tested.

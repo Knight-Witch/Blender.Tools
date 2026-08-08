@@ -1,3 +1,12 @@
+## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing
+
+- Added Inject New Magnetic Snap, Auto-Merge, multi-axis movement, multi-edge Slide and MMB navigation.
+- Added Magic Branch Single/Persistent Vertex/Edge/Face drag-and-drop building with Paver/Organic face modes.
+- Added Edge Doctor regrouping/two-edge L repair and preference-backed Edit Tools reordering.
+- Added shared drag/snap/topology modules and Dev_v2.10 Blender 4.5 packaging.
+- Added/updated feature specs, decisions, state, roadmaps, UI map, quick starts, acceptance criteria and Blender test plans.
+- Runtime Blender 4.5 validation remains pending; static Python syntax compilation passed for the authored candidate modules.
+
 ## 2026-08-07 — Dev_v2.9.0 Precision Edit
 
 - Added Coordinate Copy with Global/Local space, XYZ masks, Location/Rotation/Scale geometry-frame behavior, exact source capture, independent target application, multi-object world conversion, protection preflight, and `Ctrl+Shift+C` Apply.

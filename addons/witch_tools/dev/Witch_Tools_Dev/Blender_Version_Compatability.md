@@ -1,3 +1,11 @@
+## Dev_v2.10.0
+- Target authoring version: Blender 4.5
+- Additional Blender versions tested for this candidate: none
+- Static/source validation: authored candidate modules passed Python syntax compilation
+- Runtime verification: not performed; no Blender executable is available in the implementation environment
+- Known limitations: GPU hover target drawing, Magnetic Snap/Auto-Merge topology, multi-edge Slide rollback/data preservation, MMB orbit pivot/resume, Persistent Magic Branch Undo, N-panel drag reorder, Undo/Redo and save/reopen require Blender 4.5 validation
+- Notes: Expanded Inject New, added Magic Branch, Edge Doctor regrouping/L repair, and preference-backed Edit Tools reordering.
+
 ## Dev_v2.9.0
 - Target authoring version: Blender 4.5
 - Additional Blender versions tested for this candidate: none
@@ -73,16 +81,17 @@
 
 ## Current release
 
-- Release: **Dev_v2.9.0**
+- Release: **Dev_v2.10.0**
 - Target authoring version: **Blender 4.5**
 - Confirmed working versions for this candidate: **No Blender runtime confirmation in this implementation environment**
 - Additional Blender versions tested: **None**
-- Notes: Precision Edit source candidate adds Coordinate Copy, Planar Edit, and Inject New. Blender 4.5 registration, UI, real-mesh geometry, modal topology, undo/redo, and save/reopen validation remain pending.
+- Notes: Dev_v2.10.0 retains Precision Edit and adds magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and reorderable Edit Tools. Blender 4.5 runtime validation remains pending.
 
 ## Release history
 
 | Release | Target authoring version | Confirmed working versions | Notes |
 |---|---|---|---|
+| Dev_v2.10.0 | Blender 4.5 | Static Python/source checks only; Blender runtime pending | Magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and reorderable Edit Tools. |
 | Dev_v2.9.0 | Blender 4.5 | Static/source checks only; Blender runtime pending | Added Coordinate Copy, Plane Lock/Level, and Inject New Solo/Branch/Slide; retained Guided Align and earlier tools. |
 | Dev_v2.8.0 | Blender 4.5 | Static and pure-math checks only; Blender runtime pending | Added Guided Align with world/custom frames, straight slide rails, paired parent mapping, and rigid shape preservation. |
 | Dev_v2.6.0 | Blender 4.5 | Quickbar user-reported working; Witch Tools N-panel body failed to expand | Initial Selection Slots build; superseded by Dev_v2.6.1 N-panel hotfix. |
