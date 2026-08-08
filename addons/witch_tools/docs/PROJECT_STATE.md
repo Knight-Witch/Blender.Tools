@@ -1,228 +1,211 @@
 # Witch Tools Project State
 
-Last updated: 2026-08-07
+Last updated: 2026-08-08
 
 ## Identity
 
 - Add-on: Witch Tools
 - Canonical role: primary general-purpose N-panel toolkit and reusable mesh-operator backend
-- Development branch: `feature/witch-tools-precision-edit`
-- Parent development baseline: `feature/witch-tools-guided-align` at commit `fc94b7c27d0b850699e79b973a0548a2193eb525`
+- Development branch: `feature/witch-tools-magic-branch`
+- Direct parent: `feature/witch-tools-precision-edit` at `a5fe4bbccc954b25ac645489f2092b3d3d7618c5`
+- Earlier Guided Align baseline: `fc94b7c27d0b850699e79b973a0548a2193eb525`
 - Intended integration branch: `Blender_Dev`
 - Development package: `Witch_Tools_Dev`
-- Default target Blender version: `4.5.0`
+- Target Blender: `4.5.0`
 
 ## Current candidate
 
-- Version: `Dev_v2.9.0`
-- Scope: Coordinate Copy, Planar Edit, Inject New, plus retained Dev_v2.8.0 Guided Align and earlier Witch Tools functionality
-- Package folder: `Witch_Tools_Dev`
-- Declared target: Blender `4.5.0`
-- Runtime status: source candidate; Blender 4.5 registration, panel, mesh, modal, undo/redo, and save/reopen validation pending
-- Installable ZIP: not cut from this branch yet
-- Public/release branches modified: no
+- Version: `Dev_v2.10.0`
+- Scope: Dev_v2.9 Precision Edit retained + magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and persistent Edit Tools ordering.
+- Runtime status: source/static candidate; Blender 4.5 validation pending.
+- Public/release branches modified: no.
+- Witch Dock/Quickbar modified: no.
 
-## Baseline and source recovery
-
-The repository's older Dev_v2.7.0 snapshot cannot be reconstructed from the committed files because its source parts are truncated relative to their manifest. Dev_v2.8.0 re-established an auditable direct source tree from the verified Dev_v2.6.1 baseline and added Guided Align.
-
-This Dev_v2.9.0 work branches directly from the verified Dev_v2.8.0 Guided Align source commit:
-
-- `fc94b7c27d0b850699e79b973a0548a2193eb525`
-
-Current direct source:
-
-- `addons/witch_tools/dev/Witch_Tools_Dev/`
-
-The public/default release path remains unchanged.
-
-## Current implementation
-
-### Coordinate Copy
-
-Edit Tools now begins with **Coordinate Copy**.
-
-Implemented source behavior:
-
-- Global / Local coordinate type;
-- X/Y/Z masks;
-- Location / Rotation / Scale toggles;
-- exact one-element source capture for vertex, edge, or face;
-- source selection clears after capture;
-- Global converts through world space per object, allowing different object origins/transforms;
-- Local copies numeric object-local values;
-- vertices apply independently;
-- disconnected selected edge or face components apply independently;
-- no selection-wide target median;
-- geometry-frame Rotation/Scale semantics for mesh elements;
-- transaction-first target planning;
-- existing Vertex Lock and new Plane Lock preflight;
-- default Mesh keymap shortcut `Ctrl+Shift+C` for Apply.
-
-### Planar Edit
-
-**Plane Lock**:
-
-- stores X/Y/Z lock masks and values in persistent BMesh custom layers;
-- locks selected vertices directly; edge/face selections therefore lock participating vertices;
-- supports combined axes, partial unlock, and clear all;
-- uses a lightweight Edit Mode guard to restore locked object-local coordinates.
-
-**Level**:
-
-- captures one source vertex coordinate, edge midpoint, or face center in world space;
-- applies exact source world X/Y/Z coordinates to every selected target vertex independently;
-- converts each result back into the target object's local mesh coordinates;
-- supports multi-object Edit Mode;
-- preflights Vertex Locks and Plane Locks before mutation.
-
-### Inject New
-
-Edit Tools now contains **Inject New** immediately below Vertex Snap.
-
-Implemented source behavior:
-
-- Setup: Solo / Branch / Slide;
-- Solo: duplicate one selected vertex, edge, or face with no connection back to source;
-- Branch: duplicate one selected vertex, edge, or face and create source-to-copy branch edges;
-- Slide: split exactly one selected edge and insert one new vertex into that edge;
-- Solo/Branch movement: global X, Y, Z, or a captured straight Rail endpoint;
-- Rail endpoint capture accepts a vertex, edge midpoint, or face center;
-- Slide uses the selected source edge itself as its rail;
-- modal mouse placement with left-click/Enter commit and Esc/right-click cancel;
-- existing Vertex Lock references are snapshotted/restored across topology changes;
-- Vertex Lock and Plane Lock guards are suspended during the modal topology operation, then restored;
-- newly created vertices do not inherit Plane Lock masks;
-- shape-key meshes with multiple keys are rejected;
-- finish checks for zero-area faces.
-
-Slide is intentionally vertex-only. Branch creates branch edges, not extrusion side faces.
-
-### Existing auto-aligned inject
-
-The previous **Edge / Vertex Inject** A/B/C → D repair workflow remains a separate existing section and operator. It is not replaced or duplicated by Inject New.
-
-## Current Edit Tools UI order
+## Current Edit Tools default order
 
 1. Coordinate Copy
 2. Planar Edit
 3. Vertex Snap
-4. Inject New
-5. Object Snap
-6. Edge / Vertex Inject
-7. Curvature Sync
-8. Align Vertices / Edges / Faces
+4. Object Snap
+5. Inject New
+6. Magic Branch
+7. Edge Doctor
+8. Vertex Lock
 9. Selection Slots
-10. Vertex Locks / remaining Edit Tools controls
 
-## Witch Dock / Quickbar status
+Users can reorder these top-level sections through `Reorder Tools`. Saved order lives in add-on preferences. The reorder UI exposes a drag grip plus up/down fallback and Reset Default.
 
-Not modified in this pass. Witch Tools remains the canonical backend. Thin Witch Dock / Quickbar exposure is deferred until Dev_v2.9.0 behavior is accepted in Blender 4.5.
+Planar Edit remains top-level immediately after Coordinate Copy because it was an explicit earlier feature and was not requested to be removed; it may be moved by the user.
+
+## Dev_v2.9 functionality retained
+
+### Coordinate Copy
+
+- Global/Local;
+- X/Y/Z;
+- Location/Rotation/Scale geometry-frame copying;
+- vertex/edge/face source capture;
+- independent targets rather than one selection median;
+- multi-object world/local conversion;
+- Vertex Lock / Plane Lock preflight;
+- default Ctrl+Shift+C Apply shortcut.
+
+### Planar Edit
+
+- persistent object-local Plane Lock custom layers and guard;
+- exact per-target world-space Level operation;
+- multi-object Level support;
+- protection preflight.
+
+## Inject New — Dev_v2.10 changes
+
+- Solo / Branch / Slide retained.
+- Solo/Branch X/Y/Z are independent toggles; any non-empty combination is allowed.
+- captured straight Rail remains optional.
+- Magnetic Snap highlights hovered vertex, edge, or face.
+- vertex/edge snapping aligns the nearest compatible new endpoint while preserving rigid copied shape.
+- face snapping moves each endpoint along its own travel line to the hovered face/boundary.
+- Branch Auto-Merge welds supported vertex/edge contacts; target edge is split at an interior contact when needed.
+- arbitrary face-interior Auto-Merge retopology is intentionally not invented.
+- Slide accepts one or more preselected edges, injects one vertex into each, and applies a shared relative factor; cursor-nearest selected rail is the driver.
+- Slide does not automatically add completely unselected fan edges merely by hover in this candidate.
+- MMB pauses modal placement, assigns current live geometry as the orbit pivot candidate, passes navigation through, and resumes after release.
+- shared finish validation rejects zero-length edges and zero-area faces.
+
+## Magic Branch
+
+New source candidate with:
+
+- Single Branch / Persistent;
+- dedicated hotkeyable Persistent-toggle operator;
+- Vertex / Edge / Face click-drag branching;
+- X/Y/Z independent axes, all enabled by default;
+- shared Magnetic Snap / Auto-Merge behavior;
+- MMB orbit around live branch geometry;
+- Face Paver and Organic modes.
+
+Paver repeats equal source-derived tiles and does not stretch the final tile to force an arbitrary off-grid endpoint. Organic creates one adaptable connected face.
+
+Persistent attempts to establish per-branch Undo boundaries, but that modal Undo behavior is explicitly unverified until Blender testing.
+
+## Edge Doctor
+
+New parent UI group containing:
+
+1. Missing Vertex / Edge Injector
+2. Alignment Fixer
+3. Curvature Sync
+
+Missing Injector preserves the existing A/B/C solver and adds a two-edge L mode. Two selected edges sharing one corner infer D as `A + C - B`, reuse a vertex within the existing tolerance where possible, then create missing A-D / C-D edges.
+
+Alignment Fixer is the existing Guided Align backend with a clearer UI name; canonical `mesh.wt_guided_align_*` operator IDs remain unchanged.
+
+A/B/C viewport letter overlays are deferred QoL and are not part of Dev_v2.10.0 source.
+
+## Shared architecture
+
+- `precision_edit_drag.py`: viewport projection, hover target picking, GPU highlighting, magnetic solve, edge materialization/welding, orbit-pivot helper.
+- `precision_edit_topology.py`: duplicate/branch primitives, Organic/Paver creation, zero-geometry validation.
+- Inject New and Magic Branch both call these backends; neither owns a duplicate magnetic implementation.
 
 ## Last completed work
 
-- Read root repository rules, architecture docs, add-on-local rules, current project state/roadmap, baseline source, current version, target Blender, and relevant existing Edit Tools operators before implementation.
-- Confirmed Dev_v2.8.0 Guided Align commit `fc94b7c...` as the direct parent baseline.
-- Created `feature/witch-tools-precision-edit` without modifying the Guided Align branch or public release branches.
-- Added modular property, common math/protection, geometry-frame, Coordinate Copy, Planar Edit, Inject New, and panel modules.
-- Registered the new operator/property families and Plane Lock guard.
-- Added `Ctrl+Shift+C` Coordinate Copy Apply default keymap.
-- Added compact step-based UI and hover help.
-- Bumped development metadata to `Dev_v2.9.0` targeting Blender 4.5.
-- Created `/docs/features/precision_edit/` with specification, decisions, state, roadmap, and a topology-aware Blender 4.5 test plan.
-- Updated UI map and roadmap for the new candidate.
-- Compared the branch against the exact parent baseline; the branch is strictly ahead and contains only the intended source/docs candidate work.
+- Re-read repository rules, architecture, add-on rules/state/specs and current source before changes.
+- Confirmed current precision-edit head and created `feature/witch-tools-magic-branch` from exact SHA `a5fe4bbccc954b25ac645489f2092b3d3d7618c5`.
+- Bumped source metadata to Dev_v2.10.0 / Blender 4.5.
+- Implemented the shared drag/snap and topology layers.
+- Reworked Inject New for magnetic placement, Auto-Merge, multi-axis movement, multi-edge Slide, and MMB navigation.
+- Added Magic Branch.
+- Added Edge Doctor wrapper/L repair while preserving old repair/alignment/curvature backends.
+- Added preference-backed Edit Tools ordering.
+- Replaced the inherited branch-specific v2.9 packaging workflow with a v2.10 workflow for this branch.
+- Added `/docs/features/magic_branch/` specification, decisions, state, roadmap and Blender test plan.
+- Updated Precision Edit specification/state, UI map and parent roadmap.
 
 ## Current known-working state
 
-Previously user-validated in Blender 4.5:
+Previously user-validated in Blender 4.5 from earlier candidates:
 
 - Dev_v2.5.2 Curvature Sync production collar workflow.
 - Quickbar Dev_v1.4.0 Selection Slots workflow.
 
-Dev_v2.9.0 validation completed in this implementation environment:
+Dev_v2.10 implementation-environment checks:
 
-- branch starts from the exact Dev_v2.8.0 candidate commit;
-- branch compare reports no behind commits relative to that baseline;
-- authored new precision-edit Python modules parsed/compiled during implementation;
-- source operator/property/UI contracts were reviewed while wiring registration and panel calls;
-- no Blender executable is available in this environment.
+- authored/modified local Python candidate modules compiled successfully with Python syntax compilation;
+- version and registration wiring reviewed;
+- feature docs contain explicit acceptance criteria/test matrices;
+- no Blender executable is available here.
 
-Do not infer runtime success from the static checks above.
+Do not infer Blender runtime success from static compilation.
 
-## Active problems and limitations
+## Active problems / limitations
 
-1. Blender 4.5 registration and panel rendering are untested.
-2. Coordinate Copy edge/face Rotation/Scale geometry-frame behavior requires real-mesh acceptance testing, especially under mirrored/non-uniform object transforms.
-3. Plane Lock timer enforcement must be validated during actual Blender transforms and save/reopen.
-4. Level multi-object behavior must be measured in Blender with differently transformed objects.
-5. Inject New modal mouse projection requires camera-angle testing.
-6. Inject New cancel rollback, especially Slide edge reconstruction, must be proven in Blender.
-7. Inject New operates on one active mesh at a time.
-8. Rail is a straight source-to-end segment only.
-9. Branch creates loose branch edges rather than side faces and therefore does not promise a manifold result.
-10. Slide topology must be tested for normals/winding, material/edge attributes, zero-length edges, zero-area faces, duplicate topology, and manifold safety.
-11. Undo/redo and save/reopen are untested for the new systems.
-12. `Ctrl+Shift+C` must be checked against the user's Blender keymap for conflicts.
-13. No additional Blender version has been tested or verified for Dev_v2.9.0.
-14. Inherited documentation conflict: the Dev_v2.8.0 roadmap references `/docs/features/align_selection/`, but that directory is absent on the branch. This pass records the gap and does not fabricate historical files.
-15. Witch Dock / Quickbar exposure is deferred.
+1. Blender 4.5 registration/unregistration and panel rendering untested.
+2. GPU hover drawing and vertex/edge/face selection priority untested in Blender.
+3. Magnetic solves need camera-angle and transformed-object validation.
+4. target edge split/weld Auto-Merge needs topology/attribute validation.
+5. MMB `view_location` pivot behavior must be tested for natural orbit/resume behavior.
+6. Persistent Magic Branch per-branch Undo must be proven.
+7. N-panel drag-grip reorder must be proven; arrow fallback is available in source.
+8. multi-edge Slide cancel/Undo and special edge-data preservation must be proven.
+9. active-object-only topology creation.
+10. straight Inject Rail only.
+11. Branch does not auto-create side faces.
+12. arbitrary face-interior Auto-Merge retopology deferred.
+13. Paver preserves equal tiles and will not stretch an off-grid final tile.
+14. hover-only dynamic addition of unselected Slide fan edges deferred.
+15. A/B/C viewport letters deferred.
+16. inherited missing `/docs/features/align_selection/` historical packet remains unresolved.
+17. no additional Blender version has been tested.
+18. Witch Dock/Quickbar exposure deferred.
 
 ## Next exact implementation step
 
-Install the Dev_v2.9.0 source candidate in Blender 4.5 and execute `/addons/witch_tools/docs/features/precision_edit/TEST_PLAN.md` in order:
+1. Obtain the Dev_v2.10.0 static package from the branch packaging workflow if it passes.
+2. Install in Blender 4.5.
+3. Execute `/docs/features/precision_edit/TEST_PLAN.md` and `/docs/features/magic_branch/TEST_PLAN.md`.
+4. Prioritize: registration/UI/GPU -> Inject magnetic -> Auto-Merge -> multi-edge Slide -> MMB orbit -> Magic Branch Vertex/Edge -> Organic/Paver -> Persistent Undo -> Edge Doctor regression -> locks/attributes/normals/manifold/cancel/Undo.
+5. Fix only observed failures before considering integration.
+6. Do not begin Witch Dock/Quickbar wrappers until canonical Witch Tools behavior is accepted.
 
-1. registration/unregistration and Edit Tools panel rendering/order;
-2. Coordinate Copy Global Location with multiple target vertices;
-3. Coordinate Copy multi-object Global vs Local with different object transforms;
-4. Coordinate Copy Edge/Face Rotation/Scale;
-5. Plane Lock axis combinations, unlock, clear, transform guard, and persistence;
-6. Level on same-object and multi-object targets;
-7. Inject New Solo Vertex/Edge/Face on X/Y/Z and Rail;
-8. Inject New Branch Vertex/Edge/Face on X/Y/Z and Rail;
-9. Inject New Slide on boundary/interior/loose/special-data edges;
-10. cancel rollback, malformed selections, Vertex Locks, Plane Locks, and shape keys;
-11. undo/redo, save/reopen, normals/winding, attributes, zero geometry, and manifold checks.
-
-Fix only failures found in that validation pass. Do not broaden scope into curved rails, extrusion side faces, world-frame Plane Lock, multi-object topology Inject, viewport previews, or Witch Dock/Quickbar integration unless explicitly promoted.
-
-## Files changed for Dev_v2.9.0 source candidate
+## Files changed for Dev_v2.10.0
 
 New source modules:
 
-- `precision_edit_props.py`
-- `precision_edit_common.py`
-- `precision_edit_frames.py`
-- `operators_coordinate_copy.py`
-- `operators_planar_edit.py`
+- `precision_edit_drag.py`
+- `precision_edit_topology.py`
+- `operators_magic_branch.py`
+- `operators_edge_doctor.py`
+- `operators_edit_tool_order.py`
+- `panel_edit_sections.py`
+
+Major modified source modules:
+
 - `operators_inject_new.py`
+- `precision_edit_props.py`
 - `panel_precision_edit.py`
-
-Modified source modules:
-
+- `panel_edit_tools.py`
+- `preferences.py`
+- `registration.py`
+- `operators_ui.py`
 - `__init__.py`
 - `state.py`
-- `registration.py`
-- `keymaps.py`
-- `operators_ui.py`
-- `panel_edit_tools.py`
 
-Documentation additions/updates are tracked in `NOTES_CHANGELOG.md` and `NOTES_CHANGELOG_FULL.md`.
+Packaging:
+
+- `.github/workflows/package-witch-tools-v2-10.yml`
+- stale v2.9 branch-packaging workflow removed from this feature branch.
+
+Documentation additions/updates are tracked by the project/source notes changelogs.
 
 ## Test status
 
-- Parent baseline/branch ancestry: passed
-- Authored new-module Python parse/compile: passed during implementation
-- Source registration/panel/operator contract review: performed
-- Blender executable in implementation environment: unavailable
-- Blender 4.5 registration/unregistration: not performed
-- Blender 4.5 panel rendering/icons/tooltips: not performed
-- Coordinate Copy real-mesh execution: not performed
-- Plane Lock real transform enforcement: not performed
-- Level real-mesh execution: not performed
-- Inject New real modal/topology execution: not performed
-- Undo/redo: not performed
-- Save/reopen: not performed
-- Additional Blender versions: not tested
-- Witch Dock/Quickbar updated: no
-- Public release branches/URLs modified: no
+- Python syntax compile of authored Dev_v2.10 modules: passed.
+- Source-level architecture/registration review: performed.
+- Blender executable available here: no.
+- Blender 4.5 registration/UI/GPU/modal/topology tests: not performed.
+- Undo/Redo: not performed.
+- Save/reopen: not performed.
+- Additional Blender versions: not tested.
+- Public release branches: unchanged.
+- Witch Dock/Quickbar: unchanged.
