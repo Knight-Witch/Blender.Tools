@@ -1,184 +1,172 @@
 # Witch Tools Precision Edit — Feature Specification
 
 Status: development candidate  
-Candidate: `Dev_v2.9.0`  
+Candidate: `Dev_v2.10.0`  
 Target Blender: `4.5.0`  
-Branch: `feature/witch-tools-precision-edit`
+Branch: `feature/witch-tools-magic-branch`
 
 ## Purpose
 
-Add fast, explicit mesh-edit precision workflows to Witch Tools without relying on Blender selection medians or repeated manual coordinate entry.
+Provide fast, explicit mesh-edit precision workflows without relying on selection medians, repeated coordinate entry, or repetitive operator restarts.
 
-The feature contains three Edit Tools sections:
+Precision Edit contains:
 
-1. **Coordinate Copy**
-2. **Planar Edit**
-3. **Inject New**
+1. Coordinate Copy
+2. Planar Edit
+3. Inject New
+4. shared drag/magnetic infrastructure also used by Magic Branch
 
-Witch Tools remains the canonical backend. Any later Witch Dock / Quickbar exposure must call these operators rather than duplicate geometry logic.
+Witch Tools remains the canonical backend. Any later Witch Dock / Quickbar exposure must call Witch Tools operators rather than duplicate geometry logic.
 
 ## Coordinate Copy
 
-### User workflow
+Unchanged from the Dev_v2.9.0 candidate contract:
 
-1. Choose `Global` or `Local` coordinate space.
-2. Enable any combination of X, Y, Z.
-3. Enable Location, Rotation, Scale, or a combination.
-4. Select exactly one source vertex, edge, or face and press **Capture Source**.
-5. Select one or more targets.
-6. Press **Apply Copied Coordinates** or its hotkey.
-
-### Coordinate semantics
-
-- `Global`: source and targets are evaluated in world space, then every result is converted back into the target object's local mesh coordinates. This is the mode intended for lining up different mesh objects whose object origins/transforms differ.
-- `Local`: the same numeric object-local source values are applied in each target object's own local frame.
-- Changing Global/Local after capture invalidates the capture and requires recapture.
-- Disabled X/Y/Z components remain unchanged.
-
-### Exact-target semantics
-
-Coordinate Copy must never use the entire target selection's median as the value being changed.
-
-- Vertex mode: every selected target vertex is an independent target.
-- Edge mode: every connected component of selected target edges is an independent target group.
-- Face mode: every connected component of selected target faces is an independent target group.
-
-### Location / rotation / scale on mesh elements
-
-Mesh elements do not own Blender Object transform channels, so Rotation and Scale are defined as geometry-frame operations:
-
-- Vertex: position plus a normal-derived local frame; unit geometric extent.
-- Edge: midpoint, edge-direction frame, and edge length.
-- Face: median center, face-normal/edge-derived frame, and frame-aligned planar extent.
-
-Location moves each target point/group center. Rotation and scale operate around that target's own center.
-
-### Shortcut
-
-Default development shortcut for Apply: `Ctrl+Shift+C` in the Mesh keymap. The operator remains assignable through Blender's normal right-click shortcut workflow.
+- Global or Local capture/application;
+- any X/Y/Z mask;
+- Location / Rotation / Scale geometry-frame operations;
+- exactly one vertex/edge/face source capture;
+- vertex targets independently; connected edge/face target components independently;
+- no selection-wide target median;
+- Global converts through world space per object; Local copies numeric object-local values;
+- protected-target transaction preflight;
+- default Apply shortcut `Ctrl+Shift+C`.
 
 ## Planar Edit
 
+Unchanged from Dev_v2.9.0 candidate contract.
+
 ### Plane Lock
 
-Plane Lock freezes selected geometry on one or more object-local coordinate axes while leaving the other axes editable.
-
-- X/Y/Z may be combined.
-- Selecting an edge or face locks its participating vertices.
-- Lock references are stored as persistent BMesh custom layers, not transient vertex indices.
-- A lightweight guard restores locked coordinates during Edit Mode transforms.
-- **Unlock Selected** removes only the enabled lock axes from the current selection.
-- **Clear All Plane Locks** clears this tool's locks from all participating Edit Mode meshes.
-- Existing full Vertex Locks remain stronger protection and are honored by the precision-edit operators.
+- stores object-local X/Y/Z lock values in BMesh custom layers;
+- supports combined axes, partial unlock, clear-all and edge/face participation through vertices;
+- lightweight Edit Mode guard restores locked coordinates;
+- existing full Vertex Locks remain stronger protection.
 
 ### Level
 
-1. Select exactly one source vertex, edge, or face and press **Capture Source**.
-2. Enable X, Y, and/or Z.
-3. Select any target vertices, edges, or faces.
-4. Press **Level Targets**.
+- one vertex/edge/face source point captured in world space;
+- every selected target vertex independently receives source X/Y/Z on enabled axes;
+- supports multi-object Edit Mode with per-object world/local conversion;
+- incompatible Vertex Lock / Plane Lock targets block before mutation.
 
-The source point is captured in world space. Every selected target vertex independently receives the source world coordinate on the enabled axes. Disabled axes remain unchanged. This is an absolute per-vertex operation, not a median translation.
+## Inject New — Dev_v2.10.0
 
-## Inject New
+### Setup
 
-### Setup modes
+- `Solo`: duplicate one selected vertex, edge, or face with no source connection.
+- `Branch`: duplicate one selected vertex, edge, or face and create source-to-copy branch edges.
+- `Slide`: insert one vertex into every selected source edge; all new vertices share the same relative position along their own edges.
 
-- `Solo`: duplicate one selected vertex, edge, or face. The duplicate is not connected back to the source.
-- `Branch`: duplicate one selected vertex, edge, or face and add source-to-copy branch edges for the duplicated source vertices. Branch does not automatically create side faces.
-- `Slide`: insert one new vertex into exactly one selected edge. The original edge is split so the new vertex is already part of the topology.
+Branch still creates branch edges, not automatic extrusion side faces.
 
-Slide is deliberately vertex-only because inserting an edge or face *into* one existing edge has no unambiguous topology-preserving meaning.
+### Movement
 
-### Movement modes
+Solo/Branch now use independent global X/Y/Z toggles instead of one exclusive axis choice.
 
-Solo and Branch support:
+- one axis: motion constrained to that axis;
+- two axes: motion constrained to the corresponding global plane;
+- XYZ: free view-depth placement;
+- optional captured straight Rail remains available and replaces free XYZ movement while enabled.
 
-- `X`: move only along global X.
-- `Y`: move only along global Y.
-- `Z`: move only along global Z.
-- `Rail`: capture one endpoint from a vertex, edge midpoint, or face center; the new geometry moves only on the straight segment from the source point to that endpoint.
+At least one XYZ axis must be enabled when Rail is off.
 
-Slide uses the selected source edge itself as its rail.
+### Magnetic Snap
 
-Placement is modal: move the mouse, then left-click or Enter to commit. Esc or right-click cancels.
+When enabled, the hovered mesh target is highlighted and participates in placement. Target priority is vertex, edge, face.
 
-### Scope and safety
+- vertex: nearest compatible new endpoint lands exactly on it while the rest of the injection remains rigid;
+- edge: nearest compatible new endpoint lands on the closest edge point while the rest remains rigid;
+- face: each new endpoint follows its own parallel travel line to the hovered face plane/boundary, allowing angled-wall placement without a face-median snap.
 
-- Inject New currently operates on one active mesh in Edit Mode.
-- Meshes with multiple shape keys are rejected.
-- Existing Vertex Lock references are snapshotted/restored across topology changes.
-- Plane Lock enforcement is suspended during the modal operation and newly created vertices do not inherit Plane Lock masks.
-- Finish rejects zero-area faces discovered after the operation.
-- Cancel attempts to remove duplicated topology or dissolve the inserted Slide vertex back out.
+### Auto-Merge
 
-The existing **Edge / Vertex Inject** A/B/C auto-aligned repair operator remains a separate tool and is not replaced by Inject New.
+Branch + Magnetic Snap may merge compatible contacts on commit.
 
-## UI order
+- existing vertex -> weld;
+- edge interior -> split target edge at exact contact then weld;
+- compatible two-boundary face contacts may connect/split the face where Blender can do so safely.
 
-Edit Tools candidate order:
+Pure arbitrary face-interior retopology is intentionally not invented in this candidate.
+
+Auto-Merge target geometry protected by Vertex Lock or Plane Lock blocks before intentional target mutation.
+
+### Multi-edge Slide
+
+Slide accepts one or more preselected source edges.
+
+- one inserted vertex per selected edge;
+- selected edge nearest the cursor acts as the current driver rail;
+- every inserted vertex uses the same relative edge factor;
+- factor clamps away from exact endpoints to avoid zero-length split edges;
+- the selected driver rail is visually indicated.
+
+Dev_v2.10.0 does not dynamically add completely unselected fan edges to the Slide set merely by hovering; that interaction remains deferred until its rollback/selection contract is validated.
+
+### View navigation
+
+During modal placement, holding MMB pauses geometry placement and passes navigation to Blender. The operator assigns the current live injection center as the orbit pivot candidate. Releasing MMB resumes placement.
+
+### Scope / safety
+
+- one active mesh object in Edit Mode;
+- multiple shape-key meshes rejected;
+- Vertex Lock references snapshotted/restored;
+- Plane Lock and Vertex Lock guards suspended during modal topology changes and restored afterward;
+- new vertices do not inherit Plane Lock masks;
+- finish rejects zero-length edges and zero-area faces;
+- cancel removes duplicates or dissolves inserted Slide vertices back out.
+
+## Relationship to Magic Branch
+
+Magic Branch is specified separately in `/docs/features/magic_branch/`. It uses the same `precision_edit_drag.py` and `precision_edit_topology.py` backend so hover, snap, merge, movement and topology primitives remain canonical.
+
+## Edit Tools organization
+
+Default top-level order in Dev_v2.10.0:
 
 1. Coordinate Copy
 2. Planar Edit
 3. Vertex Snap
-4. Inject New
-5. Object Snap
-6. Edge / Vertex Inject
-7. Curvature Sync
-8. Align Vertices / Edges / Faces
+4. Object Snap
+5. Inject New
+6. Magic Branch
+7. Edge Doctor
+8. Vertex Lock
 9. Selection Slots
-10. Vertex Locks / remaining Edit Tools controls
 
-Each new section uses compact toggles/icons and an explicit numbered workflow where ordering matters.
+The order is preference-backed and user-reorderable.
+
+Edge Doctor contains:
+
+- Missing Vertex / Edge Injector;
+- Alignment Fixer;
+- Curvature Sync.
 
 ## Acceptance criteria
 
-### Coordinate Copy
+Coordinate Copy / Planar Edit retain the Dev_v2.9 acceptance criteria.
 
-- Global Location can align targets across two mesh objects with different origins/transforms to exactly the same enabled world coordinate.
-- Local Location copies the same numeric local coordinate into targets without pretending the objects share world frames.
-- Selecting multiple target vertices changes each vertex to the copied enabled coordinate, not the target median.
-- Connected selected edge/face components behave independently.
-- X/Y/Z masks preserve disabled components.
-- Location-only, Rotation-only, Scale-only, and combined modes execute without moving unrelated components.
-- Changing space after source capture is rejected until recapture.
-- Protected targets fail before partial mutation.
-- Ctrl+Shift+C invokes Apply in Mesh Edit Mode and can be reassigned through Blender keymaps.
+Inject New additionally requires:
 
-### Plane Lock
+- all single/pair/triple X/Y/Z masks behave correctly;
+- vertex/edge/face highlight matches the magnetic target actually solved;
+- edge/vertex snaps preserve rigid geometry except the intended translated contact;
+- face snap solves endpoints independently;
+- Auto-Merge leaves no coincident duplicate endpoint at supported vertex/edge contacts;
+- multiple selected Slide edges receive one inserted vertex each at the same relative factor;
+- MMB pauses placement, pivots around current live geometry and resumes without a jump;
+- commit/cancel/Undo/Redo do not leave partial destructive topology;
+- normals/winding/material and relevant edge attributes are validated;
+- manifold safety is required where the operation is expected to preserve manifoldness; loose Branch geometry is explicitly exempt from a global manifold requirement.
 
-- Locked X/Y/Z coordinates remain exact while ordinary transforms change unlocked coordinates.
-- Multiple lock axes can be combined.
-- Edge/face selection locks participating vertices.
-- Unlock Selected removes only requested axes.
-- Clear All removes this tool's locks.
-- Locks survive ordinary Edit Mode selection changes and save/reopen when Blender preserves the custom mesh layers.
+See `TEST_PLAN.md` and `/docs/features/magic_branch/TEST_PLAN.md`.
 
-### Level
+## Out of scope / deferred
 
-- Every selected target vertex receives the exact source world coordinate on enabled axes.
-- Multi-object targets with different object origins/transforms line up in world space.
-- No target-selection median is used.
-- Existing Vertex Locks and Plane Locks block incompatible changes before mutation.
-
-### Inject New
-
-- Solo Vertex/Edge/Face creates a movable disconnected copy.
-- Branch Vertex/Edge/Face creates the copy plus source-to-copy branch edges without deleting source topology.
-- Slide inserts one vertex into one edge and leaves the vertex between the original endpoints.
-- X/Y/Z mouse placement changes only the selected global movement axis.
-- Rail movement is clamped to the source-to-end segment.
-- Esc/right-click restores the pre-operation topology for all three modes.
-- Commit participates in Blender Undo/Redo as one operator action.
-- Existing material/edge attributes and face winding are preserved where the operation does not intentionally create new loose geometry.
-- Slide does not introduce zero-length edges, zero-area faces, duplicate edges, or unexpected non-manifold changes in a previously manifold local test case.
-- Failure does not leave partially injected topology.
-
-## Out of scope for Dev_v2.9.0
-
-- Curved/polyline Inject New rails.
-- Multi-object simultaneous Inject New topology editing.
-- Branch side-face generation / extrusion behavior.
-- Automatically interpreting Slide as edge/face insertion.
-- Surface projection rails.
-- Witch Dock / Quickbar wrapper changes before Witch Tools runtime acceptance.
+- curved/polyline Inject New rails;
+- multi-object simultaneous topology creation;
+- Branch side-face/extrusion generation;
+- arbitrary face-interior Auto-Merge retopology;
+- hover-only dynamic addition of unselected fan edges to multi-edge Slide;
+- Witch Dock / Quickbar wrappers before Witch Tools Blender 4.5 acceptance.
