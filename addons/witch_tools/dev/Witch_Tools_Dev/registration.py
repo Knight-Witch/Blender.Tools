@@ -1,7 +1,23 @@
 import bpy
 from bpy.props import PointerProperty, StringProperty
 
-from . import operators_coordinate_copy, operators_curvature_sync, operators_guided_align, operators_inject_new, operators_planar_edit, operators_vertex_inject, operators_selection_slots, operators_head_editing, operators_head_finishing, operators_head_prep, operators_vertex_locks, precision_edit_props
+from . import (
+    operators_coordinate_copy,
+    operators_curvature_sync,
+    operators_edit_tool_order,
+    operators_edge_doctor,
+    operators_guided_align,
+    operators_head_editing,
+    operators_head_finishing,
+    operators_head_prep,
+    operators_inject_new,
+    operators_magic_branch,
+    operators_planar_edit,
+    operators_selection_slots,
+    operators_vertex_inject,
+    operators_vertex_locks,
+    precision_edit_props,
+)
 from .custom_icons import register_custom_icons, unregister_custom_icons
 from .handlers import register_handlers, unregister_handlers
 from .keymaps import register_default_keymaps, unregister_keymaps
@@ -43,6 +59,7 @@ CORE_CLASSES = (
     WITCHTOOLS_OT_open_preferences,
     WITCHTOOLS_OT_open_link,
     WITCHTOOLS_OT_toggle_minimal_view,
+    *operators_edit_tool_order.CLASSES,
     MESH_OT_vertex_snap_global,
     *OBJECT_SNAP_CLASSES,
     WT_OT_set_active_as_source,
@@ -83,12 +100,14 @@ CORE_CLASSES = (
     *operators_head_finishing.CLASSES,
     *operators_vertex_locks.CLASSES,
     *operators_vertex_inject.CLASSES,
+    *operators_edge_doctor.CLASSES,
     *operators_selection_slots.CLASSES[2:],
     *operators_curvature_sync.CLASSES,
     *operators_guided_align.CLASSES,
     *operators_coordinate_copy.CLASSES,
     *operators_planar_edit.CLASSES,
     *operators_inject_new.CLASSES,
+    *operators_magic_branch.CLASSES,
     *PANELS,
 )
 
