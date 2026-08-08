@@ -1,0 +1,52 @@
+name: Fix v2.10 magnetic reachability
+
+on:
+  push:
+    branches:
+      - feature/witch-tools-magic-branch
+    paths:
+      - .github/workflows/fix-v2-10-magnetic-reachability.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/witch-tools-magic-branch
+          fetch-depth: 0
+      - name: Apply constrained-snap guard
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('addons/witch_tools/dev/Witch_Tools_Dev/precision_edit_drag.py')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace(
+              'def rigid_snap_delta(obj, created_verts, target, mask):',
+              'def rigid_snap_delta(obj, created_verts, target, mask, tolerance=1.0e-5):',
+          )
+          s = s.replace(
+              "        (_score, vert, delta, point) = best\n        return delta, [(vert, 'VERT', target.element, point)]",
+              "        (score, vert, delta, point) = best\n        if score[0] > tolerance:\n            return None, None\n        return delta, [(vert, 'VERT', target.element, point)]",
+          )
+          s = s.replace(
+              "    (_score, vert, delta, point) = best\n    return delta, [(vert, 'EDGE', edge, point)]",
+              "    (score, vert, delta, point) = best\n    if score[0] > tolerance:\n        return None, None\n    return delta, [(vert, 'EDGE', edge, point)]",
+          )
+          if 'if score[0] > tolerance:' not in s:
+              raise SystemExit('Reachability guard patch did not apply')
+          compile(s, str(p), 'exec')
+          p.write_text(s, encoding='utf-8')
+          Path('.github/workflows/fix-v2-10-magnetic-reachability.yml').unlink(missing_ok=True)
+      - name: Commit patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Knight Witch Dev Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Fix constrained magnetic snap reachability"
+          git push origin HEAD:feature/witch-tools-magic-branch
