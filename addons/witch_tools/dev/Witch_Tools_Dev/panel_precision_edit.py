@@ -10,33 +10,22 @@ def _report_row(layout, text):
 
 def draw_coordinate_copy(layout, context, state):
     box = layout.box()
-    if not draw_section_toggle(
-        box,
-        state,
-        'show_coordinate_copy',
-        'Coordinate Copy',
-        section_icon='COPYDOWN',
-        help_topic='coordinate_copy_title',
-    ):
+    if not draw_section_toggle(box, state, 'show_coordinate_copy', 'Coordinate Copy', section_icon='COPYDOWN', help_topic='coordinate_copy_title'):
         return
-
     if context.mode != 'EDIT_MESH':
         box.label(text='Enter Mesh Edit Mode on the mesh object(s).', icon='INFO')
 
     step1 = box.box()
     step1.label(text='1. Choose What to Copy', icon='ORIENTATION_GLOBAL')
-
     space = step1.row(align=True)
     space.label(text='Space')
     space.prop_enum(state, 'coordinate_copy_space', 'GLOBAL', text='Global')
     space.prop_enum(state, 'coordinate_copy_space', 'LOCAL', text='Local')
-
     axes = step1.row(align=True)
     axes.label(text='Axes')
     axes.prop(state, 'coordinate_copy_axis_x', text='X', toggle=True)
     axes.prop(state, 'coordinate_copy_axis_y', text='Y', toggle=True)
     axes.prop(state, 'coordinate_copy_axis_z', text='Z', toggle=True)
-
     components = step1.row(align=True)
     components.label(text='Copy')
     components.prop(state, 'coordinate_copy_use_location', text='Location', toggle=True)
@@ -64,16 +53,8 @@ def draw_coordinate_copy(layout, context, state):
 
 def draw_planar_edit(layout, context, state):
     box = layout.box()
-    if not draw_section_toggle(
-        box,
-        state,
-        'show_planar_edit',
-        'Planar Edit',
-        section_icon='MESH_PLANE',
-        help_topic='planar_edit_title',
-    ):
+    if not draw_section_toggle(box, state, 'show_planar_edit', 'Planar Edit', section_icon='MESH_PLANE', help_topic='planar_edit_title'):
         return
-
     if context.mode != 'EDIT_MESH':
         box.label(text='Enter Mesh Edit Mode on the mesh object(s).', icon='INFO')
 
@@ -106,22 +87,13 @@ def draw_planar_edit(layout, context, state):
     axes.prop(state, 'planar_level_axis_y', text='Y', toggle=True)
     axes.prop(state, 'planar_level_axis_z', text='Z', toggle=True)
     level.operator('mesh.wt_planar_level_targets', text='2. Level Targets', icon='CHECKMARK')
-
     _report_row(box, state.planar_edit_last_report)
 
 
 def draw_inject_new(layout, context, state, _legacy_props):
     box = layout.box()
-    if not draw_section_toggle(
-        box,
-        state,
-        'show_inject_new',
-        'Inject New',
-        section_icon='MOD_EDGESPLIT',
-        help_topic='inject_new_title',
-    ):
+    if not draw_section_toggle(box, state, 'show_inject_new', 'Inject New', section_icon='MOD_EDGESPLIT', help_topic='inject_new_title'):
         return
-
     if context.mode != 'EDIT_MESH':
         box.label(text='Enter Edit Mode on one mesh object.', icon='INFO')
 
@@ -135,14 +107,17 @@ def draw_inject_new(layout, context, state, _legacy_props):
     step2 = box.box()
     step2.label(text='2. Movement', icon='EMPTY_ARROWS')
     if state.inject_new_mode == 'SLIDE':
-        step2.label(text='Slide uses the selected source edge as its rail.', icon='EDGESEL')
+        step2.label(text='Selected edges are rails; all injected verts share one slide factor.', icon='EDGESEL')
     else:
-        movement = step2.row(align=True)
-        movement.prop_enum(state, 'inject_new_move', 'X', text='X')
-        movement.prop_enum(state, 'inject_new_move', 'Y', text='Y')
-        movement.prop_enum(state, 'inject_new_move', 'Z', text='Z')
-        movement.prop_enum(state, 'inject_new_move', 'RAIL', text='Rail')
-        if state.inject_new_move == 'RAIL':
+        axes = step2.row(align=True)
+        axes.label(text='Axes')
+        axes.enabled = not state.inject_new_use_rail
+        axes.prop(state, 'inject_new_axis_x', text='X', toggle=True)
+        axes.prop(state, 'inject_new_axis_y', text='Y', toggle=True)
+        axes.prop(state, 'inject_new_axis_z', text='Z', toggle=True)
+        rail_toggle = step2.row(align=True)
+        rail_toggle.prop(state, 'inject_new_use_rail', text='Use Captured Rail', icon='EDGESEL', toggle=True)
+        if state.inject_new_use_rail:
             rail = step2.row(align=True)
             rail.operator('mesh.wt_inject_new_capture_rail_end', text='Capture Rail End', icon='PIVOT_ACTIVE')
             clear = rail.row(align=True)
@@ -152,6 +127,13 @@ def draw_inject_new(layout, context, state, _legacy_props):
             status = step2.row()
             status.scale_y = 0.62
             status.label(text=state.inject_new_rail_target_label)
+
+    snap = step2.row(align=True)
+    snap.enabled = state.inject_new_mode != 'SLIDE'
+    snap.prop(state, 'inject_new_magnetic_snap', text='Magnetic Snap', icon='SNAP_ON', toggle=True)
+    merge = snap.row(align=True)
+    merge.enabled = state.inject_new_mode == 'BRANCH' and state.inject_new_magnetic_snap
+    merge.prop(state, 'inject_new_auto_merge', text='Auto-Merge', icon='AUTOMERGE_ON', toggle=True)
 
     step3 = box.box()
     step3.label(text='3. New Element', icon='VERTEXSEL')
@@ -168,8 +150,64 @@ def draw_inject_new(layout, context, state, _legacy_props):
     step4 = box.box()
     step4.label(text='4. Select Source and Inject', icon='RESTRICT_SELECT_OFF')
     if state.inject_new_mode == 'SLIDE':
-        step4.label(text='Select exactly one edge. A new vertex will divide it.')
+        step4.label(text='Select one or more edges. One new vertex is injected into each.')
     else:
-        step4.label(text='Select exactly one source vertex, edge, or face matching Step 3.')
+        step4.label(text='Select exactly one source matching Step 3, then drag the new geometry.')
     step4.operator('mesh.wt_inject_new', text='Inject New', icon='MOD_EDGESPLIT')
+    hint = step4.row()
+    hint.scale_y = 0.65
+    hint.label(text='During placement: MMB orbits around the live injection; release MMB to resume dragging.')
     _report_row(box, state.inject_new_last_report)
+
+
+def draw_magic_branch(layout, context, state):
+    box = layout.box()
+    if not draw_section_toggle(box, state, 'show_magic_branch', 'Magic Branch', section_icon='NODETREE', help_topic='magic_branch_title'):
+        return
+    if context.mode != 'EDIT_MESH':
+        box.label(text='Enter Edit Mode on one mesh object.', icon='INFO')
+
+    mode = box.box()
+    mode.label(text='1. Tool Mode', icon='RECOVER_LAST')
+    row = mode.row(align=True)
+    row.prop(state, 'magic_branch_persistent', text='Persistent', icon='PINNED', toggle=True)
+    row.operator('mesh.wt_magic_branch_toggle_persistent', text='', icon='FILE_REFRESH')
+    draw_shortcut_hint(mode, 'mesh.wt_magic_branch_toggle_persistent')
+    sub = mode.row()
+    sub.scale_y = 0.65
+    sub.label(text='OFF = Single Branch. ON = stay armed after each completed drag.')
+
+    setup = box.box()
+    setup.label(text='2. Branch Type', icon='MESH_DATA')
+    types = setup.row(align=True)
+    types.prop_enum(state, 'magic_branch_element_type', 'VERT', text='Vertex', icon='VERTEXSEL')
+    types.prop_enum(state, 'magic_branch_element_type', 'EDGE', text='Edge', icon='EDGESEL')
+    types.prop_enum(state, 'magic_branch_element_type', 'FACE', text='Face', icon='FACESEL')
+    if state.magic_branch_element_type == 'FACE':
+        face_mode = setup.row(align=True)
+        face_mode.label(text='Face Build')
+        face_mode.prop_enum(state, 'magic_branch_face_mode', 'PAVER', text='Paver')
+        face_mode.prop_enum(state, 'magic_branch_face_mode', 'ORGANIC', text='Organic')
+
+    movement = box.box()
+    movement.label(text='3. Drag / Snap', icon='EMPTY_ARROWS')
+    axes = movement.row(align=True)
+    axes.label(text='Axes')
+    axes.prop(state, 'magic_branch_axis_x', text='X', toggle=True)
+    axes.prop(state, 'magic_branch_axis_y', text='Y', toggle=True)
+    axes.prop(state, 'magic_branch_axis_z', text='Z', toggle=True)
+    snap = movement.row(align=True)
+    snap.prop(state, 'magic_branch_magnetic_snap', text='Magnetic Snap', icon='SNAP_ON', toggle=True)
+    merge = snap.row(align=True)
+    merge.enabled = state.magic_branch_magnetic_snap
+    merge.prop(state, 'magic_branch_auto_merge', text='Auto-Merge', icon='AUTOMERGE_ON', toggle=True)
+
+    start = box.box()
+    start.label(text='4. Start Building', icon='PLAY')
+    start.operator('mesh.wt_magic_branch', text='Start Magic Branch', icon='PLAY')
+    draw_shortcut_hint(start, 'mesh.wt_magic_branch')
+    hint = start.column(align=True)
+    hint.scale_y = 0.65
+    hint.label(text='Viewport: click-drag source geometry to branch it.')
+    hint.label(text='MMB pauses the branch and orbits around the live geometry; Esc exits.')
+    _report_row(box, state.magic_branch_last_report)
