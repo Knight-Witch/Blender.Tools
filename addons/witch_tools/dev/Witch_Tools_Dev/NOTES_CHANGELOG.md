@@ -1,12 +1,12 @@
 # Witch Tools Notes Changelog — Latest Update
 
-## 2026-08-07 — Dev_v2.9.0 Precision Edit
+## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing
 
-- Added **Coordinate Copy** above Vertex Snap with Global/Local space, X/Y/Z masks, Location/Rotation/Scale controls, exact source capture, independent target application, multi-object world conversion, and default `Ctrl+Shift+C` Apply shortcut.
-- Added **Planar Edit** with persistent per-vertex object-local Plane Lock axes and exact world-space Level targets.
-- Added **Inject New** below Vertex Snap with Solo/Branch/Slide, global X/Y/Z placement, captured straight Rail endpoints, Vertex/Edge/Face Solo/Branch sources, and vertex-only edge-splitting Slide.
-- Preserved the existing A/B/C **Edge / Vertex Inject** repair workflow as a separate tool.
-- Added protection-system coordination so Coordinate Copy/Level preflight Vertex Locks and Plane Locks, while Inject New suspends/restores guards around modal topology changes.
-- Added step-based compact UI, hover help, `PRECISION_EDIT_QUICK_START.md`, and the repository `precision_edit` feature packet/test plan.
-- Bumped development metadata to `Dev_v2.9.0`, target Blender 4.5.
-- Static/source checks were performed during implementation. Blender 4.5 registration, UI, real-mesh/modal topology behavior, undo/redo, and save/reopen remain untested in this environment.
+- Expanded Inject New with independent X/Y/Z movement toggles, vertex/edge/face Magnetic Snap highlighting, Branch Auto-Merge, multi-edge Slide, and MMB orbit around the live injection.
+- Added shared `precision_edit_drag.py` and `precision_edit_topology.py` backends so Inject New and Magic Branch use one canonical drag/snap/topology implementation.
+- Added Magic Branch with Single/Persistent modes, Vertex/Edge/Face branch types, Paver/Organic face workflows, magnetic placement, Auto-Merge, and a hotkeyable Persistent toggle.
+- Reorganized repair tools under Edge Doctor: Missing Vertex / Edge Injector, Alignment Fixer, Curvature Sync. Added two-edge L repair while retaining the original A/B/C solver.
+- Added preference-backed Edit Tools ordering with compact drag-grip rows, up/down fallback, and Reset Default. Planar Edit remains independently reorderable.
+- Bumped metadata to `Dev_v2.10.0`, target Blender `4.5.0`, and replaced the branch-specific v2.9 packaging workflow with a v2.10 workflow.
+- Added/updated specifications, decisions, state, UI map, roadmap, acceptance criteria and Blender 4.5 topology test plans.
+- Static Python compilation passed for authored Dev_v2.10 modules. Blender 4.5 registration, GPU hover drawing, modal behavior, MMB pivot, Auto-Merge, Persistent Undo, reorder drag, real topology, Undo/Redo and save/reopen remain untested in this environment.
