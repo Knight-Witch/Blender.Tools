@@ -1,89 +1,72 @@
 # Precision Edit — Feature State
 
-Last updated: 2026-08-07
+Last updated: 2026-08-08
 
 ## Current baseline
 
 - Repository: `Knight-Witch/Blender.Tools`
-- Branch: `feature/witch-tools-precision-edit`
-- Parent baseline commit: `fc94b7c27d0b850699e79b973a0548a2193eb525`
-- Parent candidate: Witch Tools `Dev_v2.8.0` Guided Align
-- Current candidate: Witch Tools `Dev_v2.9.0`
+- Branch: `feature/witch-tools-magic-branch`
+- Direct parent branch: `feature/witch-tools-precision-edit`
+- Parent head at branch creation: `a5fe4bbccc954b25ac645489f2092b3d3d7618c5`
+- Current candidate: Witch Tools `Dev_v2.10.0`
 - Intended Blender target: `4.5.0`
 
-## Last completed work
+## Dev_v2.9 systems retained
 
-- Added Coordinate Copy source capture and Apply operators with explicit Global/Local conversion, XYZ masks, Location/Rotation/Scale geometry-frame handling, independent target groups, multi-object world-space support, and preflight against protection systems.
-- Added Plane Lock using persistent mesh custom layers plus a guard timer.
-- Added Level source capture and exact per-target world-coordinate application.
-- Added interactive Inject New with Solo, Branch, Slide, X/Y/Z movement, arbitrary straight Rail endpoint capture, commit/cancel behavior, and protection-system suspension/restoration.
-- Added compact step-based Edit Tools UI, hover help, and a default `Ctrl+Shift+C` Coordinate Copy Apply shortcut.
-- Preserved the existing A/B/C Auto-Aligned Edge / Vertex Inject as a separate tool.
-- Bumped development metadata from Dev_v2.8.0 to Dev_v2.9.0.
-- Completed the final source-contract audit for registration order, Scene property wiring, panel property/operator references, operator IDs, default keymap references, and feature-branch ancestry/diff scope.
+- Coordinate Copy Global/Local, XYZ, Location/Rotation/Scale, independent targets, multi-object conversion.
+- Plane Lock custom-layer constraints and guard.
+- Level exact per-target world-coordinate assignment.
+- Coordinate Copy Apply default `Ctrl+Shift+C` shortcut.
 
-## Current known-working state
+## Dev_v2.10 Inject New expansion
 
-Source implementation is committed on the feature branch and the branch is based directly on the verified Dev_v2.8.0 candidate commit.
+- Solo / Branch / Slide retained.
+- Solo/Branch movement changed to independent X/Y/Z toggles; any non-empty combination is allowed.
+- straight captured Rail remains available.
+- Magnetic Snap highlights vertex/edge/face targets.
+- vertex/edge magnetic placement rigidly aligns the nearest compatible new endpoint.
+- face magnetic placement solves each endpoint along its own travel line.
+- Branch Auto-Merge welds supported vertex/edge contacts and materializes interior edge split points.
+- multiple selected Slide edges receive one inserted vertex each at one shared relative factor.
+- nearest selected rail under the cursor acts as Slide driver.
+- MMB pauses live placement and passes viewport orbit through after assigning the live injection as the pivot candidate.
+- zero-length edge and zero-area face validation added through the shared topology backend.
 
-Static syntax compilation was performed on the authored new precision-edit modules during implementation. The final source-contract audit found no registration/property/operator/keymap identifier mismatch in the reviewed Dev_v2.9.0 source. The feature branch is strictly ahead of the exact parent baseline with no behind commits and changes are confined to the Witch Tools source/documentation candidate.
+## Shared backend
 
-No Blender runtime is available in the implementation environment. No claim is made that Blender 4.5 registration, panel rendering, interactive modal placement, undo/redo, topology rollback, or save/reopen has passed.
+- `precision_edit_drag.py`: projection, hover picking/highlight, magnetic solves, merge materialization, MMB pivot helper.
+- `precision_edit_topology.py`: duplication/branch primitives, Paver/Organic primitives, geometry validation.
+- These modules are also canonical for Magic Branch; no duplicate magnetic implementation is intended.
 
-## Active problems / validation risks
+## Static checks performed
 
-1. Blender 4.5 runtime validation is pending.
-2. Coordinate Copy edge/face partial Euler rotation and geometry extent behavior needs real-mesh acceptance testing, especially under mirrored/non-uniform object transforms.
-3. Plane Lock's timer-based restoration must be tested during normal Blender transforms and save/reopen.
-4. Inject New modal mouse projection must be tested from several camera orientations.
-5. Inject New cancel rollback for Branch and especially Slide must be confirmed to restore topology exactly.
-6. Inject New currently operates on one active mesh at a time.
-7. Inject Rail is a straight source-to-end segment only.
-8. Branch creates loose source-to-copy edges, not side faces; manifoldness is therefore not promised for Branch.
-9. Slide must be tested for normals, manifold safety, edge attributes, zero geometry, and Undo/Redo.
-10. `Ctrl+Shift+C` must be checked against the user's Blender keymap for conflicts.
-11. The older roadmap references a missing `/docs/features/align_selection/` packet; that inherited documentation gap remains unresolved.
+- authored Dev_v2.10 Python modules compile with Python syntax compilation in the implementation environment;
+- source/version/registration wiring has been reviewed while integrating files;
+- stale branch-specific Dev_v2.9 packaging workflow was replaced with a Dev_v2.10 workflow targeting this feature branch.
 
-## Next exact implementation step
+## Runtime status
 
-1. Install Dev_v2.9.0 in Blender 4.5.
-2. Execute `TEST_PLAN.md` in order, beginning with registration/UI and Coordinate Copy Location tests.
-3. Fix only failures found by those tests; do not broaden scope into deferred rails/extrusion/Quickbar work.
-4. Once accepted, cut a versioned installable artifact and record exact size/SHA-256 plus tested Blender versions.
-5. Only then consider thin Witch Dock / Quickbar exposure.
+No Blender executable is available in the implementation environment. The following remain untested in Blender 4.5:
 
-## Files added for the implementation
+- registration/unregistration;
+- panel/icon/GPU hover rendering;
+- Coordinate Copy and Plane Lock inherited runtime acceptance;
+- magnetic snap from practical camera angles;
+- target-edge split/weld behavior;
+- multi-edge Slide cancellation and data preservation;
+- MMB orbit pivot/resume behavior;
+- Undo/Redo;
+- save/reopen;
+- additional Blender versions.
 
-- `precision_edit_props.py`
-- `precision_edit_common.py`
-- `precision_edit_frames.py`
-- `operators_coordinate_copy.py`
-- `operators_planar_edit.py`
-- `operators_inject_new.py`
-- `panel_precision_edit.py`
+## Current limitations
 
-## Existing source files changed
+- topology creation is active-object-only;
+- Rail is straight only;
+- Branch creates branch edges, not automatic side faces;
+- arbitrary face-interior Auto-Merge retopology is intentionally not invented;
+- Slide dynamically drives only the preselected edge set; unselected fan edges are not added solely by hover in this candidate.
 
-- `__init__.py`
-- `state.py`
-- `registration.py`
-- `keymaps.py`
-- `operators_ui.py`
-- `panel_edit_tools.py`
+## Next exact step
 
-## Test status
-
-- Authored-new-module Python syntax compile: passed during implementation
-- Final source contract audit: passed for reviewed registration/property/operator/keymap/UI identifier wiring
-- Branch ancestry / changed-file comparison: passed
-- Blender executable available in implementation environment: no
-- Blender 4.5 registration: not performed
-- Blender 4.5 UI rendering: not performed
-- Coordinate Copy real-mesh behavior: not performed
-- Plane Lock real transform guard: not performed
-- Level real-mesh multi-object behavior: not performed
-- Inject New modal behavior: not performed
-- Inject topology commit/cancel: not performed
-- Undo/redo: not performed
-- Save/reopen: not performed
-- Additional Blender versions: not tested
+Run `TEST_PLAN.md` plus `/docs/features/magic_branch/TEST_PLAN.md` in Blender 4.5. Fix only failures observed during that validation before any Witch Dock / Quickbar wrapper work.
