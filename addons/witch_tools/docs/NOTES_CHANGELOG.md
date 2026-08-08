@@ -1,16 +1,17 @@
 # Witch Tools Notes Changelog — Latest Update
 
-Date: 2026-08-07
+Date: 2026-08-08
 
-## Dev_v2.9.0 — Precision Edit documentation/state update
+## Dev_v2.10.0 — Magnetic mesh editing / Magic Branch documentation update
 
-- Added the `precision_edit` feature packet with specification, implementation decisions, feature state, roadmap, acceptance criteria, and Blender 4.5 test plan.
-- Updated the Witch Tools UI map for the new Edit Tools order: Coordinate Copy, Planar Edit, Vertex Snap, Inject New, then the retained existing tools.
-- Recorded exact Coordinate Copy semantics for Global/Local frames, independent targets, XYZ masks, and geometry-frame Location/Rotation/Scale behavior.
-- Recorded Plane Lock as persistent object-local per-vertex axis protection and Level as exact per-target world-coordinate assignment.
-- Recorded Inject New Solo/Branch/Slide behavior, straight Rail semantics, vertex-only Slide, Branch edge-only connection behavior, and the retained A/B/C auto-aligned inject tool.
-- Updated the project roadmap and state for the Dev_v2.9.0 source candidate and deferred Witch Dock/Quickbar integration until Blender 4.5 backend validation passes.
-- Completed the final source-contract audit for registration order, Scene property wiring, panel/operator/property identifiers, keymap operator IDs, and branch ancestry/diff scope; no reviewed identifier mismatch was found.
-- Recorded the inherited documentation conflict where the Dev_v2.8.0 roadmap references a missing `/docs/features/align_selection/` directory; no historical content was fabricated.
-- Target Blender remains `4.5.0`.
-- Blender runtime validation remains pending because no Blender executable is available in the implementation environment.
+- Promoted the current development candidate to `Dev_v2.10.0` on `feature/witch-tools-magic-branch`, target Blender `4.5.0`.
+- Added `/docs/features/magic_branch/` with specification, decisions, state, roadmap, acceptance criteria and a topology-aware Blender 4.5 test plan.
+- Updated Precision Edit docs for Inject New independent XYZ movement, Magnetic Snap, Auto-Merge, multi-edge Slide and MMB orbit behavior.
+- Documented shared magnetic semantics: cursor priority vertex > edge > face; vertex/edge rigid endpoint placement; face per-endpoint travel-line placement.
+- Documented conservative Auto-Merge and the explicit non-goal of inventing arbitrary face-interior retopology.
+- Documented Paver as equal-size repeated tiles and Organic as the arbitrary one-face reach mode.
+- Reorganized the UI map around Edge Doctor and persistent user-reorderable Edit Tools sections; Planar Edit remains a separate default section directly after Coordinate Copy.
+- Recorded two-edge L repair for Missing Vertex / Edge Injector while retaining the existing A/B/C solver.
+- Recorded current limitations: active-object-only topology, preselected-set multi-edge Slide, deferred A/B/C viewport labels, unverified Persistent Undo, MMB pivot feel and N-panel drag-grip behavior.
+- Replaced stale v2.9 branch packaging configuration with Dev_v2.10.0 packaging configuration.
+- Static Python compilation passed for authored candidate modules. Blender runtime validation remains pending.
