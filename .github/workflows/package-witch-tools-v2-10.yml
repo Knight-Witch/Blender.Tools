@@ -1,0 +1,71 @@
+name: Package Witch Tools Dev v2.10.0
+
+on:
+  push:
+    branches:
+      - feature/witch-tools-magic-branch
+    paths:
+      - .github/workflows/package-witch-tools-v2-10.yml
+      - addons/witch_tools/dev/Witch_Tools_Dev/**
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/witch-tools-magic-branch
+
+      - name: Validate package source
+        shell: python
+        run: |
+          import ast, pathlib
+          src = pathlib.Path('addons/witch_tools/dev/Witch_Tools_Dev')
+          init = src / '__init__.py'
+          if not init.is_file():
+              raise SystemExit('Missing Witch_Tools_Dev/__init__.py')
+          text = init.read_text(encoding='utf-8')
+          if "'version': (2, 10, 0)" not in text or "'blender': (4, 5, 0)" not in text:
+              raise SystemExit('Package metadata is not Witch Tools Dev_v2.10.0 / Blender 4.5')
+          bad = []
+          for path in sorted(src.rglob('*.py')):
+              try:
+                  ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              except Exception as exc:
+                  bad.append(f'{path}: {exc}')
+          if bad:
+              print('\n'.join(bad))
+              raise SystemExit(1)
+          forbidden = [p for p in src.rglob('*') if p.is_file() and ('__pycache__' in p.parts or p.suffix in {'.pyc', '.pyo'})]
+          if forbidden:
+              print('Forbidden cache files:', *forbidden, sep='\n')
+              raise SystemExit(1)
+          print(f'Validated {sum(1 for _ in src.rglob("*.py"))} Python files.')
+
+      - name: Build installable ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf package_stage
+          mkdir -p package_stage
+          cp -a addons/witch_tools/dev/Witch_Tools_Dev package_stage/Witch_Tools_Dev
+          find package_stage -type d -name '__pycache__' -prune -exec rm -rf {} +
+          find package_stage -type f \( -name '*.pyc' -o -name '*.pyo' -o -name 'desktop.ini' -o -name '.DS_Store' \) -delete
+          cd package_stage
+          zip -r -9 ../Witch_Tools_Dev_v2_10_0_Blender_4_5.zip Witch_Tools_Dev
+          cd ..
+          sha256sum Witch_Tools_Dev_v2_10_0_Blender_4_5.zip | tee Witch_Tools_Dev_v2_10_0_Blender_4_5.sha256
+          unzip -t Witch_Tools_Dev_v2_10_0_Blender_4_5.zip
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Witch_Tools_Dev_v2_10_0_Blender_4_5
+          path: |
+            Witch_Tools_Dev_v2_10_0_Blender_4_5.zip
+            Witch_Tools_Dev_v2_10_0_Blender_4_5.sha256
+          if-no-files-found: error
+          retention-days: 7
