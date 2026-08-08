@@ -322,7 +322,7 @@ def boundary_contact(obj, face, point_world, tolerance=1.0e-5):
     return ('FACE', face, point_world)
 
 
-def rigid_snap_delta(obj, created_verts, target, mask):
+def rigid_snap_delta(obj, created_verts, target, mask, tolerance=1.0e-5):
     mask = tuple(bool(value) for value in mask)
     matrix = obj.matrix_world
     if target is None or target.kind not in {'VERT', 'EDGE'}:
@@ -340,7 +340,9 @@ def rigid_snap_delta(obj, created_verts, target, mask):
                 best = (score, vert, delta, target_point)
         if best is None:
             return None, None
-        _score, vert, delta, point = best
+        score, vert, delta, point = best
+        if score[0] > tolerance:
+            return None, None
         return delta, [(vert, 'VERT', target.element, point)]
 
     edge = target.element
@@ -357,7 +359,9 @@ def rigid_snap_delta(obj, created_verts, target, mask):
             best = (score, vert, delta, closest)
     if best is None:
         return None, None
-    _score, vert, delta, point = best
+    score, vert, delta, point = best
+    if score[0] > tolerance:
+        return None, None
     return delta, [(vert, 'EDGE', edge, point)]
 
 
