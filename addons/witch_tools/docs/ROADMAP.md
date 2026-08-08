@@ -2,207 +2,139 @@
 
 Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `complete`.
 
-## Current development candidate
+## Current development candidate — Dev_v2.10.0
+
+Target Blender: `4.5.0`  
+Branch: `feature/witch-tools-magic-branch`  
+Runtime validation: pending
 
 ### WT-PREC-001 — Coordinate Copy
 
-- Status: active candidate in Witch Tools `Dev_v2.9.0`; Blender 4.5 validation pending
-- Priority: urgent/high
-- Feature packet: `/docs/features/precision_edit/`
-- Target Blender: `4.5.0`
-- Implemented source behavior:
-  - Global / Local coordinate capture and application;
-  - X/Y/Z component masks;
-  - Location / Rotation / Scale geometry-frame copying;
-  - vertex, edge, and face source capture;
-  - independent target application rather than one selection median;
-  - multi-object world/local conversion for different object origins/transforms;
-  - Vertex Lock and Plane Lock preflight;
-  - default `Ctrl+Shift+C` Apply shortcut.
-- Remaining:
-  - Blender 4.5 registration/UI validation;
-  - exact world/local location tests;
-  - edge/face rotation/scale acceptance tests;
-  - undo/redo and keymap-conflict validation.
+- Status: active candidate; retained from Dev_v2.9.0.
+- Global/Local; XYZ; Location/Rotation/Scale; vertex/edge/face capture; independent targets; multi-object conversion; protection preflight; Ctrl+Shift+C Apply.
+- Remaining: Blender 4.5 acceptance, especially edge/face frames and transformed objects.
 
-### WT-PREC-002 — Planar Edit: Plane Lock / Level
+### WT-PREC-002 — Planar Edit
 
-- Status: active candidate in Witch Tools `Dev_v2.9.0`; Blender 4.5 validation pending
-- Plane Lock stores object-local X/Y/Z lock coordinates in persistent BMesh custom layers and restores them through an Edit Mode guard.
-- Level captures a source vertex/edge/face point in world space and assigns each target vertex exact enabled coordinates.
-- Remaining: transform guard behavior, persistence, multi-object Level, protection interaction, undo/redo, and save/reopen.
+- Status: active candidate; retained from Dev_v2.9.0.
+- Plane Lock persistent object-local axis constraints.
+- Level exact per-target world coordinate assignment.
+- Remaining: real transform guard, persistence, multi-object, Undo/Redo.
 
-### WT-VINJ-002 — Manual Inject New
+### WT-VINJ-002 — Inject New magnetic expansion
 
-- Status: active candidate in Witch Tools `Dev_v2.9.0`; promoted from deferred by explicit user request
-- Implemented source behavior:
-  - Solo and Branch for vertex/edge/face sources;
-  - Slide as a vertex-only subdivide-like insertion into one selected edge;
-  - global X/Y/Z modal placement;
-  - captured arbitrary straight Rail endpoint for Solo/Branch;
-  - selected-edge rail for Slide;
-  - modal commit/cancel;
-  - existing Vertex Lock reference restoration and Plane Lock guard coordination.
-- Remaining:
-  - Blender 4.5 modal interaction;
-  - exact cancel rollback;
-  - undo/redo;
-  - normals/winding/material/edge-attribute tests;
-  - Slide manifold/zero-geometry tests.
+- Status: active candidate in Dev_v2.10.0.
+- Solo / Branch / multi-edge Slide.
+- independent X/Y/Z masks plus retained straight Rail.
+- vertex/edge/face Magnetic Snap with target highlight.
+- per-endpoint face travel-line solve.
+- Branch Auto-Merge for compatible vertex/edge contacts.
+- MMB pass-through orbit around live injection.
+- Remaining: Blender 4.5 modal, GPU, merge, cancellation, Undo/Redo, normals/winding/material/attribute tests.
+
+### WT-MBR-001 — Magic Branch
+
+- Status: active candidate in Dev_v2.10.0.
+- Feature packet: `/docs/features/magic_branch/`.
+- Single Branch / Persistent.
+- Vertex / Edge / Face.
+- XYZ movement, Magnetic Snap, Auto-Merge, MMB orbit.
+- Face Paver / Organic.
+- Remaining: full Blender 4.5 test plan, especially Persistent Undo and Paver rebuild/cancel behavior.
+
+### WT-EDOC-001 — Edge Doctor regrouping
+
+- Status: active candidate.
+- Parent section contains Missing Vertex / Edge Injector, Alignment Fixer, Curvature Sync.
+- Missing Injector retains the existing A/B/C solver and adds two-edge L repair.
+- A/B/C viewport letter overlay: deferred QoL.
+
+### WT-UI-001 — Reorderable Edit Tools
+
+- Status: active candidate.
+- Preference-backed custom top-level order.
+- Compact drag-grip reorder mode plus up/down fallback and default reset.
+- Remaining: validate N-panel drag modal and restart persistence.
 
 ### WT-PREC-003 — Blender 4.5 production validation
 
-- Status: planned immediate
-- Execute `/docs/features/precision_edit/TEST_PLAN.md` before integration or thin-wrapper work.
+- Status: planned immediate.
+- Execute `/docs/features/precision_edit/TEST_PLAN.md` and `/docs/features/magic_branch/TEST_PLAN.md` before integration or Quickbar work.
 
-## Guided Align — retained from Dev_v2.8.0
+## Guided Align / Alignment Fixer
 
-### WT-ALIGN-001 — Align Vertices / Edges / Faces
+### WT-ALIGN-001
 
-- Status: active candidate retained in Witch Tools `Dev_v2.9.0`; Blender 4.5 validation pending
-- Priority: urgent/high
-- Documented feature-packet path in the inherited roadmap: `/docs/features/align_selection/`
-- Documentation conflict: that directory is not present on the current branch; do not fabricate its missing historical contents.
-- Target Blender: `4.5.0`
-- Retained behavior:
-  - parent anchor capture from vertex, edge, face, and mixed selections;
-  - Active Element and Median references;
-  - world X/Y/Z matching with explicit coordinate masks;
-  - arbitrary Custom Guide start/end coordinates;
-  - custom-frame matching and projection to guide line;
-  - free movement and straight captured slide rails;
-  - one-to-all and explicit paired-by-rail relationships;
-  - rigid relative-shape preservation;
-  - whole-selection and per-island grouping;
-  - rail extent clamping;
-  - multi-object world/local coordinate conversion;
-  - Vertex Lock, stale capture, shape-key, transform, rail, and ambiguity preflight;
-  - non-mutating Analyze and transaction-first Apply.
-
-### WT-ALIGN-002 — Blender 4.5 production validation
-
-- Status: planned after/alongside current Dev_v2.9.0 validation
+- Status: active candidate retained from Dev_v2.8.0 and nested under Edge Doctor as Alignment Fixer.
+- Existing canonical `mesh.wt_guided_align_*` backend remains unchanged.
+- Inherited documentation conflict remains: older roadmap references missing `/docs/features/align_selection/`; do not fabricate historical contents.
 
 ### WT-ALIGN-003 — Witch Dock / Quickbar thin wrapper
 
-- Status: deferred until Witch Tools backend validation passes
-- Witch Dock/Quickbar may expose canonical Witch Tools operator/property contracts only.
-- It must not duplicate alignment, coordinate-copy, plane-lock, leveling, or injection backend logic.
+- Status: deferred until canonical Witch Tools backend passes Blender validation.
 
 ### WT-ALIGN-004 — Curved/polyline movement rails
 
-- Status: research
+- Status: research.
 
-### WT-ALIGN-005 — Guided Align rotation and scale matching
+## Precision / Magic Branch follow-up
 
-- Status: deferred
-- Separate from Coordinate Copy's element-frame Rotation/Scale semantics.
+### WT-PREC-004 — Curved/polyline Inject rails
 
-### WT-ALIGN-006 — Surface projection and nearest-point modes
+- Status: research.
 
-- Status: research
+### WT-PREC-005 — Branch extrusion/side-face mode
 
-### WT-ALIGN-007 — Capture diagnostics and viewport visualization
+- Status: deferred; requires explicit manifold/winding/material/attribute rules.
 
-- Status: planned after runtime validation
+### WT-PREC-006 — Multi-object topology creation
 
-## Precision Edit follow-up scope
-
-### WT-PREC-004 — Curved/polyline Inject New rails
-
-- Status: research
-
-### WT-PREC-005 — Branch side-face / extrusion mode
-
-- Status: deferred
-- Requires separate manifold, winding, material, and attribute rules.
-
-### WT-PREC-006 — Multi-object topology Inject New
-
-- Status: deferred
-- Current modal topology operator intentionally edits one active mesh.
+- Status: deferred.
 
 ### WT-PREC-007 — Plane Lock world-frame mode
 
-- Status: research
-- Current candidate stores object-local lock coordinates.
+- Status: research.
 
-### WT-PREC-008 — Precision viewport previews / gizmos
+### WT-PREC-010 — Dynamic hover-added Slide fan
 
-- Status: research
+- Status: deferred.
+- Dev_v2.10.0 multi-edge Slide operates on the preselected edge set and uses hover only to choose its current driver.
 
-### WT-PREC-009 — Witch Dock / Quickbar thin wrappers
+### WT-MBR-002 — Arbitrary face-interior Auto-Merge retopology
 
-- Status: deferred until Dev_v2.9.0 Witch Tools behavior is accepted in Blender 4.5
+- Status: research.
+- Current candidate deliberately avoids inventing an unsafe universal face-interior topology rule.
+
+### WT-MBR-003 — A/B/C / repair viewport labels
+
+- Status: deferred QoL.
+
+### WT-PREC-009 — Witch Dock / Quickbar wrappers
+
+- Status: deferred until Dev_v2.10.0 is accepted in Blender 4.5.
 
 ## Baseline preservation
 
-### WT-BASE-001 — Restore auditable direct Witch Tools source
+### WT-BASE-001
 
-- Status: complete
-- Dev_v2.7.0 snapshot conflict: committed parts are truncated and do not match the manifest.
-- Recovery baseline: verified complete Dev_v2.6.1 snapshot.
-- Dev_v2.8.0 Guided Align source baseline commit for this work: `fc94b7c27d0b850699e79b973a0548a2193eb525`.
-- Current direct source: `addons/witch_tools/dev/Witch_Tools_Dev/`.
-- Public branches and official release paths remain unchanged.
+- Status: complete.
+- Verified direct source remains `addons/witch_tools/dev/Witch_Tools_Dev/`.
+- Dev_v2.8.0 Guided Align baseline commit: `fc94b7c27d0b850699e79b973a0548a2193eb525`.
+- Dev_v2.10.0 branch was created from the then-current `feature/witch-tools-precision-edit` head `a5fe4bbccc954b25ac645489f2092b3d3d7618c5`.
+- Public release branches remain unchanged.
 
-### WT-BASE-002 — Audit integration into `Blender_Dev`
+### WT-BASE-002 — Integrate into Blender_Dev
 
-- Status: planned after Blender runtime validation
-- Compare the accepted feature branch against `Blender_Dev`, resolve documentation/build-registry conflicts, then merge only an accepted source and test record.
+- Status: planned only after Blender runtime validation.
 
-### WT-BASE-003 — Audit public/update compatibility
+## Selection / topology / protection retained
 
-- Status: planned before any official release
-
-## Selection infrastructure
-
-### WT-SEL-001 — Persistent mesh Selection Slots
-
-- Status: active; Dev_v2.6.1 implementation retained in Dev_v2.9.0
-- Remaining: Blender 4.5 N-panel confirmation, save/reopen, multi-object restore, topology marker propagation, and undo/redo.
-
-### WT-SEL-002 — Selection Slot diagnostics
-
-- Status: planned
-
-### WT-SEL-003 — Additive/subtractive restore modes
-
-- Status: deferred
-
-## Topology development
-
-### WT-VINJ-001 — Auto-Aligned Vertex Inject
-
-- Status: active MVP; retained as the separate **Edge / Vertex Inject** section in Dev_v2.9.0
-
-### WT-CURV-001 — Curvature Sync circular multi-chain prototype
-
-- Status: active MVP; primary production workflow user-validated in Blender 4.5
-- Remaining: formal undo/redo, normals/manifold/print-fit validation, and broader missing/surplus topology support.
-
-### WT-CLEAN-001 — Resolve Embedded Edges / Repair Unsplit Faces
-
-- Status: planned for Witch Tools integration
-
-## Protection infrastructure
-
-### WT-PROT-001 — Existing Vertex Lock integration
-
-- Status: active; reused by Guided Align and Dev_v2.9.0 Precision Edit preflight
-
-### WT-PROT-002 — Protected/ignored zone permissions
-
-- Status: active partial implementation
-
-### WT-PROT-003 — Plane Lock axis constraints
-
-- Status: active candidate in Dev_v2.9.0; Blender 4.5 validation pending
+- WT-SEL-001 Selection Slots: active retained.
+- WT-VINJ-001 old Auto-Aligned Vertex Inject backend: active retained through Edge Doctor wrapper.
+- WT-CURV-001 Curvature Sync: active retained, user-validated production workflow from earlier versions; new nesting requires UI regression check.
+- WT-PROT-001 Vertex Locks: active retained and consulted by magnetic Auto-Merge targets.
+- WT-PROT-003 Plane Lock: active candidate.
 
 ## Immediate next step
 
-User-test Witch Tools Dev_v2.9.0 in Blender 4.5 using the Precision Edit test plan. Fix failures found there without broadening the candidate scope. Do not begin Witch Dock/Quickbar integration until the canonical Witch Tools backend behavior is accepted.
-
-## Scope policy
-
-No discussed feature automatically enters an official release. Dev_v2.9.0 remains a development candidate. Curved rails, branch extrusion/side faces, multi-object topology injection, world-frame Plane Lock, viewport previews, and Witch Dock/Quickbar integration remain separate follow-up scopes.
+Package/install Dev_v2.10.0 in Blender 4.5 and execute the two current test plans. Fix observed failures without broadening into deferred work. Do not modify Witch Dock/Quickbar until Witch Tools drag/snap/topology behavior is accepted.
