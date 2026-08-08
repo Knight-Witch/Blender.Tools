@@ -1,0 +1,166 @@
+name: Finalize Witch Tools Dev v2.10 docs
+
+on:
+  push:
+    branches:
+      - feature/witch-tools-magic-branch
+    paths:
+      - .github/workflows/finalize-witch-tools-v2-10-docs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/witch-tools-magic-branch
+          fetch-depth: 0
+
+      - name: Update cumulative source and documentation history
+        shell: python
+        run: |
+          from pathlib import Path
+
+          ROOT = Path('.')
+          SRC = ROOT / 'addons/witch_tools/dev/Witch_Tools_Dev'
+          DOC = ROOT / 'addons/witch_tools/docs'
+
+          change = '''## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
+
+          - Expanded Inject New with independent multi-axis X/Y/Z placement, Magnetic Snap vertex/edge/face highlighting, Branch Auto-Merge, multi-edge Slide, and MMB orbit around live injection geometry.
+          - Added shared drag/snap and topology backends used by both Inject New and Magic Branch.
+          - Added Magic Branch with Single/Persistent, Vertex/Edge/Face, Paver/Organic, magnetic placement, Auto-Merge, and a dedicated hotkeyable Persistent toggle.
+          - Reorganized repair tools under Edge Doctor: Missing Vertex / Edge Injector, Alignment Fixer, and Curvature Sync. Added two-edge L repair while preserving the existing A/B/C solver.
+          - Added persistent preference-backed Edit Tools reordering with drag grip, arrow fallback, and Reset Default.
+          - Added Dev_v2.10.0 packaging configuration for Blender 4.5.
+          - Static Python compilation passed for authored candidate modules. Blender 4.5 registration, GPU hover drawing, modal interaction, topology/attribute behavior, MMB pivot, Persistent Undo, reorder dragging, Undo/Redo, and save/reopen remain untested in the implementation environment.
+
+          '''.replace('          ', '')
+
+          full_note = '''## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing
+
+          - Added Inject New Magnetic Snap, Auto-Merge, multi-axis movement, multi-edge Slide and MMB navigation.
+          - Added Magic Branch Single/Persistent Vertex/Edge/Face drag-and-drop building with Paver/Organic face modes.
+          - Added Edge Doctor regrouping/two-edge L repair and preference-backed Edit Tools reordering.
+          - Added shared drag/snap/topology modules and Dev_v2.10 Blender 4.5 packaging.
+          - Added/updated feature specs, decisions, state, roadmaps, UI map, quick starts, acceptance criteria and Blender test plans.
+          - Runtime Blender 4.5 validation remains pending; static Python syntax compilation passed for the authored candidate modules.
+
+          '''.replace('          ', '')
+
+          def prepend_once(path, marker, text):
+              data = path.read_text(encoding='utf-8')
+              if marker not in data:
+                  path.write_text(text + data, encoding='utf-8')
+
+          prepend_once(SRC / 'CHANGELOG.md', '## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch', change)
+          prepend_once(SRC / 'NOTES_CHANGELOG_FULL.md', '## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing', full_note)
+          prepend_once(DOC / 'NOTES_CHANGELOG_FULL.md', '## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing', full_note)
+
+          readme = SRC / 'README.md'
+          data = readme.read_text(encoding='utf-8')
+          if '**Witch Tools Dev_v2.10.0**' not in data:
+              anchor = '## Dev_v2.8.0 — Align Vertices / Edges / Faces'
+              tail = data[data.index(anchor):] if anchor in data else data
+              head = '''# Witch Tools
+
+          **Witch Tools Dev_v2.10.0** is the current Blender add-on development candidate for Knight Witch workflow tools.
+
+          Target build context: **Blender 4.5**
+
+          ## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
+
+          Dev_v2.10.0 retains Coordinate Copy and Planar Edit, expands Inject New with multi-axis Magnetic Snap/Auto-Merge/multi-edge Slide/MMB navigation, and adds Magic Branch for persistent click-drag mesh building.
+
+          Edit Tools default order is Coordinate Copy, Planar Edit, Vertex Snap, Object Snap, Inject New, Magic Branch, Edge Doctor, Vertex Lock, Selection Slots. Top-level sections can be reordered and the preference persists outside individual `.blend` files.
+
+          Edge Doctor contains Missing Vertex / Edge Injector, Alignment Fixer, and Curvature Sync. The old A/B/C injector backend remains intact and now also supports two selected edges forming an L.
+
+          See `PRECISION_EDIT_QUICK_START.md` and `MAGIC_BRANCH_QUICK_START.md`.
+
+          ### Validation status
+
+          Dev_v2.10.0 targets Blender 4.5. Static Python compilation passed for the authored candidate modules. Blender 4.5 registration, GPU highlighting, magnetic placement, Auto-Merge topology, MMB pivot/resume, Persistent Undo, reorder dragging, full Undo/Redo, and save/reopen remain runtime-unverified.
+
+          '''.replace('          ', '')
+              readme.write_text(head + tail, encoding='utf-8')
+
+          compat = SRC / 'Blender_Version_Compatability.md'
+          data = compat.read_text(encoding='utf-8')
+          block = '''## Dev_v2.10.0
+          - Target authoring version: Blender 4.5
+          - Additional Blender versions tested for this candidate: none
+          - Static/source validation: authored candidate modules passed Python syntax compilation
+          - Runtime verification: not performed; no Blender executable is available in the implementation environment
+          - Known limitations: GPU hover target drawing, Magnetic Snap/Auto-Merge topology, multi-edge Slide rollback/data preservation, MMB orbit pivot/resume, Persistent Magic Branch Undo, N-panel drag reorder, Undo/Redo and save/reopen require Blender 4.5 validation
+          - Notes: Expanded Inject New, added Magic Branch, Edge Doctor regrouping/L repair, and preference-backed Edit Tools reordering.
+
+          '''.replace('          ', '')
+          if not data.startswith('## Dev_v2.10.0'):
+              data = block + data
+          data = data.replace('- Release: **Dev_v2.9.0**', '- Release: **Dev_v2.10.0**', 1)
+          data = data.replace('Precision Edit source candidate adds Coordinate Copy, Planar Edit, and Inject New. Blender 4.5 registration, UI, real-mesh geometry, modal topology, undo/redo, and save/reopen validation remain pending.', 'Dev_v2.10.0 retains Precision Edit and adds magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and reorderable Edit Tools. Blender 4.5 runtime validation remains pending.', 1)
+          history_header = '| Release | Target authoring version | Confirmed working versions | Notes |\n|---|---|---|---|\n'
+          row = '| Dev_v2.10.0 | Blender 4.5 | Static Python/source checks only; Blender runtime pending | Magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and reorderable Edit Tools. |\n'
+          if row not in data and history_header in data:
+              data = data.replace(history_header, history_header + row, 1)
+          compat.write_text(data, encoding='utf-8')
+
+          # Precision packet addenda: preserve the historical Dev_v2.9 decisions while recording the current promotion.
+          for name, heading, body in (
+              ('DECISIONS.md', '## Dev_v2.10.0 addendum', '''
+          - Inject New and Magic Branch share `precision_edit_drag.py` and `precision_edit_topology.py` as canonical drag/snap/topology layers.
+          - Magnetic priority is vertex > edge > face.
+          - Face placement uses per-endpoint travel lines, not one target median.
+          - Auto-Merge is conservative; arbitrary face-interior retopology is deferred.
+          - Multi-edge Slide operates on the preselected edge set; cursor hover chooses the driver among those selected rails.
+          - MMB navigation is passed through to Blender after assigning live geometry as the pivot candidate; runtime behavior must be tested.
+          '''),
+              ('ROADMAP.md', '## Dev_v2.10.0 promotion', '''
+          - Inject New Magnetic Snap / Auto-Merge / multi-axis / multi-edge Slide / MMB: active candidate.
+          - Shared drag/topology backend with Magic Branch: active candidate.
+          - Blender 4.5 runtime acceptance: immediate next step.
+          - Dynamic hover addition of unselected Slide fan edges: deferred.
+          - Arbitrary face-interior Auto-Merge retopology: research/deferred.
+          '''),
+          ):
+              path = DOC / 'features/precision_edit' / name
+              data = path.read_text(encoding='utf-8')
+              if heading not in data:
+                  path.write_text(data + '\n\n' + heading + '\n' + body.replace('          ', '').strip() + '\n', encoding='utf-8')
+
+          test = DOC / 'features/precision_edit/TEST_PLAN.md'
+          data = test.read_text(encoding='utf-8')
+          data = data.replace('Candidate: `Witch Tools Dev_v2.9.0`', 'Candidate: `Witch Tools Dev_v2.10.0`', 1)
+          data = data.replace('4. Confirm order: Coordinate Copy, Planar Edit, Vertex Snap, Inject New, Object Snap, Edge / Vertex Inject, Curvature Sync, Guided Align, Selection Slots, Vertex Locks.', '4. Confirm default order: Coordinate Copy, Planar Edit, Vertex Snap, Object Snap, Inject New, Magic Branch, Edge Doctor, Vertex Lock, Selection Slots; confirm custom reorder persistence.', 1)
+          data = data.replace('2. Use X, Y, Z movement separately.', '2. Test X/Y/Z singly, in pairs, and XYZ together; also test Rail.', 1)
+          data = data.replace('1. Repeat X/Y/Z and Rail placement.', '1. Repeat single/pair/triple X/Y/Z and Rail placement; exercise Magnetic Snap and Auto-Merge.', 1)
+          data = data.replace('1. Select exactly one edge on a manifold quad/grid and choose Slide.', '1. Select one edge, then multiple parallel edges, on a manifold quad/grid and choose Slide.', 1)
+          data = data.replace('10. Test malformed selection: zero edges, two edges, face-only selection. All must fail without partial topology.', '10. Test malformed selection: zero edges and face-only selection must fail without partial topology; two or more selected edges are valid multi-edge Slide input.', 1)
+          add = '''
+          ## Dev_v2.10.0 magnetic / Magic Branch extension
+
+          Execute `/docs/features/magic_branch/TEST_PLAN.md` in full for Magnetic Snap, Auto-Merge, MMB orbit, multi-edge Slide, Magic Branch, Edge Doctor L repair, topology attributes, cancellation, Persistent Undo, and reorder UI validation.
+          '''.replace('          ', '')
+          if '## Dev_v2.10.0 magnetic / Magic Branch extension' not in data:
+              data += add
+          test.write_text(data, encoding='utf-8')
+
+          Path('.github/workflows/finalize-witch-tools-v2-10-docs.yml').unlink(missing_ok=True)
+
+      - name: Commit finalized documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Knight Witch Dev Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No documentation changes needed."
+            exit 0
+          fi
+          git commit -m "Finalize Witch Tools Dev v2.10 documentation"
+          git push origin HEAD:feature/witch-tools-magic-branch
