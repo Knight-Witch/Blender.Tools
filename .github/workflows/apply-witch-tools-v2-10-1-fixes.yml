@@ -1,0 +1,55 @@
+name: Apply Witch Tools Dev v2.10.1 runtime fixes
+
+on:
+  push:
+    branches:
+      - feature/witch-tools-magic-branch
+    paths:
+      - .github/workflows/apply-witch-tools-v2-10-1-fixes.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/witch-tools-magic-branch
+          fetch-depth: 0
+      - name: Verify staged patch payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object .github/tmp/wt2101_patch.gz.b64)" = "165ac38c8af5b626baba79ade8a4cf593bedf13f"
+          test "$(git hash-object .github/tmp/wt2101_docs_apply.py.gz.b64)" = "dcd78327d9bee0fc8531ef96b4f4c8bd578937bf"
+      - name: Apply source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .github/tmp/wt2101_patch.gz.b64 | gzip -d > /tmp/wt2101.patch
+          test "$(sha256sum /tmp/wt2101.patch | awk '{print $1}')" = "5fce090476bc6dea42360c312ddb77e60dc110010770112df9b646fd59e645d9"
+          cd addons/witch_tools/dev/Witch_Tools_Dev
+          patch -p2 < /tmp/wt2101.patch
+          cd ../../../..
+      - name: Update documentation and package metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .github/tmp/wt2101_docs_apply.py.gz.b64 | gzip -d > /tmp/wt2101_docs_apply.py
+          test "$(sha256sum /tmp/wt2101_docs_apply.py | awk '{print $1}')" = "fd05fa9b977ee41061b11fbd88ed8c51711019fddc4297f0ab38e6a572c11b48"
+          python /tmp/wt2101_docs_apply.py
+      - name: Commit fix candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Knight Witch Dev Bot"
+          git config user.email "actions@users.noreply.github.com"
+          rm -f .github/tmp/wt2101_patch_*.txt
+          rm -f .github/tmp/wt2101_patch.gz.b64
+          rm -f .github/tmp/wt2101_docs_apply.py.gz.b64
+          rm -f .github/workflows/apply-witch-tools-v2-10-1-fixes.yml
+          git add -A
+          git commit -m "Fix Witch Tools Dev v2.10.1 runtime issues"
+          git push origin HEAD:feature/witch-tools-magic-branch
