@@ -1,0 +1,193 @@
++- Auto-Merge now resolves all created-vertex overlaps at commit and subdivides existing target edges before welding interior contacts.
++- Magic Branch now has explicit ON/OFF activation, selection-mode-sync branch buttons, corrected MMB modifier handling, and Paver out-of-plane growth for axis-constrained wall building.
++- Object Snap now explicitly creates an undo-history boundary after a successful snap.
++- Version bumped to `Dev_v2.10.1`, target Blender `4.5.0`. Static Python syntax validation passed; Blender runtime retest remains required.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=precision_edit_topology.py' '--exclude=__init__.py' '--exclude=state.py' '--exclude=precision_edit_props.py' wt210_src/Witch_Tools_Dev/NOTES_CHANGELOG_FULL.md wt2101_work/NOTES_CHANGELOG_FULL.md
+--- wt210_src/Witch_Tools_Dev/NOTES_CHANGELOG_FULL.md	2026-08-08 21:25:15.000000000 +0000
++++ wt2101_work/NOTES_CHANGELOG_FULL.md	2026-08-09 01:56:00.182154710 +0000
+@@ -1,3 +1,13 @@
++## 2026-08-08 — Dev_v2.10.1 Runtime Fix Pass
++
++- Recorded Blender 4.5 user-test results from Dev_v2.10.0: magnetic hover/snapping, Inject New Undo/Redo, Paver, Organic, and tested Organic vertex merge worked; multi-edge Edge injection, multi-contact Auto-Merge, Paver overlap reintegration, Magic Branch navigation/activation, Paver out-of-plane growth, and Object Snap Undo need correction.
++- Inject New Edge Solo/Branch now accepts multiple selected edges.
++- Auto-Merge now resolves all created-vertex overlaps at commit and subdivides existing target edges before welding interior contacts.
++- Magic Branch now has explicit ON/OFF activation, selection-mode-sync branch buttons, corrected MMB modifier handling, and Paver out-of-plane growth for axis-constrained wall building.
++- Object Snap now explicitly creates an undo-history boundary after a successful snap.
++- Version bumped to `Dev_v2.10.1`, target Blender `4.5.0`. Static Python syntax validation passed; Blender runtime retest remains required.
++
++
+ ## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing
+ 
+ - Added Inject New Magnetic Snap, Auto-Merge, multi-axis movement, multi-edge Slide and MMB navigation.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=precision_edit_topology.py' '--exclude=__init__.py' '--exclude=state.py' '--exclude=precision_edit_props.py' wt210_src/Witch_Tools_Dev/PRECISION_EDIT_QUICK_START.md wt2101_work/PRECISION_EDIT_QUICK_START.md
+--- wt210_src/Witch_Tools_Dev/PRECISION_EDIT_QUICK_START.md	2026-08-08 21:25:15.000000000 +0000
++++ wt2101_work/PRECISION_EDIT_QUICK_START.md	2026-08-09 01:56:00.182366184 +0000
+@@ -1,4 +1,4 @@
+-# Precision Edit Quick Start — Dev_v2.10.0
++# Precision Edit Quick Start — Dev_v2.10.1
+ 
+ Target: Blender 4.5
+ 
+@@ -38,7 +38,7 @@
+ 3. Toggle **Magnetic Snap** if you want hover targets to guide placement.
+ 4. Branch only: toggle **Auto-Merge** if supported snapped contacts should become shared topology on commit.
+ 5. Choose Vertex, Edge, or Face.
+-6. Select exactly one source of that type.
++6. Select exactly one Vertex/Face source, or one or more Edge sources.
+ 7. Press **Inject New** and move the mouse.
+ 8. Hover a vertex, edge, or face to see the magnetic target highlight.
+ 9. Left-click or Enter to commit. Esc/right-click cancels.
+@@ -49,9 +49,9 @@
+ - edge: nearest compatible new endpoint lands on the edge while the rest stays rigid;
+ - face: each new endpoint follows its own travel line to the face/boundary.
+ 
+-During placement, hold MMB to pause placement and orbit around the current live injection. Release MMB to resume.
++During placement, plain MMB pauses placement and orbits around the current live injection. Shift/Ctrl/Alt+MMB retain Blender navigation without forcing the injection pivot. Release MMB to resume placement.
+ 
+-Solo stays disconnected. Branch creates source-to-copy branch edges. Auto-Merge can weld supported Branch contacts but does not invent arbitrary face-interior retopology.
++Solo stays disconnected. Branch creates source-to-copy branch edges. Auto-Merge checks every new Branch vertex on commit: exact vertex overlaps weld, and interior edge contacts split the target edge and weld into the inserted split vertex. Arbitrary face-interior retopology is still not invented.
+ 
+ ## Inject New — Multi-edge Slide
+ 
+@@ -62,7 +62,7 @@
+ 5. Every inserted vertex moves to the same relative factor on its own selected edge.
+ 6. Left-click/Enter commits; Esc/right-click cancels.
+ 
+-Slide injects one vertex per preselected edge. Dev_v2.10.0 does not automatically add completely unselected fan edges just because the cursor passes over them.
++Slide injects one vertex per preselected edge. Dev_v2.10.1 does not automatically add completely unselected fan edges just because the cursor passes over them.
+ 
+ ## Edit Tools ordering
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=precision_edit_topology.py' '--exclude=__init__.py' '--exclude=state.py' '--exclude=precision_edit_props.py' wt210_src/Witch_Tools_Dev/README.md wt2101_work/README.md
+--- wt210_src/Witch_Tools_Dev/README.md	2026-08-08 21:25:15.000000000 +0000
++++ wt2101_work/README.md	2026-08-09 01:56:00.182222080 +0000
+@@ -1,9 +1,15 @@
+ # Witch Tools
+ 
+-**Witch Tools Dev_v2.10.0** is the current Blender add-on development candidate for Knight Witch workflow tools.
++**Witch Tools Dev_v2.10.1** is the current Blender add-on development candidate for Knight Witch workflow tools.
+ 
+ Target build context: **Blender 4.5**
+ 
++## Dev_v2.10.1 — Runtime Fix Pass
++
++This hotfix keeps the Dev_v2.10 feature set and corrects Blender 4.5 issues found during the first user test pass. Inject New Edge Solo/Branch accepts multiple edges; Auto-Merge evaluates every created endpoint and uses true target-edge subdivision before welding; Magic Branch has explicit ON/OFF activation, selection-mode-sync branch buttons, corrected MMB navigation behavior, and Z/out-of-plane Paver growth; Object Snap explicitly creates an undo step.
++
++Runtime retest is still required before these fixes are called accepted.
++
+ ## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
+ 
+ Dev_v2.10.0 retains Coordinate Copy and Planar Edit, expands Inject New with multi-axis Magnetic Snap/Auto-Merge/multi-edge Slide/MMB navigation, and adds Magic Branch for persistent click-drag mesh building.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=precision_edit_topology.py' '--exclude=__init__.py' '--exclude=state.py' '--exclude=precision_edit_props.py' wt210_src/Witch_Tools_Dev/operators_inject_new.py wt2101_work/operators_inject_new.py
+--- wt210_src/Witch_Tools_Dev/operators_inject_new.py	2026-08-08 21:25:15.000000000 +0000
++++ wt2101_work/operators_inject_new.py	2026-08-09 01:54:48.477256281 +0000
+@@ -80,7 +80,8 @@
+     bl_label = 'Inject New'
+     bl_description = (
+         'Create new topology and place it with the mouse. Solo leaves the copy disconnected; '
+-        'Branch connects source-to-copy vertices; Slide inserts one or more vertices into selected edges. '
++        'Branch connects source-to-copy vertices; Edge sources may contain one or more selected edges; '
++        'Slide inserts one or more vertices into selected edges. '
+         'Magnetic Snap can lock placement to hovered vertices, edges, or faces.'
+     )
+     bl_options = {'REGISTER', 'UNDO', 'BLOCKING'}
+@@ -217,8 +218,15 @@
+     def _setup_duplicate(self, context):
+         props = context.scene.wt_precision_edit
+         element_type = props.inject_new_element_type
+-        element = topology.source_element_from_selection(self._bm, element_type)
+-        anchor_world = topology.world_point(self._obj, element_type, element)
++        if element_type == 'EDGE':
++            elements = topology.source_element_from_selection(self._bm, element_type, allow_multiple=True)
++            source_geom, source_verts = topology.source_closure_many(element_type, elements)
++            del source_geom
++            anchor_world = topology.world_center_from_verts(self._obj, source_verts)
++        else:
++            element = topology.source_element_from_selection(self._bm, element_type)
++            elements = [element]
++            anchor_world = topology.world_point(self._obj, element_type, element)
+ 
+         if props.inject_new_use_rail:
+             if not props.inject_new_rail_end_set:
+@@ -229,14 +237,14 @@
+             self._rail_start_world = anchor_world.copy()
+             self._rail_end_world = rail_end
+ 
+-        result = topology.duplicate_source(
++        result = topology.duplicate_sources(
+             self._bm,
+             element_type,
+-            element,
++            elements,
+             make_branch=props.inject_new_mode == 'BRANCH',
+         )
+         self._clear_new_plane_locks(result['created_verts'])
+-        self._source_element = element
++        self._source_element = tuple(elements) if element_type == 'EDGE' else elements[0]
+         self._source_verts = result['source_verts']
+         self._created_verts = result['created_verts']
+         self._created_edges = result['created_edges']
+@@ -286,16 +294,22 @@
+             exclude_faces=exclude_faces,
+         )
+ 
+-    def _target_protection_reason(self, target):
+-        if target is None or target.element is None:
++    def _contacts_protection_reason(self, contacts):
++        target_verts = []
++        seen = set()
++        for contact in contacts or ():
++            for vert in drag.contact_target_vertices(contact):
++                if vert.is_valid and vert not in seen:
++                    seen.add(vert)
++                    target_verts.append(vert)
++        if not target_verts:
+             return None
+-        verts = [target.element] if target.kind == 'VERT' else list(target.element.verts)
+         locked = set(operators_vertex_locks._locked_indices(self._obj, only_enabled=True))
+-        if any(vert.index in locked for vert in verts if vert.is_valid):
+-            return 'Vertex Locks protect the magnetic merge target.'
++        if any(vert.index in locked for vert in target_verts):
++            return 'Vertex Locks protect one or more Auto-Merge targets.'
+         mask_layer, _x, _y, _z = precision_edit._planar_layers(self._bm, create=False)
+-        if mask_layer is not None and any(int(vert[mask_layer]) for vert in verts if vert.is_valid):
+-            return 'Plane Lock protects the magnetic merge target.'
++        if mask_layer is not None and any(int(vert[mask_layer]) for vert in target_verts):
++            return 'Plane Lock protects one or more Auto-Merge targets.'
+         return None
+ 
+     def _update_slide(self, mouse):
+@@ -433,19 +447,35 @@
+ 
+     def _apply_auto_merge(self, context):
+         props = context.scene.wt_precision_edit
+-        if self._mode != 'BRANCH' or not props.inject_new_auto_merge or not self._snap_contacts:
++        if self._mode != 'BRANCH' or not props.inject_new_auto_merge or not props.inject_new_magnetic_snap:
+             return
+-        reason = self._target_protection_reason(self._snap_target)
++
++        contacts = drag.collect_auto_merge_contacts(
++            self._bm,
++            self._obj,
++            self._created_verts,
++            created_edges=self._created_edges,
++            branch_edges=self._branch_edges,
++            explicit_contacts=self._snap_contacts or (),
++            tolerance=1.0e-5,
++        )
++        if not contacts:
++            return
++        reason = self._contacts_protection_reason(contacts)
+         if reason:
+             raise InjectNewError(reason)
+         face_target = self._snap_target.element if self._snap_target and self._snap_target.kind == 'FACE' else None
+         drag.weld_contacts(
+             self._bm,
+             self._obj,
+-            self._snap_contacts,
++            contacts,
+             face_target=face_target,
+-            tolerance=1.0e-6,
++            tolerance=1.0e-5,
++            created_verts=self._created_verts,
++            created_edges=self._created_edges,
