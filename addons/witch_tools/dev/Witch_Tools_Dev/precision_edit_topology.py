@@ -82,8 +82,49 @@ def match_duplicate_verts(source_verts, duplicate_verts):
     return mapping
 
 
-def duplicate_source(bm, element_type, element, make_branch=False):
-    source_geom, source_verts = source_closure(element_type, element)
+def _unique_valid(elements):
+    result = []
+    seen = set()
+    for element in elements:
+        if element is None or not getattr(element, 'is_valid', False) or element in seen:
+            continue
+        seen.add(element)
+        result.append(element)
+    return result
+
+
+def source_closure_many(element_type, elements):
+    elements = _unique_valid(elements)
+    if not elements:
+        raise PrecisionTopologyError('No valid source geometry was supplied.')
+
+    if element_type == 'VERT':
+        source_verts = elements
+        source_geom = list(source_verts)
+    elif element_type == 'EDGE':
+        source_edges = elements
+        source_verts = _unique_valid(vert for edge in source_edges for vert in edge.verts)
+        source_geom = [*source_verts, *source_edges]
+    elif element_type == 'FACE':
+        source_faces = elements
+        source_verts = _unique_valid(vert for face in source_faces for vert in face.verts)
+        source_edges = _unique_valid(edge for face in source_faces for edge in face.edges)
+        source_geom = [*source_verts, *source_edges, *source_faces]
+    else:
+        raise PrecisionTopologyError(f'Unsupported source element type: {element_type}')
+    return source_geom, source_verts
+
+
+def world_center_from_verts(obj, verts):
+    verts = _unique_valid(verts)
+    if not verts:
+        raise PrecisionTopologyError('Cannot calculate a source center without vertices.')
+    matrix = obj.matrix_world
+    return sum((matrix @ vert.co for vert in verts), Vector()) / len(verts)
+
+
+def duplicate_sources(bm, element_type, elements, make_branch=False):
+    source_geom, source_verts = source_closure_many(element_type, elements)
     result = bmesh.ops.duplicate(bm, geom=source_geom)
     duplicate_geom = [item for item in result.get('geom', ()) if getattr(item, 'is_valid', False)]
     duplicate_verts = [item for item in duplicate_geom if isinstance(item, bmesh.types.BMVert)]
@@ -119,6 +160,10 @@ def duplicate_source(bm, element_type, element, make_branch=False):
         'created_faces': duplicate_faces,
         'branch_edges': branch_edges,
     }
+
+
+def duplicate_source(bm, element_type, element, make_branch=False):
+    return duplicate_sources(bm, element_type, [element], make_branch=make_branch)
 
 
 def oriented_edge_vertices(face, edge):
