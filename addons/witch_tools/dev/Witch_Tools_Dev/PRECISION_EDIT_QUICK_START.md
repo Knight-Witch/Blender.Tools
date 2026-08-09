@@ -1,4 +1,4 @@
-# Precision Edit Quick Start — Dev_v2.10.0
+# Precision Edit Quick Start — Dev_v2.10.1
 
 Target: Blender 4.5
 
@@ -38,7 +38,7 @@ Every target vertex independently receives the source world coordinate on enable
 3. Toggle **Magnetic Snap** if you want hover targets to guide placement.
 4. Branch only: toggle **Auto-Merge** if supported snapped contacts should become shared topology on commit.
 5. Choose Vertex, Edge, or Face.
-6. Select exactly one source of that type.
+6. Select exactly one Vertex/Face source, or one or more Edge sources.
 7. Press **Inject New** and move the mouse.
 8. Hover a vertex, edge, or face to see the magnetic target highlight.
 9. Left-click or Enter to commit. Esc/right-click cancels.
@@ -49,9 +49,9 @@ Magnetic behavior:
 - edge: nearest compatible new endpoint lands on the edge while the rest stays rigid;
 - face: each new endpoint follows its own travel line to the face/boundary.
 
-During placement, hold MMB to pause placement and orbit around the current live injection. Release MMB to resume.
+During placement, plain MMB pauses placement and orbits around the current live injection. Shift/Ctrl/Alt+MMB retain Blender navigation without forcing the injection pivot. Release MMB to resume placement.
 
-Solo stays disconnected. Branch creates source-to-copy branch edges. Auto-Merge can weld supported Branch contacts but does not invent arbitrary face-interior retopology.
+Solo stays disconnected. Branch creates source-to-copy branch edges. Auto-Merge checks every new Branch vertex on commit: exact vertex overlaps weld, and interior edge contacts split the target edge and weld into the inserted split vertex. Arbitrary face-interior retopology is still not invented.
 
 ## Inject New — Multi-edge Slide
 
@@ -62,7 +62,7 @@ Solo stays disconnected. Branch creates source-to-copy branch edges. Auto-Merge 
 5. Every inserted vertex moves to the same relative factor on its own selected edge.
 6. Left-click/Enter commits; Esc/right-click cancels.
 
-Slide injects one vertex per preselected edge. Dev_v2.10.0 does not automatically add completely unselected fan edges just because the cursor passes over them.
+Slide injects one vertex per preselected edge. Dev_v2.10.1 does not automatically add completely unselected fan edges just because the cursor passes over them.
 
 ## Edit Tools ordering
 

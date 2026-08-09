@@ -40,19 +40,19 @@ HELP_TOPICS = {
     ),
     'inject_new_title': (
         'Fast one-shot topology creation and placement.\n\n'
-        'Solo duplicates one selected vertex, edge, or face without a source connection. Branch duplicates it and creates source-to-copy branch edges. '
+        'Solo duplicates one selected vertex/face or one or more selected edges without a source connection. Branch duplicates them and creates source-to-copy branch edges. '
         'Slide injects one vertex into every selected edge and moves all injected vertices to the same relative position along their own rails.\n\n'
         'Solo/Branch allow any combination of global X/Y/Z, or a captured straight Rail. Magnetic Snap highlights the vertex, edge, or face under the cursor. '
         'Vertex/edge targets rigidly align the nearest corresponding injected vertex; face targets solve each injected vertex along its own travel line. '
-        'Branch Auto-Merge welds compatible snapped vertex/edge contacts into the existing topology.\n\n'
-        'During placement, hold MMB to pause the injection and orbit around its current position; release MMB to resume dragging.'
+        'Branch Auto-Merge checks every new vertex on commit: coincident vertices weld, and a contact inside an existing edge subdivides that target edge before welding so no stale unsplit edge remains.\n\n'
+        'During placement, plain MMB pauses placement and orbits around the live injection. Shift/Ctrl+MMB remain normal Blender navigation.'
     ),
     'magic_branch_title': (
         'Drag-and-drop mesh building without restarting an operator for every branch.\n\n'
-        'Single Branch exits after one completed click-drag. Persistent stays armed so the next click-drag immediately starts another branch; the Persistent toggle has its own hotkeyable operator.\n\n'
+        'Magic Branch has an explicit ON/OFF control. Single Branch turns OFF after one completed click-drag; Persistent stays armed for the next branch. Both ON/OFF and Persistent are hotkeyable operators.\n\n'
         'Vertex creates a new vertex and source-to-new edge. Edge creates a copied edge with source-to-copy connections. Face grows from the source-face edge nearest the drag direction. '
-        'Paver repeats equal-size face tiles; Organic creates one adaptable connected face.\n\n'
-        'X/Y/Z are independent movement toggles; all three enabled is free mouse movement. Magnetic Snap highlights targets and Auto-Merge welds compatible contacts. MMB orbits around the live branch.'
+        'Paver repeats equal-size face tiles and can turn out of the source face plane when the enabled axes require it (for example, Z-only can grow a wall from a horizontal face). Organic creates one adaptable connected face.\n\n'
+        'X/Y/Z are independent movement toggles; all three enabled is free mouse movement. Magnetic Snap highlights targets and Auto-Merge reintegrates every supported overlapping new vertex/edge contact. Branch Type also switches Blender Vertex/Edge/Face selection mode. Plain MMB changes the orbit pivot only during a live drag.'
     ),
     'edge_doctor_title': (
         'Topology repair tools grouped in one place.\n\n'

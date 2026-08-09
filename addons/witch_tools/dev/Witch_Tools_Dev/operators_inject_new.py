@@ -80,7 +80,8 @@ class WT_OT_inject_new(Operator):
     bl_label = 'Inject New'
     bl_description = (
         'Create new topology and place it with the mouse. Solo leaves the copy disconnected; '
-        'Branch connects source-to-copy vertices; Slide inserts one or more vertices into selected edges. '
+        'Branch connects source-to-copy vertices; Edge sources may contain one or more selected edges; '
+        'Slide inserts one or more vertices into selected edges. '
         'Magnetic Snap can lock placement to hovered vertices, edges, or faces.'
     )
     bl_options = {'REGISTER', 'UNDO', 'BLOCKING'}
@@ -217,8 +218,15 @@ class WT_OT_inject_new(Operator):
     def _setup_duplicate(self, context):
         props = context.scene.wt_precision_edit
         element_type = props.inject_new_element_type
-        element = topology.source_element_from_selection(self._bm, element_type)
-        anchor_world = topology.world_point(self._obj, element_type, element)
+        if element_type == 'EDGE':
+            elements = topology.source_element_from_selection(self._bm, element_type, allow_multiple=True)
+            source_geom, source_verts = topology.source_closure_many(element_type, elements)
+            del source_geom
+            anchor_world = topology.world_center_from_verts(self._obj, source_verts)
+        else:
+            element = topology.source_element_from_selection(self._bm, element_type)
+            elements = [element]
+            anchor_world = topology.world_point(self._obj, element_type, element)
 
         if props.inject_new_use_rail:
             if not props.inject_new_rail_end_set:
@@ -229,14 +237,14 @@ class WT_OT_inject_new(Operator):
             self._rail_start_world = anchor_world.copy()
             self._rail_end_world = rail_end
 
-        result = topology.duplicate_source(
+        result = topology.duplicate_sources(
             self._bm,
             element_type,
-            element,
+            elements,
             make_branch=props.inject_new_mode == 'BRANCH',
         )
         self._clear_new_plane_locks(result['created_verts'])
-        self._source_element = element
+        self._source_element = tuple(elements) if element_type == 'EDGE' else elements[0]
         self._source_verts = result['source_verts']
         self._created_verts = result['created_verts']
         self._created_edges = result['created_edges']
@@ -286,16 +294,22 @@ class WT_OT_inject_new(Operator):
             exclude_faces=exclude_faces,
         )
 
-    def _target_protection_reason(self, target):
-        if target is None or target.element is None:
+    def _contacts_protection_reason(self, contacts):
+        target_verts = []
+        seen = set()
+        for contact in contacts or ():
+            for vert in drag.contact_target_vertices(contact):
+                if vert.is_valid and vert not in seen:
+                    seen.add(vert)
+                    target_verts.append(vert)
+        if not target_verts:
             return None
-        verts = [target.element] if target.kind == 'VERT' else list(target.element.verts)
         locked = set(operators_vertex_locks._locked_indices(self._obj, only_enabled=True))
-        if any(vert.index in locked for vert in verts if vert.is_valid):
-            return 'Vertex Locks protect the magnetic merge target.'
+        if any(vert.index in locked for vert in target_verts):
+            return 'Vertex Locks protect one or more Auto-Merge targets.'
         mask_layer, _x, _y, _z = precision_edit._planar_layers(self._bm, create=False)
-        if mask_layer is not None and any(int(vert[mask_layer]) for vert in verts if vert.is_valid):
-            return 'Plane Lock protects the magnetic merge target.'
+        if mask_layer is not None and any(int(vert[mask_layer]) for vert in target_verts):
+            return 'Plane Lock protects one or more Auto-Merge targets.'
         return None
 
     def _update_slide(self, mouse):
@@ -433,19 +447,35 @@ class WT_OT_inject_new(Operator):
 
     def _apply_auto_merge(self, context):
         props = context.scene.wt_precision_edit
-        if self._mode != 'BRANCH' or not props.inject_new_auto_merge or not self._snap_contacts:
+        if self._mode != 'BRANCH' or not props.inject_new_auto_merge or not props.inject_new_magnetic_snap:
             return
-        reason = self._target_protection_reason(self._snap_target)
+
+        contacts = drag.collect_auto_merge_contacts(
+            self._bm,
+            self._obj,
+            self._created_verts,
+            created_edges=self._created_edges,
+            branch_edges=self._branch_edges,
+            explicit_contacts=self._snap_contacts or (),
+            tolerance=1.0e-5,
+        )
+        if not contacts:
+            return
+        reason = self._contacts_protection_reason(contacts)
         if reason:
             raise InjectNewError(reason)
         face_target = self._snap_target.element if self._snap_target and self._snap_target.kind == 'FACE' else None
         drag.weld_contacts(
             self._bm,
             self._obj,
-            self._snap_contacts,
+            contacts,
             face_target=face_target,
-            tolerance=1.0e-6,
+            tolerance=1.0e-5,
+            created_verts=self._created_verts,
+            created_edges=self._created_edges,
+            branch_edges=self._branch_edges,
         )
+        self._snap_contacts = contacts
 
     def _finish(self, context):
         self._apply_auto_merge(context)
@@ -563,7 +593,8 @@ class WT_OT_inject_new(Operator):
         if event.type == 'MIDDLEMOUSE':
             if event.value == 'PRESS':
                 self._orbiting = True
-                drag.set_orbit_pivot(self._rv3d, self._current_center_world())
+                if not (event.shift or event.ctrl or event.alt):
+                    drag.set_orbit_pivot(self._rv3d, self._current_center_world())
                 return {'PASS_THROUGH'}
             if event.value == 'RELEASE':
                 self._orbiting = False

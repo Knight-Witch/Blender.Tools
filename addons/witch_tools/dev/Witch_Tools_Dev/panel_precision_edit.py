@@ -152,11 +152,14 @@ def draw_inject_new(layout, context, state, _legacy_props):
     if state.inject_new_mode == 'SLIDE':
         step4.label(text='Select one or more edges. One new vertex is injected into each.')
     else:
-        step4.label(text='Select exactly one source matching Step 3, then drag the new geometry.')
+        if state.inject_new_element_type == 'EDGE':
+            step4.label(text='Select one or more source edges, then drag the new geometry.')
+        else:
+            step4.label(text='Select exactly one source matching Step 3, then drag the new geometry.')
     step4.operator('mesh.wt_inject_new', text='Inject New', icon='MOD_EDGESPLIT')
     hint = step4.row()
     hint.scale_y = 0.65
-    hint.label(text='During placement: MMB orbits around the live injection; release MMB to resume dragging.')
+    hint.label(text='Plain MMB orbits around the live injection; Shift/Ctrl+MMB keep normal viewport navigation.')
     _report_row(box, state.inject_new_last_report)
 
 
@@ -169,20 +172,37 @@ def draw_magic_branch(layout, context, state):
 
     mode = box.box()
     mode.label(text='1. Tool Mode', icon='RECOVER_LAST')
+    active = mode.operator(
+        'mesh.wt_magic_branch_toggle_active',
+        text='Magic Branch ON' if state.magic_branch_active else 'Magic Branch OFF',
+        icon='PAUSE' if state.magic_branch_active else 'PLAY',
+        depress=state.magic_branch_active,
+    )
+    del active
+    draw_shortcut_hint(mode, 'mesh.wt_magic_branch_toggle_active')
     row = mode.row(align=True)
-    row.prop(state, 'magic_branch_persistent', text='Persistent', icon='PINNED', toggle=True)
+    row.prop(state, 'magic_branch_persistent', text='Stay Armed (Persistent)', icon='PINNED', toggle=True)
     row.operator('mesh.wt_magic_branch_toggle_persistent', text='', icon='FILE_REFRESH')
     draw_shortcut_hint(mode, 'mesh.wt_magic_branch_toggle_persistent')
     sub = mode.row()
     sub.scale_y = 0.65
-    sub.label(text='OFF = Single Branch. ON = stay armed after each completed drag.')
+    sub.label(text='Persistent OFF = one branch then tool turns OFF. ON = keep click-drag branching.')
 
     setup = box.box()
     setup.label(text='2. Branch Type', icon='MESH_DATA')
     types = setup.row(align=True)
-    types.prop_enum(state, 'magic_branch_element_type', 'VERT', text='Vertex', icon='VERTEXSEL')
-    types.prop_enum(state, 'magic_branch_element_type', 'EDGE', text='Edge', icon='EDGESEL')
-    types.prop_enum(state, 'magic_branch_element_type', 'FACE', text='Face', icon='FACESEL')
+    for element_type, label, icon in (
+        ('VERT', 'Vertex', 'VERTEXSEL'),
+        ('EDGE', 'Edge', 'EDGESEL'),
+        ('FACE', 'Face', 'FACESEL'),
+    ):
+        op = types.operator(
+            'mesh.wt_magic_branch_set_element_type',
+            text=label,
+            icon=icon,
+            depress=state.magic_branch_element_type == element_type,
+        )
+        op.element_type = element_type
     if state.magic_branch_element_type == 'FACE':
         face_mode = setup.row(align=True)
         face_mode.label(text='Face Build')
@@ -203,11 +223,16 @@ def draw_magic_branch(layout, context, state):
     merge.prop(state, 'magic_branch_auto_merge', text='Auto-Merge', icon='AUTOMERGE_ON', toggle=True)
 
     start = box.box()
-    start.label(text='4. Start Building', icon='PLAY')
-    start.operator('mesh.wt_magic_branch', text='Start Magic Branch', icon='PLAY')
-    draw_shortcut_hint(start, 'mesh.wt_magic_branch')
+    start.label(text='4. Build in Viewport', icon='PLAY')
+    status = start.row()
+    status.alert = not state.magic_branch_active
+    status.label(
+        text='Tool is ON — click-drag source geometry.' if state.magic_branch_active else 'Turn Magic Branch ON in Step 1 to begin.',
+        icon='CHECKMARK' if state.magic_branch_active else 'INFO',
+    )
     hint = start.column(align=True)
     hint.scale_y = 0.65
-    hint.label(text='Viewport: click-drag source geometry to branch it.')
-    hint.label(text='MMB pauses the branch and orbits around the live geometry; Esc exits.')
+    hint.label(text='Branch Type also switches Blender Vertex / Edge / Face selection mode.')
+    hint.label(text='Plain MMB orbits around live geometry only while dragging; Shift+MMB pans normally.')
+    hint.label(text='Esc or the ON/OFF toggle exits Magic Branch.')
     _report_row(box, state.magic_branch_last_report)

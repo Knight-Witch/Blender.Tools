@@ -1,13 +1,10 @@
 # Witch Tools Notes Changelog — Latest Update
 
-## 2026-08-08 — Dev_v2.10.0 Magnetic Mesh Editing
+## 2026-08-08 — Dev_v2.10.1 Runtime Fix Pass
 
-- Expanded Inject New with independent X/Y/Z movement toggles, vertex/edge/face Magnetic Snap highlighting, Branch Auto-Merge, multi-edge Slide, and MMB orbit around the live injection.
-- Added shared `precision_edit_drag.py` and `precision_edit_topology.py` backends so Inject New and Magic Branch use one canonical drag/snap/topology implementation.
-- Added Magic Branch with Single/Persistent modes, Vertex/Edge/Face branch types, Paver/Organic face workflows, magnetic placement, Auto-Merge, and a hotkeyable Persistent toggle.
-- Reorganized repair tools under Edge Doctor: Missing Vertex / Edge Injector, Alignment Fixer, Curvature Sync. Added two-edge L repair while retaining the original A/B/C solver.
-- Added preference-backed Edit Tools ordering with compact drag-grip rows, up/down fallback, and Reset Default. Planar Edit remains independently reorderable.
-- Added a constrained-axis reachability guard: a magnetic vertex/edge contact is rejected when landing on it would require movement along an axis the user disabled, preventing Auto-Merge from silently violating the movement mask.
-- Bumped metadata to `Dev_v2.10.0`, target Blender `4.5.0`, and replaced the branch-specific v2.9 packaging workflow with a v2.10 workflow.
-- Added/updated specifications, decisions, state, UI map, roadmap, acceptance criteria and Blender 4.5 topology test plans.
-- Static Python compilation passed for authored Dev_v2.10 modules. Blender 4.5 registration, GPU hover drawing, modal behavior, MMB pivot, Auto-Merge, Persistent Undo, reorder drag, real topology, Undo/Redo and save/reopen remain untested in this environment.
+- Recorded Blender 4.5 user-test results from Dev_v2.10.0: magnetic hover/snapping, Inject New Undo/Redo, Paver, Organic, and tested Organic vertex merge worked; multi-edge Edge injection, multi-contact Auto-Merge, Paver overlap reintegration, Magic Branch navigation/activation, Paver out-of-plane growth, and Object Snap Undo need correction.
+- Inject New Edge Solo/Branch now accepts multiple selected edges.
+- Auto-Merge now resolves all created-vertex overlaps at commit and subdivides existing target edges before welding interior contacts.
+- Magic Branch now has explicit ON/OFF activation, selection-mode-sync branch buttons, corrected MMB modifier handling, and Paver out-of-plane growth for axis-constrained wall building.
+- Object Snap now explicitly creates an undo-history boundary after a successful snap.
+- Version bumped to `Dev_v2.10.1`, target Blender `4.5.0`. Static Python syntax validation passed; Blender runtime retest remains required.

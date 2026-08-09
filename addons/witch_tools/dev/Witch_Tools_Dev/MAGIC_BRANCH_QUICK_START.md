@@ -1,4 +1,4 @@
-# Magic Branch Quick Start — Dev_v2.10.0
+# Magic Branch Quick Start — Dev_v2.10.1
 
 Target: Blender 4.5
 
@@ -6,13 +6,13 @@ Magic Branch is the persistent click-drag mesh builder in **Witch Tools > Edit T
 
 ## Setup
 
-1. Choose **Single Branch** by leaving Persistent off, or turn **Persistent** on to remain armed after every successful branch.
-2. Choose Vertex, Edge, or Face.
-3. Enable at least one X/Y/Z movement axis. All three are enabled by default for free placement.
-4. Turn Magnetic Snap on/off.
-5. Turn Auto-Merge on if compatible magnetic contacts should weld into existing topology.
-6. For Face, choose Paver or Organic.
-7. Press **Start Magic Branch**.
+1. Turn **Magic Branch ON**. This ON/OFF action is separately hotkeyable.
+2. Choose **Single Branch** by leaving Persistent off, or turn **Persistent** on to remain armed after every successful branch.
+3. Choose Vertex, Edge, or Face. Choosing a type also switches Blender to the matching mesh selection mode.
+4. Enable at least one X/Y/Z movement axis. All three are enabled by default for free placement.
+5. Turn Magnetic Snap on/off.
+6. Turn Auto-Merge on if supported overlapping contacts should weld into existing topology.
+7. For Face, choose Paver or Organic.
 
 ## Viewport workflow
 
@@ -20,14 +20,14 @@ Magic Branch is the persistent click-drag mesh builder in **Witch Tools > Edit T
 - Move the mouse to place the live branch.
 - Hover a vertex, edge, or face to magnetically target it.
 - Release left mouse to commit.
-- Hold MMB during a live drag to pause geometry placement and orbit around the current live branch; release MMB to resume.
+- Plain MMB during a live drag pauses geometry placement and orbits around the current live branch. Shift/Ctrl/Alt+MMB use normal Blender navigation without resetting the branch pivot. Release MMB to resume.
 - Esc/right-click exits. If a live uncommitted branch exists, it is cancelled first.
 
 ## Vertex
 
 Click-drag a source vertex. A new vertex appears with an edge back to the source.
 
-With Magnetic Snap + Auto-Merge, dropping on an existing vertex welds the duplicate endpoint away, leaving a direct source-to-target edge.
+With Magnetic Snap + Auto-Merge, every supported overlapping created endpoint is reintegrated on commit. Existing vertices weld directly; a contact inside an existing edge subdivides that edge and welds into the inserted split vertex.
 
 ## Edge
 
@@ -45,11 +45,11 @@ Use Organic when the destination is arbitrary and you want one face to reach it.
 
 Click-drag a source face. The emitting edge is chosen from drag direction. Paver creates repeated source-sized tiles and adds/removes them as drag distance changes.
 
-Paver preserves equal tile size. It does not stretch its final tile just to force an off-grid endpoint.
+Paver preserves equal tile size. It does not stretch its final tile just to force an off-grid endpoint. If the source-plane direction is disabled by the movement mask, the mouse-selected enabled axis becomes the growth direction while source tile depth is preserved; for example, Z-only can grow a vertical wall from a horizontal face.
 
-## Persistent toggle hotkey
+## Hotkeys
 
-The dedicated operator is `mesh.wt_magic_branch_toggle_persistent`. Assign any Blender shortcut through the normal right-click/keymap workflow.
+`mesh.wt_magic_branch_toggle_active` toggles Magic Branch ON/OFF. `mesh.wt_magic_branch_toggle_persistent` toggles whether it stays armed after a commit. Either can be assigned through Blender keymaps.
 
 ## Current candidate limits
 

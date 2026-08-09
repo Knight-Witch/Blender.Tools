@@ -1,3 +1,11 @@
+## Dev_v2.10.1
+- Target authoring version: Blender 4.5
+- Additional Blender versions tested for this candidate: none
+- User runtime baseline: Dev_v2.10.0 was tested in Blender 4.5 and exposed merge/navigation/undo issues addressed in this hotfix; the hotfix itself is not runtime-retested yet
+- Static/source validation: full package Python syntax parse passed after the fix pass
+- Runtime retest required: multi-edge Edge Solo/Branch, all-contact Auto-Merge/target-edge subdivision, Paver overlap merge, Paver Z wall growth, Magic Branch ON/OFF and selection-mode switching, modifier MMB navigation, Object Snap Undo
+- Notes: Bugfix candidate only; no public release/Quickbar changes.
+
 ## Dev_v2.10.0
 - Target authoring version: Blender 4.5
 - Additional Blender versions tested for this candidate: none
@@ -81,16 +89,17 @@
 
 ## Current release
 
-- Release: **Dev_v2.10.0**
+- Release: **Dev_v2.10.1**
 - Target authoring version: **Blender 4.5**
 - Confirmed working versions for this candidate: **No Blender runtime confirmation in this implementation environment**
 - Additional Blender versions tested: **None**
-- Notes: Dev_v2.10.0 retains Precision Edit and adds magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and reorderable Edit Tools. Blender 4.5 runtime validation remains pending.
+- Notes: Dev_v2.10.1 is a runtime bugfix candidate for multi-edge Inject New, all-contact Auto-Merge/edge subdivision, Magic Branch activation/navigation/Paver axis growth, and Object Snap Undo. Blender 4.5 retest is pending.
 
 ## Release history
 
 | Release | Target authoring version | Confirmed working versions | Notes |
 |---|---|---|---|
+| Dev_v2.10.1 | Blender 4.5 | Source/static checks passed; runtime retest pending | Runtime-fix candidate for merge topology, navigation, Magic Branch activation/Paver axis growth, multi-edge Edge sources, and Object Snap Undo. |
 | Dev_v2.10.0 | Blender 4.5 | Static Python/source checks only; Blender runtime pending | Magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, and reorderable Edit Tools. |
 | Dev_v2.9.0 | Blender 4.5 | Static/source checks only; Blender runtime pending | Added Coordinate Copy, Plane Lock/Level, and Inject New Solo/Branch/Slide; retained Guided Align and earlier tools. |
 | Dev_v2.8.0 | Blender 4.5 | Static and pure-math checks only; Blender runtime pending | Added Guided Align with world/custom frames, straight slide rails, paired parent mapping, and rigid shape preservation. |

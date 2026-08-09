@@ -1,3 +1,4 @@
+import bpy
 import bmesh
 from bpy.props import EnumProperty
 from bpy.types import Operator
@@ -283,7 +284,7 @@ class MESH_OT_object_island_snap(Operator):
     bl_idname = 'mesh.object_island_snap'
     bl_label = 'Object / Island Snap'
     bl_description = 'Move an entire target object or disconnected mesh island using selected source and target anchors'
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {'REGISTER'}
 
     element_type: EnumProperty(
         name='Anchor Type',
@@ -347,6 +348,10 @@ class MESH_OT_object_island_snap(Operator):
             context.view_layer.update()
             if context.area:
                 context.area.tag_redraw()
+            try:
+                bpy.ops.ed.undo_push(message='Object Snap')
+            except Exception as undo_error:
+                self.report({'WARNING'}, f'Object Snap completed, but Blender could not create an undo step: {undo_error}')
 
             label = _ELEMENT_LABELS[self.element_type].title()
             target_kind = 'object' if scope == 'OBJECT' else 'mesh island'

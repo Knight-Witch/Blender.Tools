@@ -1,3 +1,16 @@
+## Dev_v2.10.1 — Runtime topology/navigation hotfix
+
+- Inject New Edge Solo/Branch now accepts one or more selected edges as one rigid source set. Multi-edge Slide remains supported.
+- Fixed Branch Auto-Merge so commit evaluates every created vertex, not only the single hovered magnetic endpoint. Coincident vertices weld; created vertices landing inside an existing edge subdivide that target edge first and weld into the inserted vertex.
+- Prevented modifier navigation from resetting the temporary Inject/Magic Branch orbit pivot; only plain MMB during a live drag assigns the live geometry as the orbit pivot. Shift/Ctrl/Alt+MMB remain Blender navigation.
+- Added explicit Magic Branch ON/OFF state and hotkeyable toggle; Persistent now controls stay-armed behavior rather than acting as the tool's only activation control.
+- Magic Branch Vertex/Edge/Face buttons now switch Blender to the corresponding mesh selection mode through an undoable operator candidate.
+- Paver can grow out of the source face plane when the enabled movement axes require it; e.g. Z-only can build a vertical wall from a horizontal face while retaining source tile depth.
+- Paver/Organic/Vertex/Edge Auto-Merge now evaluates all supported overlapping created vertices at commit, including non-hovered contacts, and splits existing target edges at interior contacts rather than leaving an unsplit overlapping edge.
+- Added an explicit Object Snap undo push because Blender 4.5 runtime testing showed Object Snap changes were not entering the undo history reliably.
+- User runtime validation on Dev_v2.10.0 confirmed hover highlighting, magnetic snapping, Inject New Undo/Redo, Paver, Organic, and tested Organic magnetic vertex merge behavior.
+- Dev_v2.10.1 remains a Blender 4.5 test candidate: the fixes above are source/static validated here but require user runtime retest.
+
 ## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
 
 - Expanded Inject New with independent multi-axis X/Y/Z placement, Magnetic Snap vertex/edge/face highlighting, Branch Auto-Merge, multi-edge Slide, and MMB orbit around live injection geometry.

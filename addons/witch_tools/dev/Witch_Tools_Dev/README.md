@@ -1,8 +1,14 @@
 # Witch Tools
 
-**Witch Tools Dev_v2.10.0** is the current Blender add-on development candidate for Knight Witch workflow tools.
+**Witch Tools Dev_v2.10.1** is the current Blender add-on development candidate for Knight Witch workflow tools.
 
 Target build context: **Blender 4.5**
+
+## Dev_v2.10.1 — Runtime Fix Pass
+
+This hotfix keeps the Dev_v2.10 feature set and corrects Blender 4.5 issues found during the first user test pass. Inject New Edge Solo/Branch accepts multiple edges; Auto-Merge evaluates every created endpoint and uses true target-edge subdivision before welding; Magic Branch has explicit ON/OFF activation, selection-mode-sync branch buttons, corrected MMB navigation behavior, and Z/out-of-plane Paver growth; Object Snap explicitly creates an undo step.
+
+Runtime retest is still required before these fixes are called accepted.
 
 ## Dev_v2.10.0 — Magnetic Mesh Editing / Magic Branch
 
