@@ -1,4 +1,4 @@
-name: Package Witch Tools Dev v2.10.0
+name: Package Witch Tools Dev v2.10.1
 
 on:
   push:
@@ -22,14 +22,15 @@ jobs:
       - name: Validate package source
         shell: python
         run: |
-          import ast, pathlib
+          import ast
+          import pathlib
+
           src = pathlib.Path('addons/witch_tools/dev/Witch_Tools_Dev')
-          init = src / '__init__.py'
-          if not init.is_file():
+          init_path = src / '__init__.py'
+          state_path = src / 'state.py'
+          if not init_path.is_file():
               raise SystemExit('Missing Witch_Tools_Dev/__init__.py')
-          text = init.read_text(encoding='utf-8')
-          if "'version': (2, 10, 0)" not in text or "'blender': (4, 5, 0)" not in text:
-              raise SystemExit('Package metadata is not Witch Tools Dev_v2.10.0 / Blender 4.5')
+
           bad = []
           for path in sorted(src.rglob('*.py')):
               try:
@@ -39,11 +40,25 @@ jobs:
           if bad:
               print('\n'.join(bad))
               raise SystemExit(1)
-          forbidden = [p for p in src.rglob('*') if p.is_file() and ('__pycache__' in p.parts or p.suffix in {'.pyc', '.pyo'})]
+
+          init_text = init_path.read_text(encoding='utf-8')
+          state_text = state_path.read_text(encoding='utf-8')
+          if "'version': (2, 10, 1)" not in init_text:
+              raise SystemExit('Unexpected bl_info version')
+          if "'blender': (4, 5, 0)" not in init_text:
+              raise SystemExit('Unexpected Blender target')
+          if 'ADDON_VERSION = (2, 10, 1)' not in state_text or "VERSION_LABEL = 'Dev_v2.10.1'" not in state_text:
+              raise SystemExit('Unexpected state.py version metadata')
+
+          forbidden = [
+              p for p in src.rglob('*')
+              if p.is_file() and ('__pycache__' in p.parts or p.suffix in {'.pyc', '.pyo'})
+          ]
           if forbidden:
               print('Forbidden cache files:', *forbidden, sep='\n')
               raise SystemExit(1)
-          print(f'Validated {sum(1 for _ in src.rglob("*.py"))} Python files.')
+
+          print(f'Validated {sum(1 for _ in src.rglob("*.py"))} Python files for Dev_v2.10.1 / Blender 4.5.')
 
       - name: Build installable ZIP
         shell: bash
@@ -55,17 +70,27 @@ jobs:
           find package_stage -type d -name '__pycache__' -prune -exec rm -rf {} +
           find package_stage -type f \( -name '*.pyc' -o -name '*.pyo' -o -name 'desktop.ini' -o -name '.DS_Store' \) -delete
           cd package_stage
-          zip -r -9 ../Witch_Tools_Dev_v2_10_0_Blender_4_5.zip Witch_Tools_Dev
+          zip -r -9 ../Witch_Tools_Dev_v2_10_1_Blender_4_5.zip Witch_Tools_Dev
           cd ..
-          sha256sum Witch_Tools_Dev_v2_10_0_Blender_4_5.zip | tee Witch_Tools_Dev_v2_10_0_Blender_4_5.sha256
-          unzip -t Witch_Tools_Dev_v2_10_0_Blender_4_5.zip
+          sha256sum Witch_Tools_Dev_v2_10_1_Blender_4_5.zip | tee Witch_Tools_Dev_v2_10_1_Blender_4_5.sha256
+          unzip -t Witch_Tools_Dev_v2_10_1_Blender_4_5.zip
+          cat > Witch_Tools_Dev_v2_10_1_Blender_4_5.manifest.txt <<EOF
+          Add-on: Witch Tools
+          Version: Dev_v2.10.1
+          Target Blender: 4.5.0
+          Branch: feature/witch-tools-magic-branch
+          Commit: ${GITHUB_SHA}
+          Static package validation: Python AST parse + metadata + cache hygiene + ZIP integrity
+          Runtime status: Blender 4.5 user retest pending
+          EOF
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Witch_Tools_Dev_v2_10_0_Blender_4_5
+          name: Witch_Tools_Dev_v2_10_1_Blender_4_5
           path: |
-            Witch_Tools_Dev_v2_10_0_Blender_4_5.zip
-            Witch_Tools_Dev_v2_10_0_Blender_4_5.sha256
+            Witch_Tools_Dev_v2_10_1_Blender_4_5.zip
+            Witch_Tools_Dev_v2_10_1_Blender_4_5.sha256
+            Witch_Tools_Dev_v2_10_1_Blender_4_5.manifest.txt
           if-no-files-found: error
           retention-days: 7
