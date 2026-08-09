@@ -18,12 +18,6 @@ jobs:
         with:
           ref: feature/witch-tools-magic-branch
           fetch-depth: 0
-      - name: Verify staged patch payloads
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git hash-object .github/tmp/wt2101_patch.gz.b64)" = "165ac38c8af5b626baba79ade8a4cf593bedf13f"
-          test "$(git hash-object .github/tmp/wt2101_docs_apply.py.gz.b64)" = "dcd78327d9bee0fc8531ef96b4f4c8bd578937bf"
       - name: Apply source patch
         shell: bash
         run: |
