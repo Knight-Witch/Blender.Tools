@@ -1,0 +1,279 @@
+name: Finalize Witch Tools Dev v2.10.1 docs and packaging
+
+on:
+  push:
+    branches:
+      - feature/witch-tools-magic-branch
+    paths:
+      - .github/workflows/finalize-witch-tools-v2-10-1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/witch-tools-magic-branch
+          fetch-depth: 0
+      - name: Update project state and feature docs
+        shell: python
+        run: |
+          from pathlib import Path
+          import ast
+
+          root = Path('.')
+          pkg = root / 'addons/witch_tools/dev/Witch_Tools_Dev'
+
+          def append_once(path, heading, text):
+              p = root / path
+              s = p.read_text(encoding='utf-8')
+              if heading not in s:
+                  s = s.rstrip() + '\n\n' + text.strip() + '\n'
+                  p.write_text(s, encoding='utf-8')
+
+          def replace(path, old, new):
+              p = root / path
+              s = p.read_text(encoding='utf-8')
+              if old in s:
+                  p.write_text(s.replace(old, new), encoding='utf-8')
+
+          precision = '''## Dev_v2.10.1 runtime-fix addendum
+
+          Blender 4.5 user testing of Dev_v2.10.0 confirmed hover highlighting, Magnetic Snap placement, Inject New Undo/Redo, Paver, Organic, and the tested Organic vertex-merge path. It also exposed runtime failures now targeted by Dev_v2.10.1:
+
+          - Edge Solo/Branch must accept one or more selected source edges.
+          - Auto-Merge must evaluate every created vertex after placement, not only the hover-winning endpoint.
+          - Interior target-edge contacts must split the target edge before welding so no stale full edge remains across the inserted vertex.
+          - Plain MMB may temporarily pivot around live geometry only during a live drag; Shift/Ctrl/Alt+MMB must remain normal Blender navigation.
+          - Object Snap must create a reliable undo-history entry.
+
+          Dev_v2.10.1 implements these source fixes. Blender 4.5 runtime retest is required before acceptance.'''
+          replace('addons/witch_tools/docs/features/precision_edit/SPEC.md', 'Candidate: `Dev_v2.10.0`', 'Candidate: `Dev_v2.10.1`')
+          append_once('addons/witch_tools/docs/features/precision_edit/SPEC.md', '## Dev_v2.10.1 runtime-fix addendum', precision)
+          append_once('addons/witch_tools/docs/features/precision_edit/DECISIONS.md', '## Dev_v2.10.1 decisions', '''## Dev_v2.10.1 decisions
+
+          - **PE-D014 — Auto-Merge is commit-wide.** Hover chooses placement; merge correctness checks every created vertex against pre-existing vertices and edges.
+          - **PE-D015 — Interior edge contact means subdivision.** Split the exact target edge before welding; coincident unsplit edge/vertex topology is not accepted.
+          - **PE-D016 — Edge Solo/Branch supports a rigid multi-edge source set.** Shared source vertices/connectivity are preserved.
+          - **PE-D017 — Navigation modifiers never assign the live pivot.** Only plain MMB during an active drag may pivot around live injection geometry.''')
+          append_once('addons/witch_tools/docs/features/precision_edit/STATE.md', '## Dev_v2.10.1 user-test handoff', '''## Dev_v2.10.1 user-test handoff
+
+          Dev_v2.10.0 was exercised in Blender 4.5. Working in that pass: hover highlighting, Magnetic Snap, Inject New Undo/Redo, Paver, Organic, and tested Organic vertex merge. Failures found: single-edge Edge source restriction, one-contact-only Auto-Merge, stale unsplit target-edge topology, Magic Branch camera pivot resets, missing explicit Magic Branch ON/OFF, missing horizontal-to-Z Paver growth, incomplete Paver overlap merge, Branch Type not syncing mesh selection mode, and Object Snap not undoing.
+
+          Dev_v2.10.1 implements source fixes for these observations. Runtime status of the hotfix remains unverified until the next Blender 4.5 test pass.''')
+          append_once('addons/witch_tools/docs/features/precision_edit/ROADMAP.md', '## Dev_v2.10.1 runtime bugfix — active', '''## Dev_v2.10.1 runtime bugfix — active
+
+          - Multi-edge Edge Solo/Branch: implemented; retest pending.
+          - All-created-vertex Auto-Merge and target-edge subdivision: implemented; topology/data/undo retest pending.
+          - Modifier-safe MMB navigation: implemented; camera retest pending.
+          - Object Snap Undo regression: explicit undo-boundary candidate implemented; retest pending.''')
+          replace('addons/witch_tools/docs/features/precision_edit/TEST_PLAN.md', 'Candidate: `Witch Tools Dev_v2.10.0`', 'Candidate: `Witch Tools Dev_v2.10.1`')
+          append_once('addons/witch_tools/docs/features/precision_edit/TEST_PLAN.md', '## Dev_v2.10.1 regression block', '''## Dev_v2.10.1 regression block
+
+          1. Edge Solo/Branch: test 2, 5, and 10 connected/disconnected selected source edges; entire set must duplicate/move rigidly.
+          2. Branch one copied edge toward two different existing rails. Commit with only one rail under the cursor: both coincident endpoints must integrate.
+          3. Every interior edge contact must replace the old full target edge with two segments sharing the inserted/welded vertex; no stale spanning edge may remain.
+          4. Repeat with multiple contacts on one edge and on different target edges; check duplicate/zero geometry, normals/winding, materials/edge attributes and Undo/Redo.
+          5. Plain MMB mid-drag must orbit around live injection; Shift/Ctrl/Alt+MMB must not reset the pivot.
+          6. Object Snap Vertex/Edge/Face in object and island scopes must Undo and Redo in one coherent step.''')
+
+          magic = '''## Dev_v2.10.1 runtime-fix addendum
+
+          Dev_v2.10.1 separates Magic Branch ON/OFF from Persistent stay-armed behavior, synchronizes Branch Type with Blender Vertex/Edge/Face selection mode, stops waiting-state/modifier MMB from resetting the orbit pivot, permits Paver to grow out of the source-face plane when the enabled axis mask requires it (Z-only floor-to-wall is canonical), and runs Auto-Merge across every supported created overlap. Interior target-edge contacts are subdivided before welding. Blender 4.5 runtime retest is required.'''
+          replace('addons/witch_tools/docs/features/magic_branch/SPEC.md', 'Candidate: `Witch Tools Dev_v2.10.0`', 'Candidate: `Witch Tools Dev_v2.10.1`')
+          append_once('addons/witch_tools/docs/features/magic_branch/SPEC.md', '## Dev_v2.10.1 runtime-fix addendum', magic)
+          append_once('addons/witch_tools/docs/features/magic_branch/DECISIONS.md', '## Dev_v2.10.1 decisions', '''## Dev_v2.10.1 decisions
+
+          - **D14 — Active and Persistent are separate.** ON/OFF controls whether the modal tool runs; Persistent only controls whether a successful commit leaves it armed.
+          - **D15 — Branch Type requests Blender mesh selection mode.** Vertex/Edge/Face buttons use an undoable operator candidate; Undo restoration must be runtime-tested.
+          - **D16 — Paver may turn out of plane under explicit axis constraint.** If the source-depth vector is removed by the axis mask, use the enabled mouse-projected direction while retaining source tile depth; reject a direction parallel to the emitting edge.
+          - **D17 — Auto-Merge correctness is global to created vertices.** Hover affects placement, not which overlaps are eligible to integrate.''')
+          append_once('addons/witch_tools/docs/features/magic_branch/STATE.md', '## Dev_v2.10.1 user-test state', '''## Dev_v2.10.1 user-test state
+
+          Dev_v2.10.0 Blender 4.5 pass: Paver, Organic, Magnetic Snap/highlight, and tested Organic vertex merge worked. Failures: camera pivot reset while waiting, no explicit ON/OFF, no Z wall growth from a horizontal source, incomplete Paver overlap integration, and no Branch Type selection-mode sync. Dev_v2.10.1 addresses each in source; retest pending.''')
+          append_once('addons/witch_tools/docs/features/magic_branch/ROADMAP.md', '## Dev_v2.10.1 immediate bugfix — active', '''## Dev_v2.10.1 immediate bugfix — active
+
+          - Explicit ON/OFF + hotkeyable toggle: source implemented; retest pending.
+          - Branch Type -> mesh selection mode sync: source implemented; Undo retest pending.
+          - Waiting/modifier MMB camera reset: source corrected; retest pending.
+          - Horizontal-to-Z Paver wall growth: source implemented; dimensions/winding retest pending.
+          - Commit-wide overlap merge + target-edge subdivision: source implemented; return-path retest pending.''')
+          append_once('addons/witch_tools/docs/features/magic_branch/TEST_PLAN.md', '## Dev_v2.10.1 regression block', '''## Dev_v2.10.1 regression block
+
+          1. Turn Magic Branch ON with nothing selected; pan/orbit. Camera must not jump to a selection or source.
+          2. While waiting, Shift+MMB pan then plain MMB orbit; no snap-back.
+          3. During a live branch, plain MMB must pivot around live geometry; modifier navigation must remain Blender-normal.
+          4. Switch Vertex -> Edge -> Face Branch Type; Blender selection mode must follow. Undo each switch and record restoration behavior.
+          5. Horizontal quad + Z-only: Paver from each emitting edge must create vertical, source-depth tiles with nonzero area and correct winding.
+          6. Pave +X, +Y, then -X onto existing topology with Auto-Merge ON. Every coincident created vertex must weld; interior edge contacts must subdivide the existing edge; no overlapping stale edge may remain.
+          7. Re-run Organic merge to ensure the previously working path does not regress.''')
+
+          project_state = '''# Witch Tools Project State
+
+          Last updated: 2026-08-08
+
+          ## Identity
+
+          - Add-on: Witch Tools
+          - Canonical role: primary general-purpose N-panel toolkit and reusable mesh/topology backend
+          - Development branch: `feature/witch-tools-magic-branch`
+          - Dev_v2.10.0 tested baseline: `f010eaa136dd8e68b78485858a369d38fc89a078`
+          - Current candidate: `Dev_v2.10.1`
+          - Target Blender: `4.5.0`
+          - Public/release branches modified: no
+          - Witch Dock/Quickbar modified: no
+
+          ## Dev_v2.10.0 Blender 4.5 user-test results
+
+          Working: Inject New hover highlighting, Magnetic Snap, Inject New Undo/Redo, Magic Branch Paver, Magic Branch Organic, and tested Organic magnetic vertex merge.
+
+          Failures requiring correction: multi-edge Edge Solo/Branch selection, multi-contact Auto-Merge, stale unsplit target edges at merge points, Magic Branch waiting-state camera pivot reset, missing explicit Magic Branch ON/OFF, horizontal-to-Z Paver growth, Paver return-path overlap merging, Branch Type selection-mode sync, and Object Snap Undo.
+
+          ## Dev_v2.10.1 source fix candidate
+
+          - Edge Solo/Branch accepts one or more selected edges as a rigid source set.
+          - Shared Auto-Merge checks every created vertex. Existing vertices weld directly; interior existing-edge contacts use a real BMesh edge split before welding.
+          - Live orbit pivot is assigned only by plain MMB during an active drag; waiting-state and modifier navigation do not reset it.
+          - Magic Branch has explicit ON/OFF plus separate Persistent stay-armed behavior.
+          - Branch Type buttons switch Blender mesh selection mode through an undoable operator candidate.
+          - Paver can fall back to an enabled out-of-plane mouse direction while preserving tile depth, enabling the Z-only floor-to-wall case.
+          - Object Snap explicitly pushes an undo boundary after a successful snap.
+
+          ## Active risks / remaining validation
+
+          Auto-Merge edge splitting needs normals/winding/material/UV/custom-edge-data/manifold and Undo/Redo testing. Multi-edge source cancel/Undo, Paver return-path merging, Z-wall Paver, Magic Branch modal lifecycle, selection-mode Undo, and Object Snap explicit Undo all require Blender 4.5 retest. Persistent per-branch Undo and N-panel drag-grip reorder remain runtime-unverified. Dynamic unselected-fan Slide and arbitrary face-interior retopology remain deferred.
+
+          ## Next exact step
+
+          Install Dev_v2.10.1 in Blender 4.5 and run, in order: multi-edge Edge injection; two-endpoint/edge-subdivision Auto-Merge; Paver return-path merge; MMB waiting/live navigation; Magic Branch ON/OFF; Branch Type selection-mode switch/Undo; Z-wall Paver; Object Snap Undo/Redo. Fix only observed failures before new scope or Quickbar exposure.
+
+          ## Files changed
+
+          Source: `precision_edit_topology.py`, `precision_edit_drag.py`, `operators_inject_new.py`, `operators_magic_branch.py`, `precision_edit_props.py`, `panel_precision_edit.py`, `operators_object_snap.py`, `operators_ui.py`, `__init__.py`, `state.py`, source quick-start/readme/changelog/compatibility files. Repository docs: Precision Edit and Magic Branch feature packets, UI map, roadmap, project state, notes and compatibility metadata.
+
+          ## Test status
+
+          Dev_v2.10.0 user Blender 4.5 pass: performed and recorded above. Dev_v2.10.1 Python AST/version checks: passed during source patch application. Dev_v2.10.1 Blender runtime: not performed. Additional Blender versions: not tested. Public release/Quickbar changes: none.
+          '''
+          (root/'addons/witch_tools/docs/PROJECT_STATE.md').write_text(project_state.replace('          ', ''), encoding='utf-8')
+
+          p = root/'addons/witch_tools/docs/UI_MAP.md'
+          s = p.read_text(encoding='utf-8').replace('Current development candidate: `Dev_v2.10.0`', 'Current development candidate: `Dev_v2.10.1`')
+          ui = '''## Dev_v2.10.1 interaction corrections
+
+          - Inject New Edge Solo/Branch accepts one or more Edge sources.
+          - Magic Branch Step 1 has explicit ON/OFF; Persistent is only stay-armed behavior.
+          - Branch Type Vertex/Edge/Face buttons also switch Blender mesh selection mode.
+          - Plain MMB changes the live orbit pivot only while dragging; modifier MMB remains normal navigation.
+          - Paver can grow along an enabled out-of-plane axis such as Z-only from a horizontal source.
+          '''.replace('          ','')
+          if '## Dev_v2.10.1 interaction corrections' not in s:
+              s = ui + '\n' + s
+          p.write_text(s, encoding='utf-8')
+
+          p = root/'addons/witch_tools/docs/ROADMAP.md'
+          s = p.read_text(encoding='utf-8')
+          road = '''## Dev_v2.10.1 runtime correction pass — active
+
+          - Multi-edge Edge Solo/Branch.
+          - Commit-wide overlap integration with real target-edge subdivision.
+          - Magic Branch waiting/modifier navigation correction and explicit ON/OFF.
+          - Branch Type selection-mode sync and Paver out-of-plane/Z-wall growth.
+          - Paver return-path overlap integration.
+          - Object Snap Undo regression.
+          - Blender 4.5 regression retest is the immediate gate before new feature scope.
+          '''.replace('          ','')
+          if '## Dev_v2.10.1 runtime correction pass — active' not in s:
+              s = road + '\n' + s
+          p.write_text(s, encoding='utf-8')
+
+          latest = '''# Witch Tools Notes Changelog — Latest Update
+
+          Date: 2026-08-08
+
+          ## Dev_v2.10.1 — Blender 4.5 runtime-fix documentation
+
+          - Recorded Dev_v2.10.0 user runtime results and the exact failing merge/navigation/undo cases.
+          - Patched canonical Witch Tools Inject New/Magic Branch topology integration, navigation/activation, Paver axis growth, and Object Snap Undo.
+          - Updated Precision Edit and Magic Branch specs, decisions, states, roadmaps and regression tests.
+          - Candidate is `Dev_v2.10.1`, target Blender `4.5.0`; runtime retest remains pending.
+          '''.replace('          ','')
+          (root/'addons/witch_tools/docs/NOTES_CHANGELOG.md').write_text(latest, encoding='utf-8')
+          p = root/'addons/witch_tools/docs/NOTES_CHANGELOG_FULL.md'; s=p.read_text(encoding='utf-8')
+          entry=latest.replace('# Witch Tools Notes Changelog — Latest Update\n\n','')+'\n\n'
+          if '## Dev_v2.10.1 — Blender 4.5 runtime-fix documentation' not in s:
+              p.write_text(entry+s,encoding='utf-8')
+
+          root_latest = '''# Blender.Tools Notes Changelog — Latest Update
+
+          ## 2026-08-08 — Witch Tools Dev_v2.10.1 runtime fix candidate
+
+          - Recorded Blender 4.5 user-test results for Witch Tools Dev_v2.10.0.
+          - Patched canonical Witch Tools Inject New/Magic Branch topology integration, navigation/activation, Paver axis growth, and Object Snap Undo.
+          - Updated Witch Tools state/test documentation and packaging metadata to Dev_v2.10.1 / Blender 4.5.
+          - Public release branches and Witch Quickbar are unchanged. Runtime retest is pending.
+          '''.replace('          ','')
+          (root/'NOTES_CHANGELOG.md').write_text(root_latest, encoding='utf-8')
+          p=root/'NOTES_CHANGELOG_FULL.md'; s=p.read_text(encoding='utf-8')
+          entry=root_latest.replace('# Blender.Tools Notes Changelog — Latest Update\n\n','')+'\n\n'
+          if '## 2026-08-08 — Witch Tools Dev_v2.10.1 runtime fix candidate' not in s:
+              header='# Blender.Tools Notes Changelog — Full History\n'
+              s=s.replace(header,header+'\n'+entry,1) if header in s else entry+s
+              p.write_text(s,encoding='utf-8')
+
+          p=root/'Blender_Version_Compatability.md'; s=p.read_text(encoding='utf-8')
+          compat='''## Witch Tools Dev_v2.10.1 — 2026-08-08
+
+          - Intended Blender target: 4.5.0
+          - Runtime baseline: Dev_v2.10.0 user-tested in Blender 4.5; specific merge/navigation/undo defects found
+          - Dev_v2.10.1 runtime verification: pending
+          - Additional Blender versions verified for Dev_v2.10.1: none
+          - Public releases / Quickbar: unchanged
+
+          '''.replace('          ','')
+          if not s.startswith('## Witch Tools Dev_v2.10.1'):
+              p.write_text(compat+s,encoding='utf-8')
+
+          for py in sorted(pkg.rglob('*.py')):
+              ast.parse(py.read_text(encoding='utf-8'), filename=str(py))
+          print('Repository docs updated; package Python parse passed.')
+      - name: Update package workflow to v2.10.1
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('.github/workflows/package-witch-tools-v2-10.yml')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('Package Witch Tools Dev v2.10.0','Package Witch Tools Dev v2.10.1')
+          s=s.replace("'version': (2, 10, 0)", "'version': (2, 10, 1)")
+          s=s.replace('Dev_v2.10.0 / Blender 4.5','Dev_v2.10.1 / Blender 4.5')
+          s=s.replace('v2_10_0','v2_10_1')
+          anchor='          unzip -t Witch_Tools_Dev_v2_10_1_Blender_4_5.zip\n'
+          manifest='''          cat > Witch_Tools_Dev_v2_10_1_Blender_4_5.manifest.txt <<EOF
+          Add-on: Witch Tools
+          Version: Dev_v2.10.1
+          Target Blender: 4.5.0
+          Branch: feature/witch-tools-magic-branch
+          Commit: ${GITHUB_SHA}
+          Static package validation: Python AST parse + metadata + cache hygiene + ZIP integrity
+          Runtime status: Blender 4.5 user retest pending
+          EOF
+'''
+          if 'Witch_Tools_Dev_v2_10_1_Blender_4_5.manifest.txt <<EOF' not in s and anchor in s:
+              s=s.replace(anchor,anchor+manifest)
+          upload='            Witch_Tools_Dev_v2_10_1_Blender_4_5.sha256\n'
+          if 'Witch_Tools_Dev_v2_10_1_Blender_4_5.manifest.txt' not in s.split('Upload package artifact')[-1]:
+              s=s.replace(upload,upload+'            Witch_Tools_Dev_v2_10_1_Blender_4_5.manifest.txt\n')
+          p.write_text(s,encoding='utf-8')
+      - name: Commit final docs and packaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Knight Witch Dev Bot"
+          git config user.email "actions@users.noreply.github.com"
+          rm -f .github/workflows/finalize-witch-tools-v2-10-1.yml
+          git add -A
+          git commit -m "Finalize Witch Tools Dev v2.10.1 docs and packaging"
+          git push origin HEAD:feature/witch-tools-magic-branch
