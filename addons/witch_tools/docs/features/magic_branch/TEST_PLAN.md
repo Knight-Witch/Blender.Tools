@@ -167,3 +167,17 @@ For every topology-changing mode above:
 ## Result record
 
 Record exact Blender build, OS, object transforms, selection mode, tool toggles, before/after counts, warnings/tracebacks, Undo behavior, and any attribute/normals/manifold differences.
+
+## Dev_v2.10.1 regression block
+
+1. Edge Solo/Branch: test multiple connected and disconnected selected source edges; the set must duplicate/move rigidly.
+2. Move one branched edge so its two new endpoints land on two different target rails while only one rail is hovered. Both contacts must integrate.
+3. Interior target-edge contacts must replace the old spanning edge with two segments sharing the inserted/welded vertex; no stale full edge may remain.
+4. Test coincident vertex contacts, multiple contacts on one edge, and contacts on different edges. Check zero/duplicate geometry, normals/winding, material/edge attributes, Undo/Redo and cancel rollback.
+5. Magic Branch waiting state: Shift+MMB pan and ordinary orbit must not snap the view back to the current selection.
+6. During a live branch/injection, plain MMB must orbit around live geometry; modifier MMB must retain normal Blender navigation.
+7. Magic Branch ON/OFF must actually enter/exit the modal tool. Persistent OFF exits after one branch; Persistent ON stays armed.
+8. Branch Type Vertex/Edge/Face must switch Blender mesh selection mode; test Undo restoration.
+9. Horizontal face + Z-only Paver must create vertical source-depth tiles with correct winding and no zero-area faces.
+10. Pave +X, +Y, then -X back onto existing topology with Auto-Merge ON. Every supported overlap must integrate and interior edge contacts must subdivide the existing edge.
+11. Object Snap Vertex/Edge/Face in object/island scopes must Undo and Redo in one coherent step.

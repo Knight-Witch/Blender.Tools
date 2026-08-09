@@ -163,3 +163,11 @@ Auto-Merge supports conservative vertex/edge materialization/welding. Arbitrary 
 - Edit Tools order/disclosure state: add-on preferences.
 - topology drag/magnetic logic: `precision_edit_drag.py` + `precision_edit_topology.py`.
 - Witch Dock / Quickbar is not modified in Dev_v2.10.0; future exposure must remain a thin wrapper over Witch Tools.
+
+## Dev_v2.10.1 UI corrections
+
+- Inject New Edge Solo/Branch accepts one or more Edge sources.
+- Magic Branch Step 1 now has explicit ON/OFF; Persistent is only stay-armed behavior.
+- Magic Branch Branch Type buttons also switch Blender Vertex/Edge/Face selection mode.
+- Plain MMB changes the live pivot only while dragging; modifier MMB keeps normal viewport navigation.
+- Paver can grow along an enabled out-of-plane axis, including the Z-only floor-to-wall case.

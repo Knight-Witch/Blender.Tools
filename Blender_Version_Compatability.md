@@ -1,3 +1,11 @@
+## Witch Tools Dev_v2.10.1 — 2026-08-08
+
+- Intended Blender target: 4.5.0
+- Runtime baseline: Dev_v2.10.0 user-tested in Blender 4.5; merge/navigation/undo defects found
+- Dev_v2.10.1 runtime verification: pending
+- Additional Blender versions verified for Dev_v2.10.1: none
+- Public releases / Quickbar: unchanged
+
 # Blender Version Compatability
 
 The filename retains the historical project spelling for continuity.

@@ -66,3 +66,11 @@ The pre-existing Dev_v2.8.0 roadmap references `/docs/features/align_selection/`
 - Auto-Merge is conservative; arbitrary face-interior retopology is deferred.
 - Multi-edge Slide operates on the preselected edge set; cursor hover chooses the driver among those selected rails.
 - MMB navigation is passed through to Blender after assigning live geometry as the pivot candidate; runtime behavior must be tested.
+
+## Dev_v2.10.1 runtime decisions
+
+- Merge correctness is commit-wide: hover chooses placement, not the only eligible merge contact.
+- A created vertex landing inside an existing edge must split that exact edge before welding; coincident unsplit topology is not acceptable.
+- Edge Solo/Branch accepts a rigid set of one or more selected edges while preserving shared source connectivity.
+- Only plain MMB during a live drag may assign the live injection pivot. Modifier MMB remains Blender navigation.
+- Object Snap uses an explicit Undo boundary candidate because automatic operator Undo did not register reliably in the Blender 4.5 user pass.

@@ -53,3 +53,10 @@ Top-level Edit Tools order is stored in add-on preferences rather than scene dat
 ## D13 — Planar Edit remains a top-level tool
 
 The new requested order omitted Planar Edit but did not request removal. Since Planar Edit was an explicit earlier requirement and remains an independent precision workflow, its default position stays directly after Coordinate Copy. It can be moved anywhere through the new reordering system.
+
+## Dev_v2.10.1 runtime decisions
+
+- Magic Branch Active and Persistent are separate: Active controls whether the modal tool runs; Persistent only controls stay-armed behavior after a commit.
+- Branch Type buttons request the corresponding Blender mesh selection mode through an undoable operator candidate.
+- If the source-plane Paver direction is removed by the enabled axis mask, use the enabled mouse-projected direction while preserving source tile depth; reject a direction parallel to the emitting edge.
+- Paver/Organic Auto-Merge checks every supported created overlap at commit, not only the hovered element.

@@ -170,3 +170,9 @@ See `TEST_PLAN.md` and `/docs/features/magic_branch/TEST_PLAN.md`.
 - arbitrary face-interior Auto-Merge retopology;
 - hover-only dynamic addition of unselected fan edges to multi-edge Slide;
 - Witch Dock / Quickbar wrappers before Witch Tools Blender 4.5 acceptance.
+
+## Dev_v2.10.1 Blender 4.5 regression addendum
+
+Dev_v2.10.0 user testing confirmed hover highlighting, Magnetic Snap, Inject New Undo/Redo, Paver, Organic, and the tested Organic vertex-merge path. Failures found were: Edge Solo/Branch restricted to one edge; only one magnetic contact merged; an old unsplit target edge remained through an inserted vertex; Magic Branch reset the view pivot while waiting; no explicit Magic Branch ON/OFF; no Z-wall Paver growth from a horizontal source; Paver return-path overlaps did not all merge; Branch Type did not synchronize Blender Vertex/Edge/Face selection mode; Object Snap did not enter Undo history.
+
+Dev_v2.10.1 implements source fixes for those cases. Blender 4.5 runtime retest remains required.

@@ -138,3 +138,7 @@ Runtime validation: pending
 ## Immediate next step
 
 Package/install Dev_v2.10.0 in Blender 4.5 and execute the two current test plans. Fix observed failures without broadening into deferred work. Do not modify Witch Dock/Quickbar until Witch Tools drag/snap/topology behavior is accepted.
+
+## Dev_v2.10.1 runtime correction pass — active
+
+Multi-edge Edge Solo/Branch, commit-wide overlap integration with true target-edge subdivision, Magic Branch navigation/ON-OFF/selection-mode sync, Paver out-of-plane growth, Paver return-path merge, and Object Snap Undo are implemented as a bugfix candidate. Blender 4.5 regression retest is the immediate gate before additional feature scope or Quickbar exposure.
