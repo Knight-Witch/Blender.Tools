@@ -1,0 +1,239 @@
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=precision_edit_topology.py' '--exclude=__init__.py' '--exclude=state.py' '--exclude=precision_edit_props.py' wt210_src/Witch_Tools_Dev/precision_edit_drag.py wt2101_work/precision_edit_drag.py
+--- wt210_src/Witch_Tools_Dev/precision_edit_drag.py	2026-08-08 21:25:15.000000000 +0000
++++ wt2101_work/precision_edit_drag.py	2026-08-09 01:55:12.664526424 +0000
+@@ -365,22 +365,151 @@
+     return delta, [(vert, 'EDGE', edge, point)]
+ 
+ 
+-def materialize_edge_point(bm, obj, edge, point_world, tolerance=1.0e-6):
+-    point_local = obj.matrix_world.inverted_safe() @ Vector(point_world)
++def _edge_world_closest(obj, edge, point_world):
++    matrix = obj.matrix_world
++    start = matrix @ edge.verts[0].co
++    end = matrix @ edge.verts[1].co
++    return closest_point_segment_3d(Vector(point_world), start, end)
++
++
++def _merge_excluded_edges(bm, created_verts=(), created_edges=(), branch_edges=()):
++    created_vert_set = {vert for vert in created_verts or () if getattr(vert, 'is_valid', False)}
++    excluded = {edge for edge in (*tuple(created_edges or ()), *tuple(branch_edges or ())) if getattr(edge, 'is_valid', False)}
++    for edge in bm.edges:
++        if edge.is_valid and any(vert in created_vert_set for vert in edge.verts):
++            excluded.add(edge)
++    return created_vert_set, excluded
++
++
++def collect_auto_merge_contacts(
++    bm,
++    obj,
++    created_verts,
++    created_edges=(),
++    branch_edges=(),
++    explicit_contacts=(),
++    tolerance=1.0e-6,
++):
++    """Resolve every supported created-vertex overlap before mutating target topology.
++
++    Explicit magnetic contacts win. Remaining created vertices are checked against
++    pre-existing vertices first, then pre-existing edges. New/branch geometry is
++    excluded so Auto-Merge cannot accidentally consume its own live topology.
++    """
++    created_vert_set, excluded_edges = _merge_excluded_edges(
++        bm,
++        created_verts=created_verts,
++        created_edges=created_edges,
++        branch_edges=branch_edges,
++    )
++    matrix = obj.matrix_world
++    by_created = {}
++
++    for created_vert, kind, element, point_world in explicit_contacts or ():
++        if created_vert not in created_vert_set or not created_vert.is_valid:
++            continue
++        if kind not in {'VERT', 'EDGE'} or element is None or not getattr(element, 'is_valid', False):
++            continue
++        if kind == 'VERT' and element in created_vert_set:
++            continue
++        if kind == 'EDGE' and element in excluded_edges:
++            continue
++        by_created[created_vert] = (created_vert, kind, element, Vector(point_world))
++
++    existing_verts = [
++        vert for vert in bm.verts
++        if vert.is_valid and not vert.hide and vert not in created_vert_set
++    ]
++    existing_edges = [
++        edge for edge in bm.edges
++        if edge.is_valid and not edge.hide and edge not in excluded_edges
++    ]
++
++    for created_vert in created_vert_set:
++        if not created_vert.is_valid or created_vert in by_created:
++            continue
++        point_world = matrix @ created_vert.co
++
++        best_vert = None
++        for target_vert in existing_verts:
++            distance = (matrix @ target_vert.co - point_world).length
++            if distance <= tolerance and (best_vert is None or distance < best_vert[0]):
++                best_vert = (distance, target_vert)
++        if best_vert is not None:
++            _distance, target_vert = best_vert
++            by_created[created_vert] = (
++                created_vert,
++                'VERT',
++                target_vert,
++                matrix @ target_vert.co,
++            )
++            continue
++
++        best_edge = None
++        for target_edge in existing_edges:
++            closest, factor, distance = _edge_world_closest(obj, target_edge, point_world)
++            if distance <= tolerance and (best_edge is None or distance < best_edge[0]):
++                best_edge = (distance, target_edge, factor, closest)
++        if best_edge is not None:
++            _distance, target_edge, _factor, closest = best_edge
++            by_created[created_vert] = (
++                created_vert,
++                'EDGE',
++                target_edge,
++                closest,
++            )
++
++    return list(by_created.values())
++
++
++def contact_target_vertices(contact):
++    _created_vert, kind, element, _point_world = contact
++    if element is None or not getattr(element, 'is_valid', False):
++        return ()
++    if kind == 'VERT':
++        return (element,)
++    if kind == 'EDGE':
++        return tuple(element.verts)
++    return ()
++
++
++def materialize_edge_point(
++    bm,
++    obj,
++    edge,
++    point_world,
++    tolerance=1.0e-6,
++    excluded_edges=(),
++    created_verts=(),
++):
++    excluded_edges = {candidate for candidate in excluded_edges or () if getattr(candidate, 'is_valid', False)}
++    created_vert_set = {vert for vert in created_verts or () if getattr(vert, 'is_valid', False)}
+     candidates = []
+-    if edge is not None and getattr(edge, 'is_valid', False):
++    if edge is not None and getattr(edge, 'is_valid', False) and edge not in excluded_edges:
+         candidates.append(edge)
+         for vert in edge.verts:
+             for linked in vert.link_edges:
+-                if linked.is_valid and linked not in candidates:
++                if (
++                    linked.is_valid
++                    and linked not in candidates
++                    and linked not in excluded_edges
++                    and not any(candidate_vert in created_vert_set for candidate_vert in linked.verts)
++                ):
+                     candidates.append(linked)
+     if not candidates:
+-        candidates = [candidate for candidate in bm.edges if candidate.is_valid and not candidate.hide]
++        candidates = [
++            candidate for candidate in bm.edges
++            if (
++                candidate.is_valid
++                and not candidate.hide
++                and candidate not in excluded_edges
++                and not any(candidate_vert in created_vert_set for candidate_vert in candidate.verts)
++            )
++        ]
+ 
+     best = None
+     for candidate in candidates:
+-        start, end = candidate.verts
+-        closest, factor, distance = closest_point_segment_3d(point_local, start.co, end.co)
++        closest, factor, distance = _edge_world_closest(obj, candidate, point_world)
+         if best is None or distance < best[0]:
+             best = (distance, candidate, factor, closest)
+     if best is None:
+@@ -389,32 +518,71 @@
+     if distance > max(tolerance, 1.0e-5):
+         raise DragSnapError('The magnetic merge point no longer lies on the target edge.')
+ 
++    matrix = obj.matrix_world
+     start, end = candidate.verts
+-    if (closest - start.co).length <= tolerance:
++    if (closest - matrix @ start.co).length <= tolerance:
+         return start
+-    if (closest - end.co).length <= tolerance:
++    if (closest - matrix @ end.co).length <= tolerance:
+         return end
+     factor = max(1.0e-6, min(1.0 - 1.0e-6, factor))
+     _new_edge, new_vert = bmesh.utils.edge_split(candidate, start, factor)
+     return new_vert
+ 
+ 
+-def weld_contacts(bm, obj, contacts, face_target=None, tolerance=1.0e-6):
++def weld_contacts(
++    bm,
++    obj,
++    contacts,
++    face_target=None,
++    tolerance=1.0e-6,
++    created_verts=(),
++    created_edges=(),
++    branch_edges=(),
++):
++    created_vert_set, excluded_edges = _merge_excluded_edges(
++        bm,
++        created_verts=created_verts,
++        created_edges=created_edges,
++        branch_edges=branch_edges,
++    )
+     target_map = {}
+     face_boundary_targets = []
++    face_boundary_sources = {
++        created_vert
++        for created_vert, kind, element, _point_world in contacts or ()
++        if (
++            face_target is not None
++            and kind in {'VERT', 'EDGE'}
++            and element is not None
++            and getattr(element, 'is_valid', False)
++            and (
++                (kind == 'VERT' and element in face_target.verts)
++                or (kind == 'EDGE' and element in face_target.edges)
++            )
++        )
++    }
++
+     for created_vert, kind, element, point_world in contacts or ():
+         if not getattr(created_vert, 'is_valid', False):
+             continue
+         if kind == 'VERT':
+             target_vert = element
+         elif kind == 'EDGE':
+-            target_vert = materialize_edge_point(bm, obj, element, point_world, tolerance=tolerance)
++            target_vert = materialize_edge_point(
++                bm,
++                obj,
++                element,
++                point_world,
++                tolerance=tolerance,
++                excluded_edges=excluded_edges,
++                created_verts=created_vert_set,
++            )
+         else:
+             continue
+         if target_vert is created_vert or not getattr(target_vert, 'is_valid', False):
+             continue
+         target_map[created_vert] = target_vert
+-        if face_target is not None:
++        if created_vert in face_boundary_sources:
+             face_boundary_targets.append(target_vert)
+ 
+     if target_map:
