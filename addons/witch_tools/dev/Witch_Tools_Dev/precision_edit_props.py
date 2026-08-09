@@ -101,10 +101,10 @@ class WTPrecisionEditProperties(PropertyGroup):
     )
     inject_new_element_type: EnumProperty(
         name='Element',
-        description='Geometry type to duplicate in Solo or Branch mode. Slide always injects vertices into the selected edges',
+        description='Geometry type to duplicate in Solo or Branch mode. Edge accepts one or more selected edges; Slide always injects vertices into selected edges',
         items=[
             ('VERT', 'Vertex', 'Duplicate one selected vertex'),
-            ('EDGE', 'Edge', 'Duplicate one selected edge and its endpoints'),
+            ('EDGE', 'Edge', 'Duplicate one or more selected edges and their shared topology'),
             ('FACE', 'Face', 'Duplicate one selected face and its boundary'),
         ],
         default='VERT',
@@ -115,6 +115,12 @@ class WTPrecisionEditProperties(PropertyGroup):
     inject_new_last_report: StringProperty(default='Choose Setup, movement, and element type; then select a source.')
 
     # Magic Branch
+    magic_branch_active: BoolProperty(
+        name='Magic Branch Active',
+        description='Runtime ON/OFF state for the Magic Branch modal tool',
+        default=False,
+        options={'SKIP_SAVE'},
+    )
     magic_branch_persistent: BoolProperty(
         name='Persistent',
         description='Stay armed after each completed branch so another click-drag can immediately create the next branch. Turn off for one branch then exit',
@@ -139,7 +145,7 @@ class WTPrecisionEditProperties(PropertyGroup):
     )
     magic_branch_auto_merge: BoolProperty(
         name='Auto-Merge',
-        description='On commit, weld compatible magnetic vertex/edge contacts into the existing topology',
+        description='On commit, weld every supported overlapping new vertex into existing vertices/edges; interior edge contacts subdivide the target edge before welding',
         default=False,
     )
     magic_branch_face_mode: EnumProperty(
@@ -150,7 +156,7 @@ class WTPrecisionEditProperties(PropertyGroup):
         ],
         default='PAVER',
     )
-    magic_branch_last_report: StringProperty(default='Configure Magic Branch, then press Start and click-drag geometry in the viewport.')
+    magic_branch_last_report: StringProperty(default='Configure Magic Branch, turn it ON, then click-drag geometry in the viewport.')
 
 
 CLASSES = (WTPrecisionEditProperties,)
