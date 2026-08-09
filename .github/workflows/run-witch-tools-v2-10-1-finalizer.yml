@@ -1,0 +1,33 @@
+name: Run Witch Tools Dev v2.10.1 finalizer
+
+on:
+  push:
+    branches:
+      - feature/witch-tools-magic-branch
+    paths:
+      - .github/workflows/run-witch-tools-v2-10-1-finalizer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/witch-tools-magic-branch
+          fetch-depth: 0
+      - name: Apply documentation and packaging state
+        run: python .github/tmp/finalize_wt2101.py
+      - name: Commit final state
+        run: |
+          set -euo pipefail
+          git config user.name "Knight Witch Dev Bot"
+          git config user.email "actions@users.noreply.github.com"
+          rm -f .github/tmp/finalize_wt2101.py
+          rm -f .github/workflows/finalize-witch-tools-v2-10-1.yml
+          rm -f .github/workflows/run-witch-tools-v2-10-1-finalizer.yml
+          git add -A
+          git commit -m "Finalize Witch Tools Dev v2.10.1 state"
+          git push origin HEAD:feature/witch-tools-magic-branch
