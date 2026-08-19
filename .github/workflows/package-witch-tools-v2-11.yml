@@ -1,4 +1,4 @@
-name: Package Witch Tools Dev v2.11.0
+name: Package Witch Tools Dev v2.11.1
 
 on:
   pull_request:
@@ -27,6 +27,8 @@ jobs:
           src = pathlib.Path('addons/witch_tools/dev/Witch_Tools_Dev')
           init_path = src / '__init__.py'
           state_path = src / 'state.py'
+          panel_path = src / 'panel_print3d.py'
+          clean_path = src / 'instant_clean_core.py'
           required = [
               'panel_transform.py', 'panel_print3d.py', 'print3d_tools.py',
               'instant_clean_core.py', 'mesh_repair_props.py', 'mesh_repair_backend.py',
@@ -56,13 +58,21 @@ jobs:
 
           init_text = init_path.read_text(encoding='utf-8')
           state_text = state_path.read_text(encoding='utf-8')
-          if "'version': (2, 11, 0)" not in init_text or "'blender': (4, 5, 0)" not in init_text:
+          panel_text = panel_path.read_text(encoding='utf-8')
+          clean_text = clean_path.read_text(encoding='utf-8')
+          if "'version': (2, 11, 1)" not in init_text or "'blender': (4, 5, 0)" not in init_text:
               raise SystemExit('Unexpected __init__.py version/Blender target')
-          if 'ADDON_VERSION = (2, 11, 0)' not in state_text or "VERSION_LABEL = 'Dev_v2.11.0'" not in state_text:
+          if 'ADDON_VERSION = (2, 11, 1)' not in state_text or "VERSION_LABEL = 'Dev_v2.11.1'" not in state_text:
               raise SystemExit('Unexpected state.py version metadata')
           for token in ("'TRANSFORM': 1", "'PRINT3D': 3", "'EDIT_TOOLS': 4"):
               if token not in state_text:
                   raise SystemExit(f'Missing panel-order contract: {token}')
+
+          for target in ('REPAIR', 'MANIFOLD', 'TOPOLOGY', 'NORMALS', 'DISSOLVE'):
+              if f"op.target = '{target}'" not in panel_text:
+                  raise SystemExit(f'Missing Advanced Clean section play target: {target}')
+          if "target: EnumProperty" not in clean_text or "self.target == 'ENABLED'" not in clean_text:
+              raise SystemExit('Missing Advanced Clean global/section target routing')
 
           forbidden = [p for p in src.rglob('*') if p.is_file() and ('__pycache__' in p.parts or p.suffix in {'.pyc','.pyo'})]
           if forbidden:
@@ -79,39 +89,33 @@ jobs:
           cp -a addons/witch_tools/dev/Witch_Tools_Dev package_stage/Witch_Tools_Dev
           find package_stage -type d -name '__pycache__' -prune -exec rm -rf {} +
           find package_stage -type f \( -name '*.pyc' -o -name '*.pyo' -o -name 'desktop.ini' -o -name '.DS_Store' \) -delete
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('package_stage/Witch_Tools_Dev/CHANGELOG.md')
-          old = p.read_text(encoding='utf-8') if p.exists() else ''
-          marker = '## Dev_v2.11.0 — 3D Print Tools + Transform integration'
-          entry = '''## Dev_v2.11.0 — 3D Print Tools + Transform integration\n\n- Added a top-level Transform panel directly below Mode Switcher with editable Location, Rotation, and Scale; Edit Mode Location edits the selected-vertex local median by translation.\n- Added top-level 3D Print Tools above Edit Tools with fixed-STL Export, consolidated Analyze Mesh results, Make Manifold, Auto Fix, and Advanced Clean.\n- Auto Fix integrates Global Fix before Local Fix. Advanced Clean integrates Repair, Manifold, Topology, Normals, and Dissolve with condensed/responsive toggle rows.\n- Retained the complete Dev_v2.10.1 Magic Branch / Edge Doctor baseline rather than regressing to the older precision-edit branch.\n- Intentionally omitted Volume/Area, separate Solid/Intersections/Shells controls, Hollow, Bisect, Align XY, Scale To, export options, Instant Clean Object Data, and Make Planar.\n- Analyze result click-to-select parity is planned after result-count parity is validated against Blender's original 3D Print Toolbox.\n- Target Blender: 4.5.0. Static package validation is performed by the packaging workflow; Blender 4.5 runtime validation remains user-pending.\n\n'''
-          if marker not in old:
-              p.write_text(entry + old, encoding='utf-8')
-          PY
           cd package_stage
-          zip -r -9 ../Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.zip Witch_Tools_Dev
+          zip -r -9 ../Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip Witch_Tools_Dev
           cd ..
-          sha256sum Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.zip | tee Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.sha256
-          unzip -t Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.zip
-          cat > Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.manifest.txt <<EOF
+          sha256sum Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip | tee Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.sha256
+          unzip -t Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip
+          cat > Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.manifest.txt <<EOF
           Add-on: Witch Tools
-          Version: Dev_v2.11.0
+          Version: Dev_v2.11.1
           Target Blender: 4.5.0
+          Additional Blender versions tested for this candidate: none
+          User reference UI environment: Blender 5.0.1 (reference screenshots only; not a Witch Tools compatibility test)
           Source baseline: Dev_v2.10.1 / feature/witch-tools-magic-branch
           Feature branch: feature/witch-tools-3d-print-transform-v2-11
           Commit: ${GITHUB_SHA}
           Package type: full installable ZIP, stable folder Witch_Tools_Dev
-          Static validation: Python AST, duplicate bl_idname scan, version/panel-order contracts, cache hygiene, ZIP integrity, SHA-256
-          Runtime status: Blender 4.5 user validation pending
+          Static validation: Python AST, duplicate bl_idname scan, version/panel-order contracts, Advanced Clean per-section routing contracts, cache hygiene, ZIP integrity, SHA-256
+          Runtime status: Blender runtime validation pending
+          Known limitations: Advanced Clean custom section headers and section-run behavior are untested; Transform/Analyze/repair/export runtime testing remains pending; no Blender 5.0.1 compatibility claim
           EOF
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5
+          name: Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5
           path: |
-            Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.zip
-            Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.sha256
-            Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.manifest.txt
+            Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip
+            Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.sha256
+            Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.manifest.txt
           if-no-files-found: error
           retention-days: 14
