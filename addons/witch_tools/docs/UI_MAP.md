@@ -1,7 +1,7 @@
 # Witch Tools UI Map
 
 Last updated: 2026-08-18  
-Current development candidate: `Dev_v2.11.3`
+Current development candidate: `Dev_v2.11.4`
 
 ## Top-level N-panel default order
 
@@ -45,18 +45,20 @@ Parent: `3D Print Tools`
 
 ### Export
 
-Visible UI remains:
+Visible UI:
 - folder selector
 - `Export STL`
 
 No format selector or export-options subsection; STL is fixed.
 
-Dev_v2.11.3 backend behavior:
+Backend:
 - exports selected mesh object(s) as one STL;
 - verifies Blender exporter completion and actual file creation;
-- attempts legacy STL export when available if current native export fails;
+- attempts legacy STL export where available;
 - falls back to direct evaluated-mesh binary STL writing when Blender operator paths fail/cancel;
 - reports explicit failure instead of silently appearing successful.
+
+Dev_v2.11.3 export was user-confirmed to create an STL in Blender 5.0.1 and is retained in Dev_v2.11.4.
 
 ### Analyze Mesh
 
@@ -73,7 +75,14 @@ Dev_v2.11.3 backend behavior:
   - Sharp Edges
   - Overhang Faces
 
-Dev_v2.11.3 retains Dev_v2.11.2 Analyzer parity source changes. The threshold grid remains hidden; backend defaults are 0.1 mm degenerate, 5° non-planar, 1 mm thickness, 160° sharp, and 45° overhang. Click-to-select remains gated on count and offending-element parity.
+Dev_v2.11.4 Analyze behavior:
+- `Check All` invokes the installed 3D Print Toolbox `mesh.print3d_check_all` operator directly.
+- Witch Tools mirrors the live Toolbox report instead of running a second detector implementation.
+- In Edit Mode, a non-empty selectable result count is shown as a button with the appropriate vertex/edge/face selection icon.
+- Clicking that count invokes the original Toolbox `mesh.print3d_select_report` using the original live report index.
+- Empty/non-selectable results remain plain count labels.
+- Analyze requires the 3D Print Toolbox extension to be installed/enabled. If its backend/report cannot be found, Witch Tools shows an error rather than producing alternate counts.
+- The original threshold/settings grid remains omitted from Witch Tools because the installed Toolbox itself is authoritative.
 
 ### Clean & Repair
 
@@ -208,11 +217,12 @@ Existing protection and saved-selection workflows retained.
 ## Persistence / backend contracts
 
 - Transform transient UI property: `Scene.wt_transform_state`.
-- 3D Print analyzer/export state: `Scene.wt_print3d`.
+- 3D Print display/export state: `Scene.wt_print3d`.
+- Analyze diagnostic source: installed 3D Print Toolbox report pipeline.
 - Advanced Clean property groups: `Scene.wt_ic_*`.
 - Mesh Repair Auto Fix state: `Scene.meshfixtool_properties`.
 - Precision Edit state: `Scene.wt_precision_edit`.
 - Existing Edit Tools order/disclosure state: add-on preferences.
 - Existing magnetic topology/drag logic remains in the Dev_v2.10.1 precision-edit backend.
 
-Witch Dock / Quickbar is not modified by Dev_v2.11.3.
+Witch Dock / Quickbar is not modified by Dev_v2.11.4.
