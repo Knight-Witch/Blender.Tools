@@ -1,5 +1,18 @@
 Date: 2026-08-18
 
+## Dev_v2.11.2 — 3D Print Toolbox Analyze parity correction
+
+- Blender 5.0.1 runtime comparison on the same `_CAP 3` mesh proved Dev_v2.11.1 Analyze Mesh was not equivalent to Blender's original 3D Print Toolbox.
+- Matching fields on the fixture: Non-manifold 0, Bad Contiguous 0, Intersect Faces 0, Shells 1, Zero Faces 0, Zero Edges 0.
+- Mismatched fields: original Toolbox Non-flat 98 / Thin 0 / Sharp 0 / Overhang 79 versus Dev_v2.11.1 Witch Tools 73 / 1 / 1 / 80.
+- Replaced simplified Analyze approximations with Toolbox-equivalent behavior: original BVH overlap handling, 0.1 mm degenerate threshold, world-transformed 5° distorted-face check, six-sample backwards-ray 1 mm thickness check, signed 160° sharp-edge check, and world-transformed 45° downward-normal overhang check.
+- Kept the Analyze threshold/settings UI hidden as requested; standard Toolbox defaults are now backend constants.
+- Blender 5.0.1 became the primary Witch Tools development/runtime target. Blender 4.5 remains the secondary compatibility target for BG3 and workflows that still require it; `bl_info` minimum remains 4.5.0 for one-package compatibility testing.
+- Updated project/feature state, roadmaps, spec, test plan, decisions, latest/full notes, compatibility documentation, build workflow, and user-visible changelog.
+- Dev_v2.11.2 runtime retest is required on the same `_CAP 3` fixture before Analyze click-to-select implementation begins.
+
+Date: 2026-08-18
+
 ## Dev_v2.11.1 — Advanced Clean Instant Clean-style restoration
 
 - User review identified that Dev_v2.11.0 had over-condensed the Instant Clean-derived Advanced Clean UI instead of preserving its original interaction model.
