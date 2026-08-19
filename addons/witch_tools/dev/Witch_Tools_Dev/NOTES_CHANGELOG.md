@@ -1,10 +1,12 @@
 # Witch Tools Notes Changelog — Latest Update
 
-## 2026-08-08 — Dev_v2.10.1 Runtime Fix Pass
+## 2026-08-18 — Dev_v2.11.4 Exact 3D Print Toolbox Analyze Bridge
 
-- Recorded Blender 4.5 user-test results from Dev_v2.10.0: magnetic hover/snapping, Inject New Undo/Redo, Paver, Organic, and tested Organic vertex merge worked; multi-edge Edge injection, multi-contact Auto-Merge, Paver overlap reintegration, Magic Branch navigation/activation, Paver out-of-plane growth, and Object Snap Undo need correction.
-- Inject New Edge Solo/Branch now accepts multiple selected edges.
-- Auto-Merge now resolves all created-vertex overlaps at commit and subdivides existing target edges before welding interior contacts.
-- Magic Branch now has explicit ON/OFF activation, selection-mode-sync branch buttons, corrected MMB modifier handling, and Paver out-of-plane growth for axis-constrained wall building.
-- Object Snap now explicitly creates an undo-history boundary after a successful snap.
-- Version bumped to `Dev_v2.10.1`, target Blender `4.5.0`. Static Python syntax validation passed; Blender runtime retest remains required.
+- User confirmed Dev_v2.11.3 STL export now creates the expected STL in Blender 5.0.1.
+- Dev_v2.11.3 Analyze still differed from the installed 3D Print Toolbox on `_CAP 3`: Toolbox Non-flat 98 / Overhang 79 versus Witch Tools 73 / 80.
+- Removed the parallel Witch Tools Analyze detector.
+- Witch Tools Check All now invokes the installed 3D Print Toolbox `mesh.print3d_check_all` directly and mirrors its live report.
+- Edit Mode result buttons invoke the original `mesh.print3d_select_report` with the original report index for exact Toolbox selection behavior.
+- Analyze explicitly requires 3D Print Toolbox installed/enabled and does not silently fall back to a different detector.
+- Primary target: Blender 5.0.1. Secondary compatibility target: Blender 4.5.0.
+- Dev_v2.11.4 runtime exact-count and exact-selection parity retest remains required.
