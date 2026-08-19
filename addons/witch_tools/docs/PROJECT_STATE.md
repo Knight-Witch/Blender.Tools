@@ -16,6 +16,24 @@ Last updated: 2026-08-18
 - Public/release branches modified: no
 - Witch Dock / Quickbar modified: no
 
+## Current artifact
+
+- Full installable ZIP: `Witch_Tools_Dev_v2_11_4_3D_Print_Transform_Blender_5_0_1.zip`
+- SHA-256: `787f3f529c1b7960380e06bc007f0e584cfb84b1335dffd47a3c41f1a0775f52`
+- Package reconstructed from the previously verified full Dev_v2.11.3 package plus the exact current Dev_v2.11.4 source files from this branch.
+- Independent post-package extraction verified the changed files against their current Git blob hashes.
+- Python files parsed: 67
+- UI/operator IDs scanned: 145
+- Duplicate IDs: none
+- Dev_v2.11.4 version/minimum-Blender metadata: verified
+- Advanced Clean routing contracts: verified
+- Exact Toolbox bridge contracts: verified
+- Parallel/local Analyze detector tokens: absent
+- Dev_v2.11.3 STL export reliability contracts: retained/verified
+- Cache/package hygiene: passed
+- ZIP integrity: passed
+- Blender runtime validation of Dev_v2.11.4: pending
+
 ## Latest Blender 5.0.1 runtime findings
 
 ### STL Export
@@ -118,6 +136,7 @@ Source:
 - `dev/Witch_Tools_Dev/state.py`
 - `dev/Witch_Tools_Dev/CHANGELOG.md`
 - `dev/Witch_Tools_Dev/Blender_Version_Compatability.md`
+- `dev/Witch_Tools_Dev/NOTES_CHANGELOG.md`
 
 Build/compatibility:
 - `.github/workflows/package-witch-tools-v2-11.yml`
@@ -140,6 +159,7 @@ Documentation:
 - Dev_v2.11.3 Blender 5.0.1 STL file creation: user-confirmed passed.
 - Dev_v2.11.3 Blender 5.0.1 Analyze parity: user-confirmed failed on Non-flat/Overhang.
 - Dev_v2.11.4 exact Toolbox bridge source implementation: complete.
+- Dev_v2.11.4 local/static package validation: passed.
+- Dev_v2.11.4 final ZIP integrity and independent source-hash verification: passed.
 - Dev_v2.11.4 Blender 5.0.1 runtime: not yet performed.
 - Dev_v2.11.4 Blender 4.5 runtime: not performed.
-- Dev_v2.11.4 full packaging/static validation: pending current validation run.
