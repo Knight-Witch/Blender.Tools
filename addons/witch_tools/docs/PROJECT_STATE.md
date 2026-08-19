@@ -19,7 +19,7 @@ Last updated: 2026-08-18
 ## Current artifact
 
 - Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
-- SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`
+- SHA-256: `4cf29f29b87261278bd5aadcf8346a4341fbbbf313db01334e60669487379a48`
 - GitHub Actions validation/package run: passed
 - Python files parsed: 67
 - Analyze parity source-contract checks: passed
@@ -27,6 +27,7 @@ Last updated: 2026-08-18
 - cache/package hygiene: passed
 - ZIP integrity: passed
 - independent downloaded-inner-ZIP SHA-256 verification: passed
+- packaged compatibility record verified present/current for Dev_v2.11.2
 - Dev_v2.11.2 Blender runtime: pending
 
 ## Current development finding
@@ -132,6 +133,7 @@ Source:
 - `__init__.py`
 - `state.py`
 - `CHANGELOG.md`
+- `Blender_Version_Compatability.md`
 
 Build/compatibility:
 - `.github/workflows/package-witch-tools-v2-11.yml`
@@ -140,6 +142,7 @@ Build/compatibility:
 Documentation:
 - `docs/PROJECT_STATE.md`
 - `docs/ROADMAP.md`
+- `docs/UI_MAP.md`
 - `docs/NOTES_CHANGELOG.md`
 - `docs/NOTES_CHANGELOG_FULL.md`
 - `docs/features/print3d_transform/SPEC.md`
@@ -155,7 +158,7 @@ Documentation:
 - Dev_v2.11.1 direct Toolbox count comparison: performed; parity failed on 4 of 10 fields
 - Dev_v2.11.2 source correction: implemented
 - Dev_v2.11.2 static/package validation: passed
-- Dev_v2.11.2 full ZIP integrity/SHA verification: passed
+- Dev_v2.11.2 full ZIP integrity/SHA/package-doc verification: passed
 - Dev_v2.11.2 Blender 5.0.1 runtime: not yet performed
 - Dev_v2.11.2 Blender 4.5 runtime: not performed
 - Public release branches changed: no
