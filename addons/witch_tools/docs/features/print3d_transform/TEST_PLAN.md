@@ -1,6 +1,6 @@
 # Witch Tools — 3D Print Tools + Transform Test Plan
 
-Candidate: Dev_v2.11.2  
+Candidate: Dev_v2.11.3  
 Primary runtime target: Blender 5.0.1  
 Secondary compatibility target: Blender 4.5.0
 
@@ -13,9 +13,7 @@ Run in Blender 5.0.1 first:
 4. Disable/re-enable once; confirm clean unregister/register.
 5. Confirm existing Dev_v2.10.1 Magic Branch, Edge Doctor, Inject New, Object Snap, and Edit Tools ordering still exist.
 
-Pass: no registration errors and no current-baseline tools disappear.
-
-Repeat the shared registration smoke test in Blender 4.5 before claiming secondary compatibility.
+Repeat shared registration smoke test in Blender 4.5 before claiming secondary compatibility.
 
 ## 2. Top-level UI order
 
@@ -51,13 +49,11 @@ Multiple vertices:
 - verify the group translates rigidly and pairwise distances remain unchanged;
 - Undo/Redo.
 
-Confirm Rotation/Scale are clearly object transforms, not fabricated per-vertex values.
-
-## 5. Analyze Mesh parity — immediate Dev_v2.11.2 gate
+## 5. Analyze Mesh parity
 
 Use the same `_CAP 3` object from the Blender 5.0.1 parity-failure screenshots, without changing transforms or geometry.
 
-Original 3D Print Toolbox reference from the user:
+Original Toolbox reference:
 - Non-manifold Edges: 0
 - Bad Contiguous Edges: 0
 - Intersect Faces: 0
@@ -69,153 +65,113 @@ Original 3D Print Toolbox reference from the user:
 - Sharp Edges: 0
 - Overhang Faces: 79
 
-Dev_v2.11.1 Witch Tools incorrectly returned:
-- Non-flat Faces: 73
-- Thin Faces: 1
-- Sharp Edges: 1
-- Overhang Faces: 80
+Dev_v2.11.3 retains the Dev_v2.11.2 parity correction and passes this first gate only if all ten counts match.
 
-Dev_v2.11.2 passes this first gate only if all ten counts exactly match the original Toolbox reference above.
+Then compare a clean watertight mesh, known non-manifold mesh, degenerate mesh, intersecting mesh, thin-wall threshold fixture, sharp convex/concave fixture, and rotated/non-uniformly-scaled curved print mesh.
 
-The integrated backend intentionally uses the Toolbox default thresholds while hiding their UI:
-- Degenerate: 0.1 mm
-- Non-Planar: 5 degrees
-- Thickness: 1 mm
-- Sharp: 160 degrees
-- Overhang: 45 degrees
-
-After the `_CAP 3` count test, compare at least:
-- a known clean watertight print mesh;
-- a mesh with known non-manifold boundaries;
-- a mesh with zero/degenerate geometry;
-- a mesh with known intersecting faces;
-- a thin-wall mesh near the 1 mm threshold;
-- a mesh containing convex and concave very-sharp manifold edges;
-- a rotated/non-uniformly-scaled curved print mesh to verify world-transform handling.
-
-For every mesh, record both count sets. Any mismatch is a failure to investigate.
-
-Once counts match, use the original Toolbox's result-selection buttons to inspect the actual offending elements. Count parity alone does not establish detector identity. Compare at minimum Non-flat, Thin, Sharp, Overhang, Intersections and degenerate results where nonzero.
-
-Click-to-select inside Witch Tools remains gated on this detector identity validation.
+Once counts match, compare actual offending-element identity using the original Toolbox selection buttons. Click-to-select inside Witch Tools remains gated on this validation.
 
 ## 6. Make Manifold
 
 Run on duplicate test files only.
 
-Test:
-- boundary hole;
-- duplicate/coincident vertices;
-- loose edge/vertex;
-- degenerate edge/face;
-- already-manifold mesh.
-
-For each:
-- inspect resulting topology;
-- check normals/winding;
-- verify material assignments where faces survive;
-- verify edge attributes where applicable;
-- run Undo and Redo;
-- ensure mode is restored predictably;
-- ensure failure does not leave a partially modified mesh.
+Test boundary holes, duplicate/coincident vertices, loose geometry, degenerate geometry, and an already-manifold mesh. Verify topology, normals/winding, materials/edge attributes where applicable, Undo/Redo, mode restoration, and failure without partial mutation.
 
 ## 7. Auto Fix — Global Fix
 
 Individually test Tri Mesh, Quad Mesh, Face Normal, Noise Shells, Spikes, Intersect Face, Intersect Volumes, Fill Holes, then representative combinations.
 
-For topology-changing cases verify:
-- no zero-length edges;
-- no zero-area faces;
-- expected manifold state;
-- normals/winding;
-- materials;
-- seams/sharp/other custom edge data where preservation is expected;
-- Undo/Redo;
-- malformed/unsupported geometry fails safely.
-
-Intersect Volumes must be treated as destructive/rebuilding until proven otherwise. Compare before/after vertex/edge/face counts and inspect attribute loss explicitly.
+Verify no unintended zero geometry, expected manifold state, normals/winding, materials/custom edge data, Undo/Redo, and safe failure on malformed input. Treat Intersect Volumes as destructive/rebuilding until proven otherwise.
 
 ## 8. Auto Fix — Local Fix
 
-In Edit Mode test:
-- Select More / Less;
-- Face Orientation display;
-- Unify/Flip;
-- Refine;
-- Remesh;
-- Smooth;
-- Reduce.
+In Edit Mode test Select More/Less, Face Orientation, Unify/Flip, Refine, Remesh, Smooth, Reduce. Verify selection scope and unrelated-island safety.
 
-Verify operations respect the intended selection scope and do not unexpectedly modify unrelated mesh islands.
+## 9. Advanced Clean
 
-## 9. Advanced Clean — UI and execution model
+UI:
+- one main Clean button;
+- separate Repair / Manifold / Topology / Normals / Dissolve child sections;
+- each section header has enable toggle + play action;
+- Object Data and Make Planar absent;
+- Dissolve last;
+- requested compact Manifold/Topology/Normals controls present.
 
-First test the layout before destructive behavior:
-- Advanced Clean has one main Clean button at the top.
-- Repair, Manifold, Topology, Normals, Dissolve are separate collapsible child sections in that order.
-- Each child header shows a section-name enable toggle and a play button.
-- Object Data is absent.
-- Make Planar is absent.
-- Dissolve is last.
-- Repair visually retains the original-style Remove group and checkbox/numeric-row structure.
-- Manifold shows Fill Holes plus compact `Remove Non-Manifold: [Faces] [Vertices] [Wire]`.
-- Topology retains Convert To and Methods, with responsive angle/Compare layout when converting to quads.
-- Normals retains original-style main controls with compact Clear Data toggles.
-- Dissolve retains the original-style Max Angle / Boundaries / Protect body.
+Behavior:
+- main Clean runs only enabled sections;
+- each section play button runs only that section even when its enable toggle is off;
+- Shift applies selection-only behavior to both paths.
 
-Execution behavior:
-1. Disable all section toggles except Repair. Click main Clean. Confirm only Repair runs.
-2. Repeat with only Manifold, Topology, Normals, then Dissolve enabled.
-3. Enable a representative combination and confirm main Clean runs exactly those enabled sections.
-4. Disable a section toggle, then press that section's play button. Confirm the individual play action still runs only that section and does not invoke the other enabled sections.
-5. Press each section play button and confirm only that section executes.
-6. Hold Shift with main Clean and each individual play button; confirm selection-only behavior applies.
+For topology-changing actions test Undo/Redo, Object/Edit restoration, normals/winding, materials, Seam/Sharp/UV/custom edge data where applicable, manifold safety, multi-object behavior where supported, malformed selections, and failure without partial destructive changes.
 
-Then run topology-safety tests with each section individually and representative combinations:
-- Undo/Redo;
-- Object/Edit Mode restoration;
-- normals/winding;
-- material assignments;
-- Seam/Sharp/UV/custom edge data where preservation is expected;
-- manifold safety where applicable;
-- multi-object behavior where supported;
-- malformed/ambiguous selections;
-- failure without partial destructive changes.
+## 10. STL export — immediate Dev_v2.11.3 gate
 
-## 10. STL export
+The prior runtime issue was that choosing a folder and pressing Export STL produced no expected output. Dev_v2.11.3 must prove both success and failure paths.
 
-- choose a folder;
-- export one selected mesh;
-- export multiple selected meshes;
-- confirm `.stl` output name/path;
-- re-import into a clean Blender scene;
-- compare dimensions and orientation;
-- verify no unexpected non-mesh objects are exported.
+### Basic one-object export
+
+1. Select one normal mesh object with faces.
+2. Choose an existing writable folder.
+3. Press `Export STL`.
+4. Confirm a `.stl` physically appears in that exact folder using the object's cleaned name.
+5. Confirm Blender/Witch Tools reports success only after the file exists.
+6. Confirm file size is greater than the 84-byte binary STL header/count minimum for a non-empty mesh.
+7. Re-import into a clean scene and compare dimensions, orientation, and position/geometry expectations.
+
+### Multiple selected meshes
+
+- Select two separated mesh objects and export.
+- Confirm one combined STL named from the active object with `_selection` suffix.
+- Re-import and verify both components are present in their correct world relationship.
+
+### Evaluated modifiers
+
+- Use a mesh with a visible unapplied modifier that changes geometry.
+- Export without applying the modifier manually.
+- Re-import and confirm the exported STL reflects evaluated modifier geometry.
+
+### Object transforms and negative scale
+
+- Test translation, rotation, and non-uniform scale.
+- Test one negative/mirrored scale fixture.
+- Re-import and inspect dimensions, orientation, triangle winding/surface orientation, and obvious inversion artifacts.
+
+### Edit Mode
+
+- With an edited mesh in Edit Mode, make an unsaved-in-mode geometry change and export.
+- Confirm the exported geometry reflects current Edit Mode data.
+
+### Overwrite and failure handling
+
+- Export to the same expected filename twice and confirm the second complete export replaces/updates the file without leaving a `.wt_tmp` file.
+- Use an unwritable/invalid destination if safe to reproduce and confirm a visible error is reported.
+- Invoke with no selected mesh through any reachable path and confirm it refuses safely.
+- Test an empty mesh/no exportable triangles and confirm it fails rather than accepting an empty STL.
+- After any fallback failure, confirm the temporary `.wt_tmp` file is removed and an existing destination is not replaced by a partial fallback file.
+
+### Native vs fallback path
+
+- Normal test should establish whether Blender's native exporter succeeds in Blender 5.0.1.
+- If a controlled development setup can make the native/legacy operator unavailable or return cancellation without risking the user's work, explicitly test the direct Witch Tools fallback and re-import its output.
+- If the fallback cannot be forced safely, record it as source/static validated but runtime-untested rather than claiming it works.
 
 ## 11. Regression — Dev_v2.10.1 baseline
 
-Smoke test:
-- Magic Branch activation and Branch Type selection-mode sync;
-- Inject New Edge Solo/Branch and Slide;
-- magnetic target highlighting/merge on one known case;
-- Edge Doctor parent and nested tools;
-- Object Snap Undo;
-- Edit Tools reorder controls.
-
-This feature must not be accepted if integrating 3D Print/Transform regresses the newer baseline.
+Smoke test Magic Branch activation/selection-mode sync, Inject New Edge Solo/Branch/Slide, one magnetic merge case, Edge Doctor, Object Snap Undo, and Edit Tools reorder controls.
 
 ## 12. Blender 4.5 secondary compatibility
 
-After the Blender 5.0.1 primary pass, test in Blender 4.5 at minimum:
+After Blender 5.0.1 primary validation, test at minimum:
 - register/unregister;
-- Transform panel rendering and basic Object/Edit coordinate edit;
-- Analyze `_CAP 3` or an equivalent saved parity fixture;
-- Advanced Clean headers and one safe Repair action;
-- the BG3-specific workflows the user still performs in 4.5;
-- Magic Branch/Inject/Edge Doctor smoke tests if those workflows are expected in 4.5.
+- basic Transform;
+- Analyze parity fixture/equivalent;
+- one safe Advanced Clean Repair action;
+- one-object STL export/re-import;
+- BG3 workflows still expected in 4.5;
+- Magic Branch/Inject/Edge Doctor if expected there.
 
 Do not claim 4.5 compatibility for paths not actually tested there.
 
 ## Acceptance
 
-Dev_v2.11.2 is accepted only after the primary Blender 5.0.1 checks are recorded, Analyze count/offending-element parity is established, and the relevant Blender 4.5 secondary checks are separately recorded. Static AST/package validation alone is not runtime validation.
+Dev_v2.11.3 is accepted only after the primary Blender 5.0.1 checks are recorded, Analyze parity is established, STL export creates and re-imports valid files, and relevant Blender 4.5 secondary checks are separately recorded. Static/package validation alone is not runtime validation.
