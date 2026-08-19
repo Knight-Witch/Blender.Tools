@@ -1,3 +1,13 @@
+## Dev_v2.11.4 — Exact 3D Print Toolbox Analyze bridge
+
+- Removed Witch Tools' parallel/reimplemented Analyze detectors after Blender 5.0.1 testing still produced different Non-flat and Overhang counts from the installed 3D Print Toolbox.
+- Analyze Mesh > Check All now invokes the installed 3D Print Toolbox `mesh.print3d_check_all` operator directly and mirrors that extension's own live report data into the Witch Tools Results box.
+- In Edit Mode, non-empty result counts now call the original Toolbox `mesh.print3d_select_report` operator with the original report index, restoring the click-to-select behavior from the 3D Print Toolbox panel.
+- Witch Tools no longer substitutes its own thresholds, BMesh copies, normals calculations, BVH logic, or thickness-ray logic for Analyze. The installed Toolbox is the single source of truth for these results.
+- If 3D Print Toolbox is unavailable, Analyze now fails explicitly instead of falling back to a different implementation that could disagree.
+- Dev_v2.11.3 STL export fix is retained unchanged and was user-confirmed to produce an STL in Blender 5.0.1.
+- Primary target: Blender 5.0.1. Secondary compatibility target: Blender 4.5. Runtime exact-count and click-selection retest pending.
+
 ## Dev_v2.11.3 — STL export reliability hotfix
 
 - Fixed the integrated 3D Print Tools Export STL path after Blender 5.0.1 runtime testing showed that selecting a folder and pressing Export STL could appear to do nothing.
