@@ -4,10 +4,13 @@ Date: 2026-08-18
 
 - User review identified that Dev_v2.11.0 had over-condensed the Instant Clean-derived Advanced Clean UI instead of preserving its original interaction model.
 - Restored Repair / Manifold / Topology / Normals / Dissolve as individual collapsible child sections with section-header enable toggles and per-section play actions.
-- Main Clean runs the enabled sections; each section play action runs only that section. Shift selection-only behavior applies to both paths.
+- Main Clean runs the enabled sections; each section play action runs only that section, even when that section's global-enable toggle is off. Shift selection-only behavior applies to both paths.
 - Restored original-style checkbox/boxed layouts where no redesign had been requested.
 - Retained the explicit customizations: Object Data and Make Planar removed, Dissolve last, compact Manifold Remove Non-Manifold toggles, responsive Topology angle/Compare controls, compact Normals Clear Data toggles.
 - Added `print3d_transform/DECISIONS.md` and expanded the feature spec/state/roadmap/test plan, global roadmap/UI map/project state, compatibility record, and user-visible changelog.
+- Built full installable artifact `Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip`.
+- GitHub Actions static/package validation passed; independent ZIP integrity and SHA-256 verification passed.
+- Artifact SHA-256: `d6ecf1b893c1d619fc5974ec0ca1836fe7333abd4b9c5724ff497b63859c2441`.
 - Candidate advanced to `Dev_v2.11.1`, target Blender remains `4.5.0`; runtime validation pending. User reference screenshots show Blender 5.0.1 but no Witch Tools 5.0.1 compatibility claim is made yet.
 
 Date: 2026-08-18
