@@ -1,3 +1,18 @@
+## Dev_v2.10.0 — Transform + 3D Print Tools
+
+- Added a top-level **Transform** panel directly below Mode Switcher with collapsible Location, Rotation, and Scale controls.
+- Object transforms are directly editable in Witch Tools; in Mesh Edit Mode, Location shows the selected-vertex local median and editing it translates the selected vertices by delta.
+- Added a top-level **3D Print Tools** panel above Edit Tools.
+- Added simplified fixed-format STL export with only a folder picker and **Export STL** button.
+- Added **Analyze Mesh > Check All** with consolidated results for non-manifold edges, bad contiguous edges, intersecting faces, shells, zero faces/edges, non-flat faces, thin faces, sharp edges, and overhangs.
+- Added **Clean & Repair > Make Manifold**.
+- Integrated the supplied Mesh Repair workflow as **Auto Fix**, with Global Fix before Local Fix and retained Tri/Quad, Face Normal, Noise Shells, Spikes, Intersect Face, Intersect Volumes, Fill Holes, and local repair controls.
+- Integrated the supplied Instant Clean workflow as **Advanced Clean**, retaining Repair, Manifold, Topology, Normals, and Dissolve while removing Object Data and Make Planar.
+- Added requested compact toggle bars for Remove Non-Manifold and Normals Clear Data, plus responsive wrapping for Topology Compare and other compact option rows.
+- Intentionally omitted the original 3D Print Toolbox Volume/Area statistics, per-check filter/settings grid, Hollow, Bisect, Align XY, Scale To, and export options.
+- Development metadata is now `Dev_v2.10.0`, intended for Blender `4.5.0`.
+- Static Python parse/compile was performed in the implementation environment. Blender 4.5 registration, panel rendering, operator execution, topology safety, undo/redo, save/reopen, and STL export/re-import remain untested.
+
 ## Dev_v2.9.0 — Precision Edit
 
 - Added **Edit Tools > Coordinate Copy** above Vertex Snap with Global/Local coordinate type, X/Y/Z masks, Location/Rotation/Scale toggles, vertex/edge/face source capture, exact independent target application, and multi-object world-space conversion for meshes with different origins/transforms.
