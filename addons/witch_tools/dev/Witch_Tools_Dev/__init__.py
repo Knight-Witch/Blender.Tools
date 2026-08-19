@@ -1,10 +1,10 @@
 bl_info = {
-    'name': 'Witch Tools Dev_v2.10.1',
+    'name': 'Witch Tools Dev_v2.11.0',
     'author': 'Knight Witch',
-    'version': (2, 10, 1),
+    'version': (2, 11, 0),
     'blender': (4, 5, 0),
     'location': 'View3D > Sidebar > Witch Tools',
-    'description': 'Workflow-organized BG3 Blender tools for mode switching, mirror, edit, weight, modifiers, heads, bodies, armour, hair, armatures, shape keys, export, and troubleshooting',
+    'description': 'Workflow-organized Blender tools with integrated Transform, 3D-print analysis/repair/cleanup, Magic Branch, BG3, weight, modifier, and modeling workflows',
     'category': 'Mesh',
 }
 

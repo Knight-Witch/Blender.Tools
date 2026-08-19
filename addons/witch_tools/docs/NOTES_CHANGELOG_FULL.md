@@ -1,3 +1,15 @@
+Date: 2026-08-18
+
+## Dev_v2.11.0 — 3D Print Tools + Transform integration
+
+- Corrected the feature baseline from the stale Dev_v2.9.0 precision-edit branch to the current Dev_v2.10.1 Magic Branch source.
+- Added top-level Transform below Mode Switcher with object Location/Rotation/Scale and selected-mesh local Location editing.
+- Added top-level 3D Print Tools above Edit Tools with simplified STL Export, consolidated Analyze Mesh counts, Make Manifold, Auto Fix, and Advanced Clean.
+- Preserved Dev_v2.10.1 Magic Branch, Inject New, Edge Doctor, Object Snap, Edit Tools ordering, and current registration contracts.
+- Added/updated `print3d_transform` specification, state, roadmap, acceptance criteria, and Blender 4.5 topology-aware test plan.
+- Recorded click-to-select Analyze results as a required follow-up after detector/count parity is validated against Blender's original 3D Print Toolbox.
+- Target Blender remains 4.5.0; Dev_v2.11.0 runtime validation is pending.
+
 Date: 2026-08-08
 
 ## Dev_v2.10.1 — Blender 4.5 runtime-fix documentation

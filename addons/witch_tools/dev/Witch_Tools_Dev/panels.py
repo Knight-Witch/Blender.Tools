@@ -12,11 +12,15 @@ from .panel_armature_tools import PANELS as ARMATURE_TOOL_PANELS
 from .panel_shape_key_tools import PANELS as SHAPE_KEY_TOOL_PANELS
 from .panel_export_tools import PANELS as EXPORT_TOOL_PANELS
 from .panel_troubleshooting_tools import PANELS as TROUBLESHOOTING_TOOL_PANELS
+from .panel_transform import PANELS as TRANSFORM_PANELS
+from .panel_print3d import PANELS as PRINT3D_PANELS
 
 
 PANELS = (
     *MODE_SWITCHER_PANELS,
+    *TRANSFORM_PANELS,
     *AUTO_MIRROR_PANELS,
+    *PRINT3D_PANELS,
     *EDIT_TOOL_PANELS,
     *WEIGHT_TOOL_PANELS,
     *MODIFIER_PANELS,

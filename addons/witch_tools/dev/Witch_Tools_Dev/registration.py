@@ -2,6 +2,9 @@ import bpy
 from bpy.props import PointerProperty, StringProperty
 
 from . import (
+    instant_clean_core,
+    mesh_repair_backend,
+    mesh_repair_props,
     operators_coordinate_copy,
     operators_curvature_sync,
     operators_edit_tool_order,
@@ -16,7 +19,9 @@ from . import (
     operators_selection_slots,
     operators_vertex_inject,
     operators_vertex_locks,
+    panel_transform,
     precision_edit_props,
+    print3d_tools,
 )
 from .custom_icons import register_custom_icons, unregister_custom_icons
 from .handlers import register_handlers, unregister_handlers
@@ -47,6 +52,12 @@ from .props import WTObjectRefItem, WTWeightMirrorItem, WitchToolsProperties
 from .utils_context import prefs_mirror_tolerance
 
 
+MESH_REPAIR_CLASSES = (
+    mesh_repair_props.MFTProperties,
+    *mesh_repair_backend.CLASSES,
+)
+
+
 CORE_CLASSES = (
     WitchToolsPreferences,
     WTObjectRefItem,
@@ -55,6 +66,10 @@ CORE_CLASSES = (
     operators_selection_slots.WTSelectionSlotItem,
     WitchToolsProperties,
     *precision_edit_props.CLASSES,
+    *panel_transform.CLASSES,
+    *print3d_tools.CLASSES,
+    *instant_clean_core.CLASSES,
+    *MESH_REPAIR_CLASSES,
     WITCHTOOLS_OT_help_tooltip,
     WITCHTOOLS_OT_open_preferences,
     WITCHTOOLS_OT_open_link,
@@ -119,6 +134,11 @@ def register():
 
     bpy.types.Scene.witch_tools = PointerProperty(type=WitchToolsProperties)
     bpy.types.Scene.wt_precision_edit = PointerProperty(type=precision_edit_props.WTPrecisionEditProperties)
+    panel_transform.register_props()
+    print3d_tools.register_props()
+    instant_clean_core.register_props()
+    bpy.types.Scene.meshfixtool_properties = PointerProperty(type=mesh_repair_props.MFTProperties)
+
     bpy.types.WindowManager.wt_return_object_name = StringProperty(default='')
     bpy.types.WindowManager.wt_return_mode = StringProperty(default='OBJECT')
     bpy.types.WindowManager.wt_return_workspace_name = StringProperty(default='')
@@ -158,6 +178,11 @@ def unregister():
     _safe_delete(bpy.types.WindowManager, 'wt_return_workspace_name')
     _safe_delete(bpy.types.WindowManager, 'wt_return_mode')
     _safe_delete(bpy.types.WindowManager, 'wt_return_object_name')
+
+    _safe_delete(bpy.types.Scene, 'meshfixtool_properties')
+    instant_clean_core.unregister_props()
+    print3d_tools.unregister_props()
+    panel_transform.unregister_props()
     _safe_delete(bpy.types.Scene, 'wt_precision_edit')
     _safe_delete(bpy.types.Scene, 'witch_tools')
 

@@ -1,12 +1,127 @@
 # Witch Tools UI Map
 
-Last updated: 2026-08-08  
-Current development candidate: `Dev_v2.10.0`
+Last updated: 2026-08-18  
+Current development candidate: `Dev_v2.11.0`
 
-## Edit Tools — default order
+## Top-level N-panel default order
 
-Top-level sections are now preference-backed and reorderable. Default:
+1. Mode Switcher
+2. Transform
+3. Auto Mirror
+4. 3D Print Tools
+5. Edit Tools
+6. Weight Tools
+7. Quick Modifiers
+8. Head Tools
+9. Body Tools
+10. Armour Tools
+11. Hair Tools
+12. Armature Tools
+13. Shape Key Tools
+14. Export Tools
+15. Troubleshooting Tools
+16. Footer
 
+## Transform
+
+Parent: `Transform`
+
+Child panels:
+- Location
+- Rotation
+- Scale
+
+Object Mode:
+- Location / Rotation / Scale map directly to active-object transforms.
+
+Mesh Edit Mode:
+- Location shows selected-vertex object-local median and translates the selection by delta when edited.
+- One selected vertex therefore displays/edits that vertex coordinate.
+- Rotation / Scale remain active-object transforms.
+
+## 3D Print Tools
+
+Parent: `3D Print Tools`
+
+### Export
+
+- folder selector
+- `Export STL`
+
+No format selector or export-options subsection; STL is fixed.
+
+### Analyze Mesh
+
+- `Check All`
+- Results box:
+  - Non-manifold Edges
+  - Bad Contiguous Edges
+  - Intersect Faces
+  - Shells
+  - Zero Faces
+  - Zero Edges
+  - Non-flat Faces
+  - Thin Faces
+  - Sharp Edges
+  - Overhang Faces
+
+Dev_v2.11.0 exposes counts only. Exact click-to-select result behavior is planned after detector parity is validated against Blender's original 3D Print Toolbox.
+
+### Clean & Repair
+
+- `Make Manifold`
+
+#### Auto Fix
+
+Global Fix first:
+- Tri Mesh / Quad Mesh
+- Face Normal
+- Noise Shells + Min %
+- Spikes + Min Angle
+- Intersect Face + Min Angle
+- Intersect Volumes
+- Fill Holes
+- Auto Fix
+
+Local Fix:
+- Select More / Less
+- Face Orientation
+- Unify/Flip
+- Refine
+- Remesh
+- Smooth
+- Reduce
+
+#### Advanced Clean
+
+- Clean
+- Repair
+- Manifold
+- Topology
+- Normals
+- Dissolve
+
+Requested condensed controls:
+- Manifold `Remove Non-Manifold:` Faces / Vertices / Wire toggle row.
+- Topology face/shape angle controls share a row when width permits and split at narrow widths.
+- Topology Compare: Sharp / Seam / UV / Material / VCol responsive toggle row.
+- Normals Clear Data: Split Normals / Sharp Edges toggle row.
+- Dissolve remains at the bottom.
+
+Not exposed in this integrated UI:
+- Volume/Area
+- separate Solid/Intersections/Shells controls
+- Hollow
+- Bisect
+- Align XY
+- Scale To
+- export options
+- Instant Clean Object Data
+- Make Planar
+
+## Edit Tools — retained Dev_v2.10.1 baseline
+
+Default preference-backed order:
 1. Coordinate Copy
 2. Planar Edit
 3. Vertex Snap
@@ -17,157 +132,50 @@ Top-level sections are now preference-backed and reorderable. Default:
 8. Vertex Lock
 9. Selection Slots
 
-`Reorder Tools` switches the panel to compact rows with a drag grip and explicit up/down arrow fallback. The saved order lives in Witch Tools add-on preferences, not the `.blend` scene.
+`Reorder Tools` remains preference-backed with compact drag-grip/up/down controls.
 
-## Coordinate Copy
+### Coordinate Copy
 
-Three-step workflow retained from Dev_v2.9.0:
+Global/Local; X/Y/Z; Location/Rotation/Scale; capture one vertex/edge/face source; apply to independent targets. Default Apply shortcut: `Ctrl+Shift+C`.
 
-1. Global / Local, X/Y/Z, Location/Rotation/Scale.
-2. Capture one vertex/edge/face source.
-3. Select independent targets and Apply Copied Coordinates.
+### Planar Edit
 
-Default Apply shortcut: `Ctrl+Shift+C`.
+- Plane Lock: persistent object-local X/Y/Z vertex constraints.
+- Level: capture source point and assign exact enabled world coordinates to targets.
 
-## Planar Edit
+### Inject New
 
-Retained as an independent top-level tool because it is a separate precision workflow.
+- Solo / Branch / Slide.
+- XYZ movement, optional captured rail, Magnetic Snap, Branch Auto-Merge.
+- Dev_v2.10.1 multi-edge Edge source and merge corrections retained.
 
-- Plane Lock: X/Y/Z object-local axis locks, partial unlock, clear all.
-- Level: capture one source point, assign exact enabled world coordinates to every target vertex.
+### Magic Branch
 
-## Vertex Snap / Object Snap
+- explicit ON/OFF plus separate Persistent behavior.
+- Vertex / Edge / Face.
+- Face Paver / Organic.
+- XYZ, Magnetic Snap, Auto-Merge.
+- Branch Type synchronizes Blender selection mode in the Dev_v2.10.1 candidate.
 
-Existing operator contracts and controls remain unchanged.
+### Edge Doctor
 
-## Inject New
+Contains:
+- Missing Vertex / Edge Injector
+- Alignment Fixer
+- Curvature Sync
 
-Four-step UI:
+### Vertex Lock / Selection Slots
 
-### 1. Initial Setup
+Existing protection and saved-selection workflows retained.
 
-- Solo
-- Branch
-- Slide
+## Persistence / backend contracts
 
-### 2. Movement
+- Transform transient UI property: `Scene.wt_transform_state`.
+- 3D Print analyzer/export state: `Scene.wt_print3d`.
+- Advanced Clean property groups: `Scene.wt_ic_*`.
+- Mesh Repair Auto Fix state: `Scene.meshfixtool_properties`.
+- Precision Edit state: `Scene.wt_precision_edit`.
+- Existing Edit Tools order/disclosure state: add-on preferences.
+- Existing magnetic topology/drag logic remains in the Dev_v2.10.1 precision-edit backend.
 
-Solo/Branch:
-
-- independent X / Y / Z toggles;
-- optional `Use Captured Rail`;
-- Magnetic Snap;
-- Branch-only Auto-Merge.
-
-Slide:
-
-- select one or more edges;
-- all inserted vertices share one relative rail factor;
-- the selected edge nearest the cursor is the driver rail.
-
-### 3. New Element
-
-Solo/Branch: Vertex / Edge / Face.  
-Slide: Vertex only.
-
-### 4. Select Source and Inject
-
-`Inject New` starts modal placement. Magnetic targets highlight in the viewport. Hold MMB to pause placement and orbit around the live injection; release MMB to resume.
-
-Canonical operators:
-
-- `mesh.wt_inject_new_capture_rail_end`
-- `mesh.wt_inject_new_clear_rail`
-- `mesh.wt_inject_new`
-
-## Magic Branch
-
-### Tool Mode
-
-- Persistent toggle (dedicated hotkeyable operator)
-- OFF = Single Branch
-- ON = remain armed after a completed branch
-
-### Branch Type
-
-- Vertex
-- Edge
-- Face
-
-Face adds:
-
-- Paver: repeat equal-size source-derived tiles;
-- Organic: one connected adaptable face.
-
-### Drag / Snap
-
-- X / Y / Z independent toggles, XYZ default;
-- Magnetic Snap;
-- Auto-Merge.
-
-`Start Magic Branch` arms the viewport. Click-drag geometry of the chosen type. Hold MMB during a drag to orbit around live branch geometry.
-
-Canonical operators:
-
-- `mesh.wt_magic_branch`
-- `mesh.wt_magic_branch_toggle_persistent`
-
-## Edge Doctor
-
-Parent repair section containing:
-
-### Missing Vertex / Edge Injector
-
-Former Edge / Vertex Inject A/B/C repair plus new two-edge L mode.
-
-- A/B/C: select A, B, C individually; C active last. Existing projection solver remains canonical.
-- L mode: select two edges sharing one corner; infer the fourth parallelogram corner and create/reuse the missing vertex and outer edges.
-
-Canonical wrapper: `mesh.wt_edge_doctor_missing_inject`.
-
-### Alignment Fixer
-
-Former `Align Vertices / Edges / Faces` / Guided Align UI, renamed and nested. Backend operators remain the existing `mesh.wt_guided_align_*` contracts.
-
-### Curvature Sync
-
-Existing Curvature Sync workflow, nested unchanged under Edge Doctor.
-
-## Vertex Lock
-
-Existing Vertex Locks / Protected Edit Zone controls retained and renamed at top-level UI to singular `Vertex Lock`.
-
-## Selection Slots
-
-Existing saved mesh-selection workflow retained.
-
-## Magnetic target behavior
-
-Shared by Inject New and Magic Branch:
-
-1. vertex cursor target wins;
-2. otherwise edge;
-3. otherwise face.
-
-Hover highlight must correspond to the target actually used by placement.
-
-- vertex/edge: nearest compatible new endpoint is aligned while copied shape stays rigid;
-- face: live endpoints solve independently along parallel travel lines to the face/boundary.
-
-Auto-Merge supports conservative vertex/edge materialization/welding. Arbitrary face-interior retopology is not automatically invented in the Dev_v2.10.0 candidate.
-
-## Persistence / backend contract
-
-- Coordinate/Level transient capture state: `Scene.wt_precision_edit`.
-- Plane Lock values: BMesh custom layers.
-- Edit Tools order/disclosure state: add-on preferences.
-- topology drag/magnetic logic: `precision_edit_drag.py` + `precision_edit_topology.py`.
-- Witch Dock / Quickbar is not modified in Dev_v2.10.0; future exposure must remain a thin wrapper over Witch Tools.
-
-## Dev_v2.10.1 UI corrections
-
-- Inject New Edge Solo/Branch accepts one or more Edge sources.
-- Magic Branch Step 1 now has explicit ON/OFF; Persistent is only stay-armed behavior.
-- Magic Branch Branch Type buttons also switch Blender Vertex/Edge/Face selection mode.
-- Plain MMB changes the live pivot only while dragging; modifier MMB keeps normal viewport navigation.
-- Paver can grow along an enabled out-of-plane axis, including the Z-only floor-to-wall case.
+Witch Dock / Quickbar is not modified by Dev_v2.11.0.
