@@ -1,7 +1,7 @@
 # Witch Tools UI Map
 
 Last updated: 2026-08-18  
-Current development candidate: `Dev_v2.11.0`
+Current development candidate: `Dev_v2.11.1`
 
 ## Top-level N-panel default order
 
@@ -65,7 +65,7 @@ No format selector or export-options subsection; STL is fixed.
   - Sharp Edges
   - Overhang Faces
 
-Dev_v2.11.0 exposes counts only. Exact click-to-select result behavior is planned after detector parity is validated against Blender's original 3D Print Toolbox.
+Dev_v2.11.1 exposes counts only. Exact click-to-select result behavior is planned after detector parity is validated against Blender's original 3D Print Toolbox.
 
 ### Clean & Repair
 
@@ -94,19 +94,48 @@ Local Fix:
 
 #### Advanced Clean
 
-- Clean
-- Repair
-- Manifold
-- Topology
-- Normals
-- Dissolve
+Top of parent:
+- `Clean` — runs all section-header toggles currently enabled.
+- Shift + Clean — current-selection-only behavior.
 
-Requested condensed controls:
-- Manifold `Remove Non-Manifold:` Faces / Vertices / Wire toggle row.
-- Topology face/shape angle controls share a row when width permits and split at narrow widths.
-- Topology Compare: Sharp / Seam / UV / Material / VCol responsive toggle row.
-- Normals Clear Data: Split Normals / Sharp Edges toggle row.
-- Dissolve remains at the bottom.
+Instant Clean-style collapsible section headers, in this order:
+1. `[Repair toggle] [Play Repair]`
+2. `[Manifold toggle] [Play Manifold]`
+3. `[Topology toggle] [Play Topology]`
+4. `[Normals toggle] [Play Normals]`
+5. `[Dissolve toggle] [Play Dissolve]`
+
+The toggle controls inclusion in the parent Clean action. The play button invokes only that individual section. Shift + an individual play button applies the same selection-only behavior.
+
+Repair body:
+- `Remove` group.
+- Loose checkbox + Vert / Edge / Face compact buttons.
+- Doubles checkbox + distance.
+- Zero Faces checkbox + area threshold.
+- Dispensables checkbox + angle.
+
+Manifold body:
+- Fill Holes checkbox + Max Sides.
+- `Remove Non-Manifold:` Faces / Vertices / Wire compact toggle bar.
+- No Make Planar.
+
+Topology body:
+- `Convert to` selector.
+- Tris: original-style Methods group for Quads and NGons.
+- Quads: Face Angle / Shape Angle share a row when width permits and separate at narrow widths.
+- Compare: Sharp / Seam / UV / Material / VCol responsive toggle bar.
+
+Normals body:
+- Recalculate + orientation.
+- Smooth by Angle + Max Angle.
+- Weighted Normals.
+- Clear Data: Split Normals / Sharp Edges compact toggle bar.
+
+Dissolve body:
+- Max Angle.
+- Boundaries.
+- original-style Protect box: Seam / Sharp / UV / Materials.
+- Dissolve is intentionally last.
 
 Not exposed in this integrated UI:
 - Volume/Area
@@ -178,4 +207,4 @@ Existing protection and saved-selection workflows retained.
 - Existing Edit Tools order/disclosure state: add-on preferences.
 - Existing magnetic topology/drag logic remains in the Dev_v2.10.1 precision-edit backend.
 
-Witch Dock / Quickbar is not modified by Dev_v2.11.0.
+Witch Dock / Quickbar is not modified by Dev_v2.11.1.
