@@ -1,7 +1,7 @@
 # Witch Tools UI Map
 
 Last updated: 2026-08-18  
-Current development candidate: `Dev_v2.11.2`
+Current development candidate: `Dev_v2.11.3`
 
 ## Top-level N-panel default order
 
@@ -45,10 +45,18 @@ Parent: `3D Print Tools`
 
 ### Export
 
+Visible UI remains:
 - folder selector
 - `Export STL`
 
 No format selector or export-options subsection; STL is fixed.
+
+Dev_v2.11.3 backend behavior:
+- exports selected mesh object(s) as one STL;
+- verifies Blender exporter completion and actual file creation;
+- attempts legacy STL export when available if current native export fails;
+- falls back to direct evaluated-mesh binary STL writing when Blender operator paths fail/cancel;
+- reports explicit failure instead of silently appearing successful.
 
 ### Analyze Mesh
 
@@ -65,7 +73,7 @@ No format selector or export-options subsection; STL is fixed.
   - Sharp Edges
   - Overhang Faces
 
-Dev_v2.11.2 still exposes counts only. The UI intentionally does not restore the original 3D Print Toolbox threshold grid, but the backend now uses the standard Toolbox defaults and check semantics for parity: 0.1 mm degenerate, 5° non-planar, 1 mm thickness, 160° sharp, and 45° overhang. Exact click-to-select result behavior remains gated on count parity plus offending-element identity validation.
+Dev_v2.11.3 retains Dev_v2.11.2 Analyzer parity source changes. The threshold grid remains hidden; backend defaults are 0.1 mm degenerate, 5° non-planar, 1 mm thickness, 160° sharp, and 45° overhang. Click-to-select remains gated on count and offending-element parity.
 
 ### Clean & Repair
 
@@ -207,4 +215,4 @@ Existing protection and saved-selection workflows retained.
 - Existing Edit Tools order/disclosure state: add-on preferences.
 - Existing magnetic topology/drag logic remains in the Dev_v2.10.1 precision-edit backend.
 
-Witch Dock / Quickbar is not modified by Dev_v2.11.2.
+Witch Dock / Quickbar is not modified by Dev_v2.11.3.
