@@ -1,10 +1,12 @@
 # Witch Tools — 3D Print Tools + Transform Test Plan
 
-Candidate: Dev_v2.11.1  
-Target: Blender 4.5.0
+Candidate: Dev_v2.11.2  
+Primary runtime target: Blender 5.0.1  
+Secondary compatibility target: Blender 4.5.0
 
 ## 1. Package / registration
 
+Run in Blender 5.0.1 first:
 1. Install the full ZIP over the existing `Witch_Tools_Dev` package.
 2. Enable Witch Tools.
 3. Confirm no traceback during registration.
@@ -12,6 +14,8 @@ Target: Blender 4.5.0
 5. Confirm existing Dev_v2.10.1 Magic Branch, Edge Doctor, Inject New, Object Snap, and Edit Tools ordering still exist.
 
 Pass: no registration errors and no current-baseline tools disappear.
+
+Repeat the shared registration smoke test in Blender 4.5 before claiming secondary compatibility.
 
 ## 2. Top-level UI order
 
@@ -49,30 +53,51 @@ Multiple vertices:
 
 Confirm Rotation/Scale are clearly object transforms, not fabricated per-vertex values.
 
-## 5. Analyze Mesh parity
+## 5. Analyze Mesh parity — immediate Dev_v2.11.2 gate
 
-Use the same unmodified mesh in Blender's original 3D Print Toolbox and Witch Tools. Compare:
-- Non-manifold Edges
-- Bad Contiguous Edges
-- Intersect Faces
-- Shells
-- Zero Faces
-- Zero Edges
-- Non-flat Faces
-- Thin Faces
-- Sharp Edges
-- Overhang Faces
+Use the same `_CAP 3` object from the Blender 5.0.1 parity-failure screenshots, without changing transforms or geometry.
 
-Test at least:
+Original 3D Print Toolbox reference from the user:
+- Non-manifold Edges: 0
+- Bad Contiguous Edges: 0
+- Intersect Faces: 0
+- Shells: 1
+- Zero Faces: 0
+- Zero Edges: 0
+- Non-flat Faces: 98
+- Thin Faces: 0
+- Sharp Edges: 0
+- Overhang Faces: 79
+
+Dev_v2.11.1 Witch Tools incorrectly returned:
+- Non-flat Faces: 73
+- Thin Faces: 1
+- Sharp Edges: 1
+- Overhang Faces: 80
+
+Dev_v2.11.2 passes this first gate only if all ten counts exactly match the original Toolbox reference above.
+
+The integrated backend intentionally uses the Toolbox default thresholds while hiding their UI:
+- Degenerate: 0.1 mm
+- Non-Planar: 5 degrees
+- Thickness: 1 mm
+- Sharp: 160 degrees
+- Overhang: 45 degrees
+
+After the `_CAP 3` count test, compare at least:
 - a known clean watertight print mesh;
 - a mesh with known non-manifold boundaries;
 - a mesh with zero/degenerate geometry;
 - a mesh with known intersecting faces;
-- a curved print mesh that produces non-flat/overhang results.
+- a thin-wall mesh near the 1 mm threshold;
+- a mesh containing convex and concave very-sharp manifold edges;
+- a rotated/non-uniformly-scaled curved print mesh to verify world-transform handling.
 
-Record both counts for every field. Any mismatch is a failure to investigate; do not claim detector parity from matching totals alone if selected offending geometry differs.
+For every mesh, record both count sets. Any mismatch is a failure to investigate.
 
-Click-to-select result parity is not in Dev_v2.11.1; it is gated on this detector validation.
+Once counts match, use the original Toolbox's result-selection buttons to inspect the actual offending elements. Count parity alone does not establish detector identity. Compare at minimum Non-flat, Thin, Sharp, Overhang, Intersections and degenerate results where nonzero.
+
+Click-to-select inside Witch Tools remains gated on this detector identity validation.
 
 ## 6. Make Manifold
 
@@ -179,10 +204,18 @@ Smoke test:
 
 This feature must not be accepted if integrating 3D Print/Transform regresses the newer baseline.
 
-## Compatibility observation
+## 12. Blender 4.5 secondary compatibility
 
-The user's Instant Clean reference screenshots are from Blender 5.0.1. Dev_v2.11.1 remains authored for Blender 4.5.0. If the user performs runtime testing in 5.0.1, record those results separately as an additional-version test; do not infer 4.5 or 5.0 compatibility from static validation alone.
+After the Blender 5.0.1 primary pass, test in Blender 4.5 at minimum:
+- register/unregister;
+- Transform panel rendering and basic Object/Edit coordinate edit;
+- Analyze `_CAP 3` or an equivalent saved parity fixture;
+- Advanced Clean headers and one safe Repair action;
+- the BG3-specific workflows the user still performs in 4.5;
+- Magic Branch/Inject/Edge Doctor smoke tests if those workflows are expected in 4.5.
+
+Do not claim 4.5 compatibility for paths not actually tested there.
 
 ## Acceptance
 
-Dev_v2.11.1 is accepted only after the above Blender checks are recorded. Static AST/package validation alone is not runtime validation.
+Dev_v2.11.2 is accepted only after the primary Blender 5.0.1 checks are recorded, Analyze count/offending-element parity is established, and the relevant Blender 4.5 secondary checks are separately recorded. Static AST/package validation alone is not runtime validation.
