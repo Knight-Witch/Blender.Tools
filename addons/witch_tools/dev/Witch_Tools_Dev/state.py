@@ -1,7 +1,7 @@
 ADDON_PACKAGE = __package__
-ADDON_VERSION = (2, 11, 0)
+ADDON_VERSION = (2, 11, 1)
 IS_DEV_BUILD = True
-VERSION_LABEL = 'Dev_v2.11.0' if IS_DEV_BUILD else 'v2.11.0'
+VERSION_LABEL = 'Dev_v2.11.1' if IS_DEV_BUILD else 'v2.11.1'
 ADDON_NAME = f'Witch Tools {VERSION_LABEL}'
 BUILD_TARGET_LABEL = 'Blender 4.5'
 PANEL_CATEGORY = 'Witch Tools'
