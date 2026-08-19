@@ -1,6 +1,6 @@
 # Blender Version Compatibility
 
-## Current development candidate — Dev_v2.11.3
+## Current development candidate — Dev_v2.11.4
 
 - Add-on: Witch Tools
 - Primary runtime/development target: Blender 5.0.1
@@ -10,30 +10,38 @@
 - Parent baseline: Dev_v2.10.1 / `feature/witch-tools-magic-branch`
 - Public/release branches modified: no
 
-### Runtime evidence
+### Blender 5.0.1 runtime evidence
 
-Blender 5.0.1 user testing on prior Dev_v2.11.x candidates established:
-- the integrated 3D Print Tools panel renders;
-- Analyze Mesh executes, but Dev_v2.11.1 mismatched the original 3D Print Toolbox on Non-flat/Thin/Sharp/Overhang; Dev_v2.11.2 contains a source correction and still requires parity retest;
-- Export STL was attempted after selecting a folder and produced no expected file/result; Dev_v2.11.3 contains the export reliability correction and still requires runtime retest.
+User testing established:
+- 3D Print Tools panel renders.
+- Analyze Mesh executes in prior Dev_v2.11.x candidates.
+- Dev_v2.11.3 still disagreed with the original installed 3D Print Toolbox on `_CAP 3`: Toolbox Non-flat 98 / Overhang 79 versus Witch Tools Non-flat 73 / Overhang 80.
+- Dev_v2.11.3 STL export hotfix now successfully creates an STL file.
 
-Dev_v2.11.3 has not yet been runtime-confirmed in Blender 5.0.1 or Blender 4.5.0. Source/package validation is not a compatibility claim.
+### Dev_v2.11.4 Analyze compatibility model
 
-### Dev_v2.11.3 export compatibility work
+Analyze no longer contains a parallel Witch Tools detector. It directly invokes the 3D Print Toolbox operator registered in the running Blender installation:
+- `mesh.print3d_check_all` for analysis;
+- the Toolbox live report for displayed counts;
+- `mesh.print3d_select_report` for selectable result entries in Edit Mode.
 
-- validates native Blender STL operator completion and actual file creation;
-- attempts legacy STL export where available;
-- includes a direct binary STL fallback using selected evaluated mesh geometry if Blender's operator paths fail/cancel;
-- fallback is intended to include modifiers, world transforms, triangulation, and negative-transform winding correction;
-- explicit Blender 5.0.1 and 4.5.0 export/re-import testing remains required.
+Therefore the Analyze compatibility target is the Toolbox extension actually installed in that Blender environment rather than a separately reconstructed snapshot of its algorithms.
+
+Analyze dependency:
+- 3D Print Toolbox must be installed and enabled.
+- If the Toolbox operator/report pipeline is unavailable, Analyze fails explicitly.
+- Transform, STL Export, Clean & Repair, and other Witch Tools functionality remain independent.
+
+Dev_v2.11.4 exact count and click-selection behavior still require Blender 5.0.1 runtime retest. Blender 4.5 secondary behavior depends on the 3D Print Toolbox version installed there and is not yet tested.
 
 ## Recent development history
 
 | Release | Primary target | Secondary target | Runtime status / notes |
 |---|---|---|---|
-| Dev_v2.11.3 | Blender 5.0.1 | Blender 4.5 | STL export hotfix source implemented; runtime export/re-import pending. Analyze parity retest also pending. |
-| Dev_v2.11.2 | Blender 5.0.1 | Blender 4.5 | Analyze parity source correction after 5.0.1 mismatch; corrected analyzer not yet runtime-retested. |
-| Dev_v2.11.1 | Blender 4.5 authoring baseline | Blender 5.0.1 observed UI environment | Restored Instant Clean-style Advanced Clean structure; 3D Print UI and Analyze were exercised in 5.0.1. |
+| Dev_v2.11.4 | Blender 5.0.1 | Blender 4.5 | Analyze changed to direct installed-Toolbox backend/report/select pipeline; runtime exact parity pending. Dev_v2.11.3 STL file creation fix retained and previously user-confirmed in 5.0.1. |
+| Dev_v2.11.3 | Blender 5.0.1 | Blender 4.5 | STL export hotfix user-confirmed to create file; local Analyze still mismatched Non-flat/Overhang. |
+| Dev_v2.11.2 | Blender 5.0.1 | Blender 4.5 | Attempted local Analyze parity rewrite; later runtime evidence showed remaining mismatch. |
+| Dev_v2.11.1 | Blender 4.5 authoring baseline | Blender 5.0.1 observed UI environment | Restored Instant Clean-style Advanced Clean structure; 3D Print UI and Analyze exercised in 5.0.1. |
 | Dev_v2.11.0 | Blender 4.5 | none confirmed | Initial Transform + 3D Print integration. |
 | Dev_v2.10.1 | Blender 4.5 | none confirmed | Magic Branch/Inject/Object Snap runtime-fix candidate; retest pending. |
 | Dev_v2.10.0 | Blender 4.5 | none confirmed | Magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, reorderable Edit Tools. |
@@ -41,7 +49,5 @@ Dev_v2.11.3 has not yet been runtime-confirmed in Blender 5.0.1 or Blender 4.5.0
 | Dev_v2.8.0 | Blender 4.5 | none confirmed | Guided Align source/static validation; Blender runtime pending. |
 | Dev_v2.6.1 | Blender 4.5 | none confirmed | Selection Slots N-panel hotfix; exact runtime validation pending. |
 | Dev_v2.5.2 | Blender 4.5 target | Blender Python 5.2.0 LTS test runtime | Curvature Sync column repair; actual collar regression passed in test runtime, exact 4.5 pending. |
-| Dev_v2.5.1 | Blender 4.5 target | Blender Python 5.2.0 LTS test runtime | Auto-Aligned Vertex Inject; exact 4.5 pending. |
-| Dev_v2.5.0 | Blender 4.5 target | Blender Python 5.2.0 LTS test runtime | Curvature Sync MVP runtime checks in test runtime; exact 4.5 interactive validation pending. |
 
 Older compatibility history remains available in repository history and cumulative project changelogs.
