@@ -1,5 +1,17 @@
 Date: 2026-08-18
 
+## Dev_v2.11.1 — Advanced Clean Instant Clean-style restoration
+
+- User review identified that Dev_v2.11.0 had over-condensed the Instant Clean-derived Advanced Clean UI instead of preserving its original interaction model.
+- Restored Repair / Manifold / Topology / Normals / Dissolve as individual collapsible child sections with section-header enable toggles and per-section play actions.
+- Main Clean runs the enabled sections; each section play action runs only that section. Shift selection-only behavior applies to both paths.
+- Restored original-style checkbox/boxed layouts where no redesign had been requested.
+- Retained the explicit customizations: Object Data and Make Planar removed, Dissolve last, compact Manifold Remove Non-Manifold toggles, responsive Topology angle/Compare controls, compact Normals Clear Data toggles.
+- Added `print3d_transform/DECISIONS.md` and expanded the feature spec/state/roadmap/test plan, global roadmap/UI map/project state, compatibility record, and user-visible changelog.
+- Candidate advanced to `Dev_v2.11.1`, target Blender remains `4.5.0`; runtime validation pending. User reference screenshots show Blender 5.0.1 but no Witch Tools 5.0.1 compatibility claim is made yet.
+
+Date: 2026-08-18
+
 ## Dev_v2.11.0 — 3D Print Tools + Transform integration
 
 - Corrected the feature baseline from the stale Dev_v2.9.0 precision-edit branch to the current Dev_v2.10.1 Magic Branch source.
@@ -36,7 +48,7 @@ Date: 2026-08-08
 - Added a full `precision_edit` feature packet with specification, decisions, state, roadmap, acceptance criteria, and Blender 4.5 topology-aware test plan.
 - Documented Coordinate Copy Global/Local conversion, XYZ masks, independent target behavior, geometry-frame Location/Rotation/Scale semantics, multi-object support, protection preflight, and default `Ctrl+Shift+C` Apply shortcut.
 - Documented Plane Lock persistent object-local axis constraints and Level exact per-target world coordinate assignment.
-- Documented Inject New Solo/Branch/Slide behavior, global XYZ movement, straight captured Rail endpoints, vertex-only Slide edge insertion, Branch edge-only connections, modal commit/cancel, and protection-system coordination.
+- Documented Inject New Solo/Branch/Slide behavior, global X/Y/Z movement, straight captured Rail endpoints, vertex-only Slide edge insertion, Branch edge-only connections, modal commit/cancel, and protection-system coordination.
 - Preserved the existing A/B/C Auto-Aligned Edge / Vertex Inject as a separate repair workflow.
 - Updated the Edit Tools runtime order and the top-level Witch Tools roadmap/project state.
 - Completed the final source-contract audit for registration/property/operator/UI/keymap identifier wiring and feature-branch ancestry/diff scope; no reviewed identifier mismatch was found.
