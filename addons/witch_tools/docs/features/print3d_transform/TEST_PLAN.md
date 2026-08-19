@@ -1,6 +1,6 @@
 # Witch Tools — 3D Print Tools + Transform Test Plan
 
-Candidate: Dev_v2.11.0  
+Candidate: Dev_v2.11.1  
 Target: Blender 4.5.0
 
 ## 1. Package / registration
@@ -72,7 +72,7 @@ Test at least:
 
 Record both counts for every field. Any mismatch is a failure to investigate; do not claim detector parity from matching totals alone if selected offending geometry differs.
 
-Click-to-select result parity is not in Dev_v2.11.0; it is gated on this detector validation.
+Click-to-select result parity is not in Dev_v2.11.1; it is gated on this detector validation.
 
 ## 6. Make Manifold
 
@@ -123,25 +123,39 @@ In Edit Mode test:
 
 Verify operations respect the intended selection scope and do not unexpectedly modify unrelated mesh islands.
 
-## 9. Advanced Clean
+## 9. Advanced Clean — UI and execution model
 
-Test Clean with each category individually:
-- Repair
-- Manifold
-- Topology
-- Normals
-- Dissolve
+First test the layout before destructive behavior:
+- Advanced Clean has one main Clean button at the top.
+- Repair, Manifold, Topology, Normals, Dissolve are separate collapsible child sections in that order.
+- Each child header shows a section-name enable toggle and a play button.
+- Object Data is absent.
+- Make Planar is absent.
+- Dissolve is last.
+- Repair visually retains the original-style Remove group and checkbox/numeric-row structure.
+- Manifold shows Fill Holes plus compact `Remove Non-Manifold: [Faces] [Vertices] [Wire]`.
+- Topology retains Convert To and Methods, with responsive angle/Compare layout when converting to quads.
+- Normals retains original-style main controls with compact Clear Data toggles.
+- Dissolve retains the original-style Max Angle / Boundaries / Protect body.
 
-Then test representative combinations and selection-only behavior.
+Execution behavior:
+1. Disable all section toggles except Repair. Click main Clean. Confirm only Repair runs.
+2. Repeat with only Manifold, Topology, Normals, then Dissolve enabled.
+3. Enable a representative combination and confirm main Clean runs exactly those enabled sections.
+4. Disable a section toggle, then press that section's play button. Confirm the individual play action still runs only that section and does not invoke the other enabled sections.
+5. Press each section play button and confirm only that section executes.
+6. Hold Shift with main Clean and each individual play button; confirm selection-only behavior applies.
 
-Specific UI/behavior checks:
-- Remove Non-Manifold Faces/Vertices/Wire toggle row;
-- Topology Face/Shape angle responsive layout;
-- Compare Sharp/Seam/UV/Material/VCol toggles;
-- Normals Clear Data Split Normals/Sharp Edges toggles;
-- Dissolve protection toggles.
-
-For topology-changing operators perform the full safety checks: Undo/Redo, mode, normals/winding, materials/edge attributes, manifold safety, malformed selections, and failure without partial destructive changes.
+Then run topology-safety tests with each section individually and representative combinations:
+- Undo/Redo;
+- Object/Edit Mode restoration;
+- normals/winding;
+- material assignments;
+- Seam/Sharp/UV/custom edge data where preservation is expected;
+- manifold safety where applicable;
+- multi-object behavior where supported;
+- malformed/ambiguous selections;
+- failure without partial destructive changes.
 
 ## 10. STL export
 
@@ -165,6 +179,10 @@ Smoke test:
 
 This feature must not be accepted if integrating 3D Print/Transform regresses the newer baseline.
 
+## Compatibility observation
+
+The user's Instant Clean reference screenshots are from Blender 5.0.1. Dev_v2.11.1 remains authored for Blender 4.5.0. If the user performs runtime testing in 5.0.1, record those results separately as an additional-version test; do not infer 4.5 or 5.0 compatibility from static validation alone.
+
 ## Acceptance
 
-Dev_v2.11.0 is accepted only after the above Blender 4.5 checks are recorded. Static AST/package validation alone is not runtime validation.
+Dev_v2.11.1 is accepted only after the above Blender checks are recorded. Static AST/package validation alone is not runtime validation.
