@@ -1,8 +1,10 @@
+from .panel_mode_switcher import PANELS as MODE_SWITCHER_PANELS
+from .panel_transform import PANELS as TRANSFORM_PANELS
 from .panel_auto_mirror import PANELS as AUTO_MIRROR_PANELS
+from .panel_print3d import PANELS as PRINT3D_PANELS
 from .panel_edit_tools import PANELS as EDIT_TOOL_PANELS
 from .panel_footer import PANELS as FOOTER_PANELS
 from .panel_head_tools import PANELS as HEAD_TOOL_PANELS
-from .panel_mode_switcher import PANELS as MODE_SWITCHER_PANELS
 from .panel_modifier_tool import PANELS as MODIFIER_PANELS
 from .panel_weight_tools import PANELS as WEIGHT_TOOL_PANELS
 from .panel_body_tools import PANELS as BODY_TOOL_PANELS
@@ -16,7 +18,9 @@ from .panel_troubleshooting_tools import PANELS as TROUBLESHOOTING_TOOL_PANELS
 
 PANELS = (
     *MODE_SWITCHER_PANELS,
+    *TRANSFORM_PANELS,
     *AUTO_MIRROR_PANELS,
+    *PRINT3D_PANELS,
     *EDIT_TOOL_PANELS,
     *WEIGHT_TOOL_PANELS,
     *MODIFIER_PANELS,
