@@ -1,7 +1,7 @@
 # Witch Tools UI Map
 
 Last updated: 2026-08-18  
-Current development candidate: `Dev_v2.11.1`
+Current development candidate: `Dev_v2.11.2`
 
 ## Top-level N-panel default order
 
@@ -65,7 +65,7 @@ No format selector or export-options subsection; STL is fixed.
   - Sharp Edges
   - Overhang Faces
 
-Dev_v2.11.1 exposes counts only. Exact click-to-select result behavior is planned after detector parity is validated against Blender's original 3D Print Toolbox.
+Dev_v2.11.2 still exposes counts only. The UI intentionally does not restore the original 3D Print Toolbox threshold grid, but the backend now uses the standard Toolbox defaults and check semantics for parity: 0.1 mm degenerate, 5° non-planar, 1 mm thickness, 160° sharp, and 45° overhang. Exact click-to-select result behavior remains gated on count parity plus offending-element identity validation.
 
 ### Clean & Repair
 
@@ -207,4 +207,4 @@ Existing protection and saved-selection workflows retained.
 - Existing Edit Tools order/disclosure state: add-on preferences.
 - Existing magnetic topology/drag logic remains in the Dev_v2.10.1 precision-edit backend.
 
-Witch Dock / Quickbar is not modified by Dev_v2.11.1.
+Witch Dock / Quickbar is not modified by Dev_v2.11.2.
