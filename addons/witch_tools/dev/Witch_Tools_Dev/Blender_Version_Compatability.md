@@ -1,68 +1,47 @@
 # Blender Version Compatibility
 
-## Current development candidate — Dev_v2.11.2
+## Current development candidate — Dev_v2.11.3
 
 - Add-on: Witch Tools
-- Version: `Dev_v2.11.2`
-- Primary development/runtime target: **Blender 5.0.1**
-- Secondary compatibility target: **Blender 4.5.0**
-- Minimum Blender version declared by the add-on: **4.5.0**
-- Public release branches changed by this candidate: no
+- Primary runtime/development target: Blender 5.0.1
+- Secondary compatibility target: Blender 4.5.0
+- Add-on minimum declared in `bl_info`: Blender 4.5.0
+- Current branch: `feature/witch-tools-3d-print-transform-v2-11`
+- Parent baseline: Dev_v2.10.1 / `feature/witch-tools-magic-branch`
+- Public/release branches modified: no
 
-### Blender 5.0.1 runtime evidence
+### Runtime evidence
 
-Dev_v2.11.1 was run by the user in Blender 5.0.1 and established that:
+Blender 5.0.1 user testing on prior Dev_v2.11.x candidates established:
 - the integrated 3D Print Tools panel renders;
-- Analyze Mesh > Check All executes and populates results;
-- direct same-mesh comparison against Blender's original 3D Print Toolbox is possible.
+- Analyze Mesh executes, but Dev_v2.11.1 mismatched the original 3D Print Toolbox on Non-flat/Thin/Sharp/Overhang; Dev_v2.11.2 contains a source correction and still requires parity retest;
+- Export STL was attempted after selecting a folder and produced no expected file/result; Dev_v2.11.3 contains the export reliability correction and still requires runtime retest.
 
-That comparison exposed an Analyze parity bug in Dev_v2.11.1 on `_CAP 3`:
-- original Toolbox: Non-flat `98`, Thin `0`, Sharp `0`, Overhang `79`;
-- Dev_v2.11.1 Witch Tools: Non-flat `73`, Thin `1`, Sharp `1`, Overhang `80`.
+Dev_v2.11.3 has not yet been runtime-confirmed in Blender 5.0.1 or Blender 4.5.0. Source/package validation is not a compatibility claim.
 
-The other six displayed counts matched on that fixture: Non-manifold `0`, Bad Contiguous `0`, Intersect Faces `0`, Shells `1`, Zero Faces `0`, Zero Edges `0`.
+### Dev_v2.11.3 export compatibility work
 
-Dev_v2.11.2 replaces the simplified Analyze approximations with 3D Print Toolbox-equivalent check semantics/default thresholds. **The Dev_v2.11.2 parity fix itself has not yet been runtime-tested in Blender 5.0.1.**
+- validates native Blender STL operator completion and actual file creation;
+- attempts legacy STL export where available;
+- includes a direct binary STL fallback using selected evaluated mesh geometry if Blender's operator paths fail/cancel;
+- fallback is intended to include modifiers, world transforms, triangulation, and negative-transform winding correction;
+- explicit Blender 5.0.1 and 4.5.0 export/re-import testing remains required.
 
-### Blender 4.5 status
+## Recent development history
 
-Blender 4.5 remains a secondary compatibility target, especially for BG3 workflows and tooling that still requires the older environment. Dev_v2.11.2 has not yet received its Blender 4.5 compatibility pass.
+| Release | Primary target | Secondary target | Runtime status / notes |
+|---|---|---|---|
+| Dev_v2.11.3 | Blender 5.0.1 | Blender 4.5 | STL export hotfix source implemented; runtime export/re-import pending. Analyze parity retest also pending. |
+| Dev_v2.11.2 | Blender 5.0.1 | Blender 4.5 | Analyze parity source correction after 5.0.1 mismatch; corrected analyzer not yet runtime-retested. |
+| Dev_v2.11.1 | Blender 4.5 authoring baseline | Blender 5.0.1 observed UI environment | Restored Instant Clean-style Advanced Clean structure; 3D Print UI and Analyze were exercised in 5.0.1. |
+| Dev_v2.11.0 | Blender 4.5 | none confirmed | Initial Transform + 3D Print integration. |
+| Dev_v2.10.1 | Blender 4.5 | none confirmed | Magic Branch/Inject/Object Snap runtime-fix candidate; retest pending. |
+| Dev_v2.10.0 | Blender 4.5 | none confirmed | Magnetic Inject New, Magic Branch, Edge Doctor regrouping/L repair, reorderable Edit Tools. |
+| Dev_v2.9.0 | Blender 4.5 | none confirmed | Coordinate Copy, Plane Lock/Level, Inject New Solo/Branch/Slide. |
+| Dev_v2.8.0 | Blender 4.5 | none confirmed | Guided Align source/static validation; Blender runtime pending. |
+| Dev_v2.6.1 | Blender 4.5 | none confirmed | Selection Slots N-panel hotfix; exact runtime validation pending. |
+| Dev_v2.5.2 | Blender 4.5 target | Blender Python 5.2.0 LTS test runtime | Curvature Sync column repair; actual collar regression passed in test runtime, exact 4.5 pending. |
+| Dev_v2.5.1 | Blender 4.5 target | Blender Python 5.2.0 LTS test runtime | Auto-Aligned Vertex Inject; exact 4.5 pending. |
+| Dev_v2.5.0 | Blender 4.5 target | Blender Python 5.2.0 LTS test runtime | Curvature Sync MVP runtime checks in test runtime; exact 4.5 interactive validation pending. |
 
-Do not infer that every Dev_v2.11.2 path works in 4.5 merely because the add-on minimum remains 4.5.0. Shared/BG3 paths must be tested there separately.
-
-### Static/package validation
-
-The Dev_v2.11.2 full-package validation passed:
-- Python AST parse across 67 Python files;
-- duplicate operator/UI ID scan;
-- version and panel-order contracts;
-- Advanced Clean section-routing source contracts;
-- Analyze parity source-contract checks;
-- cache/package hygiene;
-- ZIP integrity;
-- SHA-256 verification.
-
-Static/package validation does not establish Blender runtime behavior.
-
-### Known compatibility/testing limitations
-
-Still pending:
-- Dev_v2.11.2 Analyze parity retest in Blender 5.0.1;
-- exact offending-element identity comparison before Analyze click-to-select is added;
-- Transform Edit Mode coordinate/Undo testing;
-- Advanced Clean section execution and Shift-selection testing;
-- Make Manifold / Auto Fix / Advanced Clean topology-safety testing;
-- STL export/re-import testing;
-- Dev_v2.10.1 Magic Branch / Inject New / Object Snap regression testing after integration;
-- Blender 4.5 secondary compatibility testing.
-
-The Toolbox-equivalent Thin Faces path creates a temporary mesh/object and uses object ray casts, matching the original algorithm. This path specifically needs runtime validation in both 5.0.1 and 4.5.
-
-## Recent compatibility history
-
-- `Dev_v2.11.1`: authored under the former Blender 4.5-primary policy; user runtime in Blender 5.0.1 confirmed 3D Print Tools rendering/Analyze execution and exposed the analyzer parity issue fixed in source by Dev_v2.11.2.
-- `Dev_v2.10.1`: Blender 4.5-targeted Magic Branch/Inject/Object Snap runtime-fix candidate; source/static checks passed, but its hotfix paths still require regression retest.
-- `Dev_v2.10.0`: Blender 4.5-targeted Magnetic Inject New / Magic Branch / Edge Doctor candidate; partial user runtime evidence is recorded in the project changelogs/state.
-- `Dev_v2.5.2`: Curvature Sync column-repair workflow received successful user production feedback; exact compatibility details are retained in repository history/cumulative project documentation.
-
-Older compatibility history remains preserved in Git history and the cumulative Witch Tools documentation/changelogs rather than being represented as current candidate status here.
+Older compatibility history remains available in repository history and cumulative project changelogs.
