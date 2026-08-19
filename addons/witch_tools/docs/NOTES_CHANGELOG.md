@@ -11,7 +11,8 @@ Date: 2026-08-18
 - Blender 5.0.1 is now the primary Witch Tools development/runtime target. Blender 4.5 remains a secondary compatibility target for BG3 and workflows that still require it; the add-on minimum remains 4.5.0 so the same package can still be tested there.
 - Advanced Clean Dev_v2.11.1 layout/section-run behavior is retained unchanged.
 - Analyze click-to-select remains gated on count parity plus actual offending-element identity comparison.
-- Built full installable `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`.
-- GitHub Actions static/package validation, ZIP integrity, and independent downloaded-inner-ZIP SHA verification passed.
-- Artifact SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`.
+- Updated the packaged Blender compatibility record so the full ZIP no longer reports the stale Dev_v2.10.1 candidate as current.
+- Built final full installable `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`.
+- GitHub Actions static/package validation, ZIP integrity, and independent downloaded-inner-ZIP SHA/package-document verification passed.
+- Final artifact SHA-256: `4cf29f29b87261278bd5aadcf8346a4341fbbbf313db01334e60669487379a48`.
 - Candidate: `Dev_v2.11.2`; Blender 5.0.1 parity retest pending.
