@@ -8,7 +8,7 @@ Last updated: 2026-08-18
 - Canonical role: primary general-purpose N-panel toolkit and reusable mesh/topology backend
 - Development branch: `feature/witch-tools-3d-print-transform-v2-11`
 - Parent baseline: `feature/witch-tools-magic-branch` Dev_v2.10.1 packaging head `9ef376505ccf9df3f39720dea630b378470c818b`
-- Current candidate: `Dev_v2.11.2`
+- Current candidate: `Dev_v2.11.3`
 - Primary runtime/development target: Blender `5.0.1`
 - Secondary compatibility target: Blender `4.5.0`, primarily for BG3 and workflows that still require it
 - Add-on minimum (`bl_info['blender']`): Blender `4.5.0`
@@ -16,149 +16,96 @@ Last updated: 2026-08-18
 - Public/release branches modified: no
 - Witch Dock / Quickbar modified: no
 
-## Current artifact
+## Current development findings
 
-- Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
-- SHA-256: `4cf29f29b87261278bd5aadcf8346a4341fbbbf313db01334e60669487379a48`
-- GitHub Actions validation/package run: passed
-- Python files parsed: 67
-- Analyze parity source-contract checks: passed
-- duplicate UI/operator ID check: passed
-- cache/package hygiene: passed
-- ZIP integrity: passed
-- independent downloaded-inner-ZIP SHA-256 verification: passed
-- packaged compatibility record verified present/current for Dev_v2.11.2
-- Dev_v2.11.2 Blender runtime: pending
-
-## Current development finding
+### Analyze Mesh
 
 The user tested Dev_v2.11.1 Analyze Mesh in Blender 5.0.1 against Blender's original 3D Print Toolbox on the same `_CAP 3` mesh.
 
-Original Toolbox:
-- Non-manifold 0
-- Bad Contiguous 0
-- Intersect Faces 0
-- Shells 1
-- Zero Faces 0
-- Zero Edges 0
-- Non-flat 98
-- Thin 0
-- Sharp 0
-- Overhang 79
+Original Toolbox: `0 / 0 / 0 / 1 / 0 / 0 / 98 / 0 / 0 / 79`.
+Dev_v2.11.1 Witch Tools: `0 / 0 / 0 / 1 / 0 / 0 / 73 / 1 / 1 / 80`.
 
-Dev_v2.11.1 Witch Tools:
-- Non-manifold 0
-- Bad Contiguous 0
-- Intersect Faces 0
-- Shells 1
-- Zero Faces 0
-- Zero Edges 0
-- Non-flat 73
-- Thin 1
-- Sharp 1
-- Overhang 80
+Dev_v2.11.2 replaced the simplified analyzer approximations with Toolbox-equivalent semantics. Runtime parity retest is still pending.
 
-The six matching counts validate those specific observed outputs only. The four mismatches prove the initial Analyze implementation was not equivalent to the Toolbox.
+### STL Export
 
-## Dev_v2.11.2 source correction
+The user then reported in Blender 5.0.1 that, after selecting an export folder, pressing `Export STL` produced no visible result/file.
 
-`print3d_tools.py` now follows the original 3D Print Toolbox check semantics instead of simplified approximations:
-- Toolbox 0.1 mm degenerate threshold for Zero Faces / Zero Edges;
-- Toolbox-style BVH self-intersection overlap handling;
-- world-transformed loop-normal Non-flat check at 5 degrees;
-- world-transformed triangulated six-sample backwards-ray Thin check at 1 mm;
-- world-transformed signed manifold-edge Sharp check at 160 degrees;
-- world-transformed downward-normal Overhang check at 45 degrees.
+Inspection showed the integrated exporter called Blender's STL operator and then reported success without checking the returned operator status or verifying that a file had actually been written. The exact runtime reason Blender's operator failed/cancelled is not yet established.
 
-The threshold/settings UI remains hidden as requested. Analyze click-to-select remains deferred until both count parity and offending-element identity are verified.
+Dev_v2.11.3 changes the export path so it:
+- validates the chosen folder and selected mesh set;
+- tries Blender's current native STL exporter first;
+- checks for `FINISHED` and verifies an STL file was actually created;
+- tries the legacy STL operator as a compatibility path where available;
+- falls back to a self-contained binary STL writer if Blender's exporters are unavailable or cancel;
+- writes selected evaluated meshes with modifiers, world transforms, triangulation, and negative-transform winding correction;
+- reports a real error if all export paths fail instead of silently appearing successful.
 
-## Blender target change
-
-The user clarified that Blender 5.0.1 is their normal/general-use Blender environment. Blender 4.5 is used mainly for BG3 modding or other workflows where older Collada/tooling constraints require it.
-
-Therefore:
-- Blender 5.0.1 is now the primary Witch Tools target.
-- Blender 4.5 remains a secondary compatibility target.
-- One installable package should remain usable in 4.5 where technically possible, so the add-on minimum stays 4.5.0 until a real incompatibility requires a split.
-- Compatibility claims must still be based on actual runtime testing per feature/path.
+The simple Export UI remains unchanged: folder selector + `Export STL`, fixed STL format.
 
 ## Advanced Clean state retained
 
 Dev_v2.11.1 restored the intended Instant Clean-style interaction model:
 - Repair / Manifold / Topology / Normals / Dissolve are separate collapsible child sections.
 - Each header has an enable toggle and individual play button.
-- Main Clean runs the enabled sections.
-- A section play button runs only that section, even if its enable toggle is off.
+- Main Clean runs enabled sections; a section play button runs only that section.
 - Shift selection-only behavior applies to both paths.
 - Explicit user-requested compact layout changes remain; Object Data and Make Planar remain removed; Dissolve remains last.
 
 ## Current known-working/runtime-observed state
 
-Observed in Blender 5.0.1 on Dev_v2.11.1:
+Observed in Blender 5.0.1 on the prior candidate:
 - Witch Tools 3D Print Tools panel rendered.
-- Analyze Mesh Check All executed and populated the Results box.
-- Direct parity comparison was performed and exposed the mismatch above.
+- Analyze Mesh Check All executed and populated Results.
+- Direct Analyze comparison exposed the known parity mismatch.
+- Export STL was user-tested and failed to produce the expected file/result.
 
 Not established yet:
-- Dev_v2.11.2 analyzer parity;
+- Dev_v2.11.3 STL export/re-import success;
+- Dev_v2.11.2/2.11.3 Analyze detector parity;
 - Advanced Clean section execution/Shift behavior;
 - Transform coordinate editing;
 - Make Manifold / Auto Fix / Advanced Clean topology safety;
-- STL export/reimport;
 - Dev_v2.10.1 Magic Branch/Inject/Object Snap regression in this integrated candidate;
-- Blender 4.5 secondary compatibility for Dev_v2.11.2.
+- Blender 4.5 secondary compatibility for Dev_v2.11.3.
 
 ## Active problems / limitations
 
-1. Dev_v2.11.2 Analyzer must be rerun on the same `_CAP 3` mesh. Expected reference counts are `0 / 0 / 0 / 1 / 0 / 0 / 98 / 0 / 0 / 79`.
-2. After count parity, offending-element identity must be compared using the original Toolbox selection buttons before Witch Tools click-to-select is implemented.
-3. Analyze click-to-select is required but still deferred until detector identity is confirmed.
-4. Thickness parity uses the original Toolbox temporary-mesh/ray-cast method; Blender 5.0.1 runtime verification is required and 4.5 compatibility must be tested separately.
-5. Advanced Clean section headers/actions still need runtime behavior tests.
-6. Topology-changing repair/clean operations require Undo/Redo, mode, normals/winding, material/edge/custom-data, manifold, malformed-selection, and failure-safety testing.
-7. Transform Edit Mode coordinate editing remains runtime-untested.
-8. Auto Fix/Make Manifold/STL export remain runtime-untested.
-9. Dev_v2.10.1 Magic Branch/Inject/Object Snap fixes still require regression retest after integration.
+1. Dev_v2.11.3 Export STL must be runtime-tested in Blender 5.0.1 with one selected mesh and multiple selected meshes, then re-imported for dimension/orientation verification.
+2. The fallback writer is source/static work until Blender runtime testing confirms evaluated mesh extraction and resulting STL behavior.
+3. Analyze must be rerun on the same `_CAP 3` fixture; expected Toolbox reference counts remain `0 / 0 / 0 / 1 / 0 / 0 / 98 / 0 / 0 / 79`.
+4. After Analyze count parity, offending-element identity must be compared before Witch Tools click-to-select is implemented.
+5. Advanced Clean section actions and topology-changing operations still require Undo/Redo, mode, normals/winding, material/edge/custom-data, manifold, malformed-selection, and failure-safety testing.
+6. Transform Edit Mode coordinate editing remains runtime-untested.
+7. Dev_v2.10.1 Magic Branch/Inject/Object Snap fixes still require regression retest after integration.
+8. Blender 4.5 secondary compatibility remains unverified for Dev_v2.11.3.
 
 ## Next exact implementation step
 
-Install the full Dev_v2.11.2 ZIP in Blender 5.0.1 and rerun Analyze on the same `_CAP 3` parity fixture. Do not move to Analyze click-to-select until all ten counts match and the actual selected error geometry is compared.
+Package Dev_v2.11.3 as a full installable ZIP and install it in Blender 5.0.1.
 
-After primary 5.0.1 validation, run the explicitly required secondary Blender 4.5 compatibility smoke tests for shared/BG3 workflows.
+First, select one normal mesh, choose a real folder, press `Export STL`, confirm the `.stl` appears, and re-import it to verify dimensions/orientation. Then test a multi-object selection and one object with an unapplied modifier. If export still fails, capture the new explicit error message.
 
-## Files changed for Dev_v2.11.2
+After export is confirmed, rerun Analyze on `_CAP 3` and compare all ten counts against the original Toolbox before beginning click-to-select work.
+
+## Files changed for Dev_v2.11.3
 
 Source:
 - `print3d_tools.py`
 - `__init__.py`
 - `state.py`
 - `CHANGELOG.md`
-- `Blender_Version_Compatability.md`
 
-Build/compatibility:
-- `.github/workflows/package-witch-tools-v2-11.yml`
-- `docs/COMPATIBILITY_DEV_v2.11.2.md`
-
-Documentation:
-- `docs/PROJECT_STATE.md`
-- `docs/ROADMAP.md`
-- `docs/UI_MAP.md`
-- `docs/NOTES_CHANGELOG.md`
-- `docs/NOTES_CHANGELOG_FULL.md`
-- `docs/features/print3d_transform/SPEC.md`
-- `STATE.md`
-- `ROADMAP.md`
-- `TEST_PLAN.md`
-- `DECISIONS.md`
+Documentation/build files are updated with this state, test plan, compatibility record, and packaging metadata.
 
 ## Test status
 
-- Dev_v2.11.1 Blender 5.0.1 3D Print Tools panel rendering: user-observed
-- Dev_v2.11.1 Blender 5.0.1 Analyze execution: user-observed
-- Dev_v2.11.1 direct Toolbox count comparison: performed; parity failed on 4 of 10 fields
-- Dev_v2.11.2 source correction: implemented
-- Dev_v2.11.2 static/package validation: passed
-- Dev_v2.11.2 full ZIP integrity/SHA/package-doc verification: passed
-- Dev_v2.11.2 Blender 5.0.1 runtime: not yet performed
-- Dev_v2.11.2 Blender 4.5 runtime: not performed
+- Prior Blender 5.0.1 3D Print Tools panel rendering: user-observed
+- Prior Blender 5.0.1 Analyze execution: user-observed
+- Prior direct Toolbox Analyze comparison: performed; parity failed on 4 of 10 fields
+- Prior Export STL runtime attempt: user-observed failure/no output
+- Dev_v2.11.3 export source correction: implemented
+- Dev_v2.11.3 Blender 5.0.1 runtime: not yet performed
+- Dev_v2.11.3 Blender 4.5 runtime: not performed
 - Public release branches changed: no
