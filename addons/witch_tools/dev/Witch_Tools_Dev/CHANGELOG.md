@@ -1,3 +1,13 @@
+## Dev_v2.11.3 — STL export reliability hotfix
+
+- Fixed the integrated 3D Print Tools Export STL path after Blender 5.0.1 runtime testing showed that selecting a folder and pressing Export STL could appear to do nothing.
+- The exporter now checks Blender's native/current STL operator return status and verifies that a non-empty STL file was actually created instead of assuming the operator call succeeded.
+- Added the legacy STL operator as a compatibility attempt when available.
+- Added a self-contained binary STL fallback writer using selected evaluated mesh geometry, applied modifiers, object world transforms, triangulation, and negative-transform winding correction when Blender's STL operator is unavailable or cancels.
+- Export failures now report an explicit error instead of silently returning apparent success.
+- The UI remains intentionally simple: folder selector + Export STL only; format stays fixed to STL.
+- Primary runtime target: Blender 5.0.1. Secondary compatibility target: Blender 4.5. Dev_v2.11.3 runtime export/re-import testing is pending.
+
 ## Dev_v2.11.2 — 3D Print Toolbox Analyze parity correction
 
 - Corrected Witch Tools Analyze Mesh after Blender 5.0.1 runtime comparison showed mismatched Non-flat, Thin, Sharp, and Overhang results against the original 3D Print Toolbox.
