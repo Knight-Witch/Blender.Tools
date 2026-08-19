@@ -2,7 +2,7 @@
 
 Statuses: `active`, `planned`, `deferred`, `research`, `rejected`, `complete`.
 
-## Current candidate — Dev_v2.11.3
+## Current candidate — Dev_v2.11.4
 
 Primary runtime target: Blender 5.0.1  
 Secondary compatibility target: Blender 4.5.0  
@@ -18,11 +18,19 @@ Baseline: Dev_v2.10.1 Magic Branch
 
 ### WT-PRINT-001 — Consolidated Analyze Mesh
 
-- Status: active parity-fix candidate.
-- Dev_v2.11.1 runtime comparison in Blender 5.0.1 proved mismatches against the original 3D Print Toolbox: Non-flat 73 vs 98, Thin 1 vs 0, Sharp 1 vs 0, Overhang 80 vs 79.
-- Dev_v2.11.2 replaced the simplified approximations with Toolbox-equivalent transformed-mesh, signed-angle, BVH, degenerate-threshold, and six-sample thickness semantics.
-- Dev_v2.11.3 retains that correction unchanged.
-- Remaining: rerun the same `_CAP 3` mesh and verify all ten counts match; then compare offending-element identity for selectable results.
+- Status: active exact-backend candidate.
+- Dev_v2.11.1 local detector mismatch: Non-flat 73 vs Toolbox 98, Thin 1 vs 0, Sharp 1 vs 0, Overhang 80 vs 79.
+- Dev_v2.11.2 attempted a Toolbox-equivalent local rewrite.
+- Dev_v2.11.3 user retest still failed: Non-flat 73 vs 98 and Overhang 80 vs 79. Thin/Sharp matched 0/0.
+- Dev_v2.11.4 removes the parallel detector entirely. Witch Tools invokes the installed Toolbox `mesh.print3d_check_all` and mirrors its live report.
+- No alternate detector fallback is allowed; unavailable Toolbox backend is an explicit error.
+- Remaining: Blender 5.0.1 exact count/display retest on `_CAP 3` and report-resolution testing.
+
+### WT-PRINT-004 — Analyze result selection/highlight parity
+
+- Status: active candidate in Dev_v2.11.4.
+- In Edit Mode, non-empty Witch Tools result buttons invoke the original Toolbox `mesh.print3d_select_report` with the original report index.
+- Remaining: verify the exact selected element set matches the original Toolbox buttons for Non-flat, Overhang, and representative edge/face diagnostics.
 
 ### WT-PRINT-002 — Clean & Repair consolidation
 
@@ -35,17 +43,11 @@ Baseline: Dev_v2.10.1 Magic Branch
 
 ### WT-PRINT-003 — Simplified STL export
 
-- Status: active hotfix candidate.
+- Status: active candidate with initial runtime success.
 - UI remains folder + Export STL; fixed STL format.
-- User runtime test showed the prior export path could appear to do nothing after a folder was selected.
-- Dev_v2.11.3 validates Blender exporter completion/output, tries current and legacy Blender STL paths, and adds a direct binary STL fallback from selected evaluated meshes.
-- Remaining: Blender 5.0.1 one-object/multi-object/modifier/transform export and re-import validation; explicit failure behavior; then Blender 4.5 compatibility smoke test.
-
-### WT-PRINT-004 — Analyze result selection/highlight parity
-
-- Status: planned required follow-up after analyzer parity.
-- Make actionable result counts select/highlight the exact offending vertices/edges/faces.
-- Do not implement until count/detection parity and offending-element identity are verified.
+- Dev_v2.11.3 added exporter status/file validation plus a direct binary STL fallback.
+- User confirmed Dev_v2.11.3 now produces an STL in Blender 5.0.1.
+- Remaining: re-import dimensions/orientation, multi-object, modifier-evaluated, negative-scale/fallback paths, then Blender 4.5 smoke test.
 
 ## Baseline preservation
 
@@ -58,10 +60,12 @@ Baseline: Dev_v2.10.1 Magic Branch
 
 Before acceptance:
 - Blender 5.0.1 register/unregister and required panel order;
+- original Toolbox Check All vs Witch Tools Check All exact displayed-count parity on unchanged meshes;
+- original Toolbox result selection vs Witch Tools result selection exact element parity in Edit Mode;
+- explicit Analyze failure when the Toolbox backend is disabled/unavailable;
 - Advanced Clean header layout and individual/main execution including Shift selection-only;
 - Transform editing;
-- Analyze count parity and offending-element parity;
-- STL one/multi-object export, modifier evaluation, transforms, file creation, explicit failure, and re-import;
+- STL multi-object/modifier/transform/re-import and failure-path validation;
 - Make Manifold / Auto Fix / Advanced Clean;
 - Undo/Redo and mode handling;
 - normals/winding and material/edge/custom-data preservation;
@@ -72,17 +76,23 @@ Before acceptance:
 
 ## Deferred / research
 
-### WT-PRINT-005 — Threshold/preferences pass
+### WT-PRINT-005 — Self-contained exact Toolbox vendoring
+
+- Status: research/deferred.
+- Current Dev_v2.11.4 Analyze deliberately calls the installed 3D Print Toolbox to guarantee parity.
+- If Witch Tools later must function without the original extension installed, vendor the exact current Toolbox source package as a pinned backend. Do not hand-reimplement its detectors again.
+
+### WT-PRINT-006 — Threshold/preferences pass
 
 - Status: deferred.
-- Keep standard Toolbox thresholds hidden unless an actual workflow need appears.
+- Threshold controls remain omitted from Witch Tools; while direct delegation is used, the installed Toolbox settings are authoritative.
 
 ### WT-XFORM-002 — Mesh world/local coordinate switch
 
 - Status: research.
 - Current Edit Mode Location is object-local.
 
-## Explicitly excluded from current scope
+## Explicitly excluded from current UI scope
 
 - Volume / Area statistics
 - separate Solid / Intersections / Shells controls
@@ -96,4 +106,4 @@ Before acceptance:
 
 ## Immediate next step
 
-Package/install Dev_v2.11.3 in Blender 5.0.1 and test Export STL first. Confirm an STL is physically written and re-imports correctly for one mesh, multiple meshes, and a modifier-evaluated mesh. Then rerun Analyze on `_CAP 3` before click-to-select work.
+Package/install Dev_v2.11.4 in Blender 5.0.1 with 3D Print Toolbox enabled. On `_CAP 3`, run the original Toolbox Check All and Witch Tools Check All consecutively and confirm every displayed value is identical. Then enter Edit Mode and compare the original and Witch Tools result buttons for exact selected-element parity.
