@@ -5,43 +5,76 @@ Last updated: 2026-08-18
 ## Identity
 
 - Add-on: Witch Tools
-- Candidate: `Dev_v2.11.3`
+- Candidate: `Dev_v2.11.4`
 - Development branch: `feature/witch-tools-3d-print-transform-v2-11`
 - Parent baseline: `feature/witch-tools-magic-branch` Dev_v2.10.1 packaging head `9ef376505ccf9df3f39720dea630b378470c818b`
 - Primary runtime target: Blender `5.0.1`
 - Secondary compatibility target: Blender `4.5.0`
 - `bl_info` minimum: Blender `4.5.0`
 
-## Artifact
+## Runtime findings leading to Dev_v2.11.4
 
-- Full installable ZIP: `Witch_Tools_Dev_v2_11_3_3D_Print_Transform_Blender_5_0_1.zip`
-- SHA-256: `67b884b75bf594273930b016a5d62601e16318b745b568eb13bc9ea6be8b7cf0`
-- GitHub Actions run: `32215145944` — passed
-- Static source/package validation: passed
-- ZIP integrity and independent local SHA verification: passed
-- Blender runtime: pending
+The user retested Dev_v2.11.3 in Blender 5.0.1 on the same `_CAP 3` object.
 
-## Analyze Mesh state
+Original 3D Print Toolbox:
+- Non-manifold Edges: 0
+- Bad Contiguous Edges: 0
+- Intersect Faces: 0
+- Shells: 1
+- Zero Faces: 0
+- Zero Edges: 0
+- Non-flat Faces: 98
+- Thin Faces: 0
+- Sharp Edges: 0
+- Overhang Faces: 79
 
-Dev_v2.11.1 Blender 5.0.1 comparison on `_CAP 3` failed parity against the original 3D Print Toolbox on Non-flat/Thin/Sharp/Overhang. Dev_v2.11.2 replaced the approximations with Toolbox-equivalent semantics; Dev_v2.11.3 retains that correction. Corrected runtime parity is still unverified.
+Witch Tools Dev_v2.11.3:
+- Non-manifold Edges: 0
+- Bad Contiguous Edges: 0
+- Intersect Faces: 0
+- Shells: 1
+- Zero Faces: 0
+- Zero Edges: 0
+- Non-flat Faces: 73
+- Thin Faces: 0
+- Sharp Edges: 0
+- Overhang Faces: 80
 
-Expected `_CAP 3` Toolbox reference: `0 / 0 / 0 / 1 / 0 / 0 / 98 / 0 / 0 / 79`.
+Therefore the local Analyze implementation remained unacceptable even after the Dev_v2.11.2 parity rewrite.
+
+The same user test confirmed the Dev_v2.11.3 STL export hotfix now produces the STL file successfully in Blender 5.0.1.
+
+## Dev_v2.11.4 Analyze architecture
+
+Witch Tools no longer implements its own Analyze detector.
+
+`Check All` now:
+1. invokes the installed 3D Print Toolbox `mesh.print3d_check_all` operator;
+2. reads the report produced by that same installed extension;
+3. maps the live report entries into the compact Witch Tools Results box.
+
+In Edit Mode, non-empty result entries invoke the original Toolbox `mesh.print3d_select_report` operator with the original report index. This restores the original click-to-select pipeline rather than re-creating selection logic.
+
+There is intentionally no alternate Witch Tools detector fallback. If the 3D Print Toolbox backend/report cannot be found, Analyze returns a visible error. Exact parity takes priority over maintaining two implementations.
+
+## Analyze dependency
+
+- Required for Analyze: installed and enabled 3D Print Toolbox extension.
+- Not required for: Transform, STL Export, Make Manifold, Auto Fix, Advanced Clean, or other Witch Tools features.
 
 ## STL Export state
 
-User runtime report: in Blender 5.0.1, choosing an export folder and pressing `Export STL` produced no expected output.
+Dev_v2.11.3 export reliability fix is retained unchanged and is user-confirmed to create an STL in Blender 5.0.1.
 
-The old integration did not validate the Blender export operator result or output file. Dev_v2.11.3 now validates folder/selection, checks native exporter completion and output, attempts the legacy exporter where available, and has a direct binary STL fallback from selected evaluated meshes.
+The exporter:
+- validates folder and selected mesh set;
+- verifies Blender exporter completion and physical file creation;
+- tries legacy export where available;
+- has a direct evaluated-mesh binary STL fallback;
+- uses world transforms, triangulation, and negative-transform winding correction;
+- writes fallback output transactionally through a temporary file.
 
-Fallback design:
-- evaluated modifiers;
-- world transforms;
-- loop-triangle export;
-- negative-transform winding correction;
-- temporary file + atomic replacement;
-- explicit failure if no exportable triangles or all paths fail.
-
-This implementation is source/static validated but not yet run in Blender.
+Full re-import/dimension/orientation matrix is still pending.
 
 ## Advanced Clean state
 
@@ -49,14 +82,14 @@ Dev_v2.11.1 Instant Clean-style section structure and execution design remain re
 
 ## Runtime validation status
 
-Performed on prior candidate(s) in Blender 5.0.1:
-- 3D Print Tools panel rendering;
-- Analyze execution/comparison;
-- prior Export STL attempt, which failed/no-output.
+Performed in Blender 5.0.1:
+- 3D Print Tools panel rendering: passed on prior candidates.
+- Analyze execution: passed on prior candidates, but local detector parity failed through Dev_v2.11.3.
+- STL file creation: user-confirmed passed on Dev_v2.11.3.
 
-Not yet performed on Dev_v2.11.3:
-- STL export/re-import;
-- corrected Analyze parity;
+Not yet performed on Dev_v2.11.4:
+- direct Toolbox-backed Analyze count parity;
+- direct Toolbox click-to-select parity in Edit Mode;
 - Advanced Clean execution/Shift behavior;
 - Transform editing;
 - Make Manifold / Auto Fix safety;
@@ -64,6 +97,14 @@ Not yet performed on Dev_v2.11.3:
 
 ## Next exact step
 
-Install Dev_v2.11.3 in Blender 5.0.1 and test Export STL first on one ordinary mesh into a known writable folder. Confirm the file appears and re-imports correctly. Then test multi-object and unapplied-modifier cases. If export fails, capture the explicit error text now produced.
+Install the full Dev_v2.11.4 package in Blender 5.0.1 with 3D Print Toolbox enabled.
 
-Then rerun `_CAP 3` Analyze parity before implementing result click-to-select.
+On the unchanged `_CAP 3` object:
+1. run the original 3D Print Toolbox `Check All`;
+2. run Witch Tools `Check All`;
+3. verify every displayed count is identical;
+4. enter Edit Mode and click the original Toolbox Non-flat result, record/observe its selected faces;
+5. rerun `Check All` if required, click the Witch Tools Non-flat result, verify the exact same faces are selected;
+6. repeat for Overhang and another non-zero/selectable diagnostic where available.
+
+If the counts differ after Dev_v2.11.4, investigate report-module resolution/mapping only; do not reintroduce a parallel detector.
