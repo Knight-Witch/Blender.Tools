@@ -10,12 +10,13 @@
 ## Package validation
 
 - Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
-- SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`
+- SHA-256: `4cf29f29b87261278bd5aadcf8346a4341fbbbf313db01334e60669487379a48`
 - GitHub Actions validation/package job: passed
 - ZIP integrity: passed
 - Independent downloaded-inner-ZIP SHA-256 verification: passed
 - Python AST parse: 67 Python files passed
 - Required Analyze parity source contracts: present
+- Packaged `Blender_Version_Compatability.md`: verified updated for Dev_v2.11.2 / Blender 5.0.1 primary / Blender 4.5 secondary
 - Cache/package hygiene: passed
 
 Static/package success does not establish Blender runtime compatibility.
