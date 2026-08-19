@@ -1,7 +1,7 @@
 # Witch Tools — 3D Print Tools + Transform Specification
 
 Status: active development candidate  
-Version: `Dev_v2.11.2`  
+Version: `Dev_v2.11.3`  
 Parent baseline: Witch Tools `Dev_v2.10.1` / `feature/witch-tools-magic-branch`  
 Primary runtime target: `Blender 5.0.1`  
 Secondary compatibility target: `Blender 4.5.0`
@@ -40,9 +40,22 @@ Mesh Edit Mode:
 
 ### Export
 
+UI:
 - Folder selector.
-- One Export STL action.
+- One `Export STL` action.
 - Format is always STL; no options subsection is exposed.
+
+Behavior:
+- Export the currently selected mesh object(s) as one STL file into the chosen folder.
+- Single-object filename uses the active/selected object name; multi-object export uses the active object name with `_selection` suffix.
+- Prefer Blender's current native STL exporter and apply evaluated modifiers.
+- Do not treat an operator invocation as success merely because it did not raise: require a `FINISHED` result and verify that an STL file was actually created.
+- When available, the legacy Blender STL operator may be used as a compatibility attempt.
+- If Blender's STL operator paths are unavailable or cancel/fail, Witch Tools may write binary STL directly from selected evaluated mesh geometry.
+- Direct fallback output must use world transforms, triangulated evaluated geometry, and correct winding for negative transforms.
+- Fallback output must be transactional: write a temporary file and replace the target only after a complete successful write.
+- A selection with no exportable triangles must fail clearly rather than create/accept an empty STL.
+- If all export paths fail, report a visible error with diagnostic detail instead of silently appearing to succeed.
 
 ### Analyze Mesh
 
@@ -127,6 +140,8 @@ Topology-changing operations must:
 - be tested for malformed selections and shape/topology edge cases;
 - document any operator that intentionally rebuilds topology or may discard custom data.
 
+Export must never overwrite/replace the destination with a partial fallback file after a failed fallback write.
+
 ## Acceptance criteria
 
 The candidate is accepted only when:
@@ -139,4 +154,5 @@ The candidate is accepted only when:
 - Check All counts match the original 3D Print Toolbox on known meshes using the same default thresholds;
 - Make Manifold, Auto Fix, and Advanced Clean complete without unhandled exceptions on valid test meshes;
 - Undo/Redo, mode restoration, normals/winding, material/edge data, manifold safety, and failure behavior are tested for topology-changing actions;
-- STL export succeeds and re-imports as expected.
+- STL export actually creates a valid non-empty file, applies evaluated modifiers/world transforms as intended, and re-imports with expected dimensions/orientation;
+- a failed Blender STL operator does not result in a false-success report.
