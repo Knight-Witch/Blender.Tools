@@ -112,7 +112,7 @@ def _count_thin_faces(bm, minimum=0.001):
         center = face.calc_center_median(); normal = face.normal.normalized(); found = False
         for direction in (normal, -normal):
             hit = tree.ray_cast(center + direction * eps, direction, minimum)
-            if hit and hit[0] is not None and hit[3] is not None and hit[3] != face.index and hit[2] is not None and hit[2] <= minimum:
+            if hit and hit[0] is not None and hit[2] is not None and hit[2] != face.index and hit[3] is not None and hit[3] <= minimum:
                 found = True; break
         if found: bad += 1
     return bad
