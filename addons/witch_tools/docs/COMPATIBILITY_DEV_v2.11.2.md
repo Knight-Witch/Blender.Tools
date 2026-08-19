@@ -5,7 +5,20 @@
 - Primary development/runtime target: Blender 5.0.1
 - Secondary compatibility target: Blender 4.5.0
 - Add-on minimum version in `bl_info`: Blender 4.5.0
-- Additional Blender versions tested for this candidate: none yet
+- Additional Blender versions tested for Dev_v2.11.2 itself: none yet
+
+## Package validation
+
+- Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
+- SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`
+- GitHub Actions validation/package job: passed
+- ZIP integrity: passed
+- Independent downloaded-inner-ZIP SHA-256 verification: passed
+- Python AST parse: 67 Python files passed
+- Required Analyze parity source contracts: present
+- Cache/package hygiene: passed
+
+Static/package success does not establish Blender runtime compatibility.
 
 ## Runtime evidence inherited from Dev_v2.11.1
 
