@@ -1,3 +1,12 @@
+## Dev_v2.11.1 — Advanced Clean layout/section-run correction
+
+- Restored the Advanced Clean presentation much closer to Instant Clean instead of flattening the section controls into a generic compact toggle strip.
+- Repair, Manifold, Topology, Normals, and Dissolve are again individual collapsible sections with their own enable toggle and play button in the section header.
+- The play button runs only that individual cleanup section; the main Clean button runs whichever section-header toggles are enabled.
+- Restored the original-style checkbox/boxed layouts where the user had not requested a redesign: Repair, Topology methods, Normals controls, and Dissolve Protect.
+- Retained the requested deliberate changes: no Object Data, no Make Planar, Dissolve remains last, Manifold Remove Non-Manifold is the compact Faces / Vertices / Wire toggle bar, Topology angle/Compare controls remain responsive, and Normals Clear Data is a compact toggle bar.
+- Target Blender remains 4.5.0. Blender runtime validation is pending; the user's reference screenshots were taken in Blender 5.0.1 and do not by themselves establish Witch Tools 5.0 compatibility.
+
 ## Dev_v2.11.0 — 3D Print Tools + Transform integration
 
 - Rebased the requested 3D Print/Transform integration onto the current Dev_v2.10.1 Magic Branch baseline instead of the older Dev_v2.9.0 precision-edit branch.
