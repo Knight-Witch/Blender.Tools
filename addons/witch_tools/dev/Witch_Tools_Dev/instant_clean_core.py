@@ -5,6 +5,16 @@ from bpy.types import Operator, PropertyGroup
 from bpy.props import BoolProperty, FloatProperty, IntProperty, EnumProperty, PointerProperty
 
 
+CLEAN_TARGET_ITEMS = (
+    ('ENABLED', 'Enabled Sections', 'Run every Advanced Clean section currently enabled in the section headers'),
+    ('REPAIR', 'Repair', 'Run only Repair'),
+    ('MANIFOLD', 'Manifold', 'Run only Manifold'),
+    ('TOPOLOGY', 'Topology', 'Run only Topology'),
+    ('NORMALS', 'Normals', 'Run only Normals'),
+    ('DISSOLVE', 'Dissolve', 'Run only Dissolve'),
+)
+
+
 class WTInstantCleanCategories(PropertyGroup):
     repair: BoolProperty(name='Repair', default=True)
     manifold: BoolProperty(name='Manifold', default=True)
@@ -181,16 +191,43 @@ def _dissolve(context):
     bpy.ops.mesh.dissolve_limited(angle_limit=pg.max_angle, use_dissolve_boundaries=pg.boundaries, delimit=delimiter)
 
 
+def _enabled_targets(categories):
+    targets = set()
+    if categories.repair: targets.add('REPAIR')
+    if categories.manifold: targets.add('MANIFOLD')
+    if categories.topology: targets.add('TOPOLOGY')
+    if categories.normals: targets.add('NORMALS')
+    if categories.dissolve: targets.add('DISSOLVE')
+    return targets
+
+
 class WT_OT_advanced_clean(Operator):
     bl_idname = 'witch_tools.advanced_clean'; bl_label = 'Clean'; bl_options = {'REGISTER','UNDO'}
-    bl_description = 'Run enabled Advanced Clean categories. Hold Shift to clean only the current selection.'
+    bl_description = 'Clean the enabled Advanced Clean sections, or run one section from its play button. Hold Shift to clean only the current selection.'
+
+    target: EnumProperty(name='Clean Target', items=CLEAN_TARGET_ITEMS, default='ENABLED', options={'HIDDEN', 'SKIP_SAVE'})
+    selection_only: BoolProperty(name='Selection Only', default=False, options={'HIDDEN', 'SKIP_SAVE'})
+
     @classmethod
     def poll(cls, context): return bool(context.selected_objects or context.objects_in_mode)
-    def invoke(self, context, event): self.selection_only = bool(event.shift); return self.execute(context)
+
+    def invoke(self, context, event):
+        self.selection_only = bool(event.shift)
+        return self.execute(context)
+
     def execute(self, context):
         prev_mode = context.mode; prev_active = context.view_layer.objects.active
         objects = [o for o in (context.objects_in_mode if context.mode == 'EDIT_MESH' else context.selected_objects) if o.type == 'MESH']
-        if not objects: self.report({'ERROR'}, 'Select at least one mesh object.'); return {'CANCELLED'}
+        if not objects:
+            self.report({'ERROR'}, 'Select at least one mesh object.')
+            return {'CANCELLED'}
+
+        categories = context.scene.wt_ic_categories
+        targets = _enabled_targets(categories) if self.target == 'ENABLED' else {self.target}
+        if not targets:
+            self.report({'WARNING'}, 'No Advanced Clean sections are enabled.')
+            return {'CANCELLED'}
+
         if not prev_active or prev_active.type != 'MESH': context.view_layer.objects.active = objects[0]
         if context.mode != 'EDIT_MESH': bpy.ops.object.mode_set(mode='EDIT')
         bmeshes = [bmesh.from_edit_mesh(o.data) for o in objects]; hidden = []
@@ -198,13 +235,15 @@ class WT_OT_advanced_clean(Operator):
             if self.selection_only:
                 for bm in bmeshes: hidden.append({v for v in bm.verts if v.hide})
                 bpy.ops.mesh.hide(unselected=True)
-            else: bpy.ops.mesh.select_all(action='SELECT')
-            cats = context.scene.wt_ic_categories
-            if cats.repair: _repair(context, objects, bmeshes)
-            if cats.manifold: _manifold(context, objects, bmeshes)
-            if cats.topology: _topology(context)
-            if cats.normals: _normals(context, objects, bmeshes)
-            if cats.dissolve: _dissolve(context)
+            else:
+                bpy.ops.mesh.select_all(action='SELECT')
+
+            if 'REPAIR' in targets: _repair(context, objects, bmeshes)
+            if 'MANIFOLD' in targets: _manifold(context, objects, bmeshes)
+            if 'TOPOLOGY' in targets: _topology(context)
+            if 'NORMALS' in targets: _normals(context, objects, bmeshes)
+            if 'DISSOLVE' in targets: _dissolve(context)
+
             for obj in objects: bmesh.update_edit_mesh(obj.data, loop_triangles=True, destructive=True)
             if self.selection_only:
                 bpy.ops.mesh.reveal(select=False)
@@ -213,7 +252,8 @@ class WT_OT_advanced_clean(Operator):
                         if v.is_valid: v.hide_set(True)
             return {'FINISHED'}
         except Exception as exc:
-            self.report({'ERROR'}, f'Advanced Clean failed: {exc}'); return {'CANCELLED'}
+            self.report({'ERROR'}, f'Advanced Clean failed: {exc}')
+            return {'CANCELLED'}
         finally:
             try:
                 if prev_mode == 'OBJECT' and context.mode == 'EDIT_MESH': bpy.ops.object.mode_set(mode='OBJECT')
