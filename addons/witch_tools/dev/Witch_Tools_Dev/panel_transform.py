@@ -76,7 +76,7 @@ class VIEW3D_PT_wt_transform_rotation(Panel):
         if obj.rotation_mode == 'QUATERNION': self.layout.prop(obj, 'rotation_quaternion', text='')
         elif obj.rotation_mode == 'AXIS_ANGLE': self.layout.prop(obj, 'rotation_axis_angle', text='')
         else: self.layout.prop(obj, 'rotation_euler', text='')
-        if context.mode == 'EDIT_MESH': self.layout.label(text='Object rotation', icon='OBJECT_ORIGIN')
+        if context.mode == 'EDIT_MESH': self.layout.label(text='Object rotation', icon='OBJECT_DATA')
 
 
 class VIEW3D_PT_wt_transform_scale(Panel):
@@ -86,7 +86,7 @@ class VIEW3D_PT_wt_transform_scale(Panel):
         obj = context.active_object
         if obj:
             self.layout.prop(obj, 'scale', text='')
-            if context.mode == 'EDIT_MESH': self.layout.label(text='Object scale', icon='OBJECT_ORIGIN')
+            if context.mode == 'EDIT_MESH': self.layout.label(text='Object scale', icon='OBJECT_DATA')
 
 
 PANELS = (VIEW3D_PT_wt_transform, VIEW3D_PT_wt_transform_location, VIEW3D_PT_wt_transform_rotation, VIEW3D_PT_wt_transform_scale)
