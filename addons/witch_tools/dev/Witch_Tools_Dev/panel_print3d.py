@@ -1,6 +1,6 @@
 from bpy.types import Panel
 from .state import PANEL_CATEGORY, PANEL_ORDERS
-from .print3d_tools import RESULT_FIELDS
+from .print3d_tools import RESULT_FIELDS, RESULT_ICONS, get_toolbox_report_entry
 
 
 def _narrow(context, pixels=360):
@@ -76,10 +76,31 @@ class VIEW3D_PT_wt_print3d_analyze(Panel):
         row.operator('witch_tools.print3d_analyze', text='Check All', icon='CHECKMARK')
         box = self.layout.box()
         box.label(text='Results', icon='INFO')
+
+        same_object = bool(
+            props.last_analyzed_object
+            and context.active_object
+            and props.last_analyzed_object == context.active_object.name
+        )
+        is_edit = context.edit_object is not None
+
         for prop_name, label in RESULT_FIELDS:
             row = box.row(align=True)
             row.label(text=label)
-            row.label(text=str(getattr(props, prop_name)))
+            value = getattr(props, prop_name)
+            entry = get_toolbox_report_entry(prop_name) if same_object and is_edit else None
+            if entry:
+                index, _text, data = entry
+                if data and isinstance(data, (tuple, list)) and len(data) > 1 and data[1]:
+                    op = row.operator(
+                        'mesh.print3d_select_report',
+                        text=str(value),
+                        icon=RESULT_ICONS.get(prop_name, 'RESTRICT_SELECT_OFF'),
+                    )
+                    op.index = index
+                    continue
+            row.label(text=str(value))
+
         if props.last_analyzed_object and context.active_object and props.last_analyzed_object != context.active_object.name:
             self.layout.label(text='Results are from a different object', icon='ERROR')
 
