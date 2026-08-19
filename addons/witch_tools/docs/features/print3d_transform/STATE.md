@@ -12,6 +12,19 @@ Last updated: 2026-08-18
 - Secondary compatibility target: Blender `4.5.0`
 - `bl_info` minimum remains Blender `4.5.0`
 
+## Artifact
+
+- Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
+- SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`
+- GitHub Actions static/package validation: passed
+- 67 Python files parsed
+- Analyze parity source-contract checks: passed
+- duplicate `bl_idname` check: passed
+- package hygiene: passed
+- ZIP integrity: passed
+- downloaded inner ZIP SHA verification: passed
+- Dev_v2.11.2 Blender runtime: pending
+
 ## Blender 5.0.1 runtime result that triggered Dev_v2.11.2
 
 The user ran Dev_v2.11.1 Analyze Mesh and Blender's original 3D Print Toolbox Check All on the same object in Blender 5.0.1.
