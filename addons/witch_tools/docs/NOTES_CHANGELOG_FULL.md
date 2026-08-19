@@ -1,5 +1,19 @@
 Date: 2026-08-18
 
+## Dev_v2.11.3 — STL export reliability hotfix
+
+- Blender 5.0.1 runtime testing exposed that the integrated Export STL button could produce no expected file/result after a folder was selected.
+- Source inspection found the exporter did not validate Blender's operator return status or verify an output file before reporting success; the exact Blender-side reason for cancellation/failure remains runtime-unknown.
+- Added folder/selection validation, current native STL operator result/file validation, legacy operator compatibility attempt, and a self-contained binary STL fallback.
+- The fallback exports selected evaluated meshes with modifiers, world transforms, triangulation, and negative-transform winding correction and uses a temporary file before replacing the destination.
+- Export failures now report explicit details rather than silently appearing successful.
+- The simple folder + Export STL UI and fixed STL format remain unchanged.
+- Dev_v2.11.2 Analyze parity correction remains included and pending runtime parity retest.
+- Updated source versioning, user changelog, project/feature state, test/compatibility/build documentation, and packaging validation for Dev_v2.11.3.
+- Primary target remains Blender 5.0.1; Blender 4.5 remains secondary compatibility target. Runtime export/re-import validation is pending.
+
+Date: 2026-08-18
+
 ## Dev_v2.11.2 — 3D Print Toolbox Analyze parity correction
 
 - Blender 5.0.1 runtime comparison on the same `_CAP 3` mesh proved Dev_v2.11.1 Analyze Mesh was not equivalent to Blender's original 3D Print Toolbox.
