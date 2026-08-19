@@ -1,9 +1,10 @@
 # Witch Tools — 3D Print Tools + Transform Specification
 
 Status: active development candidate  
-Version: `Dev_v2.11.1`  
+Version: `Dev_v2.11.2`  
 Parent baseline: Witch Tools `Dev_v2.10.1` / `feature/witch-tools-magic-branch`  
-Target Blender: `4.5.0`
+Primary runtime target: `Blender 5.0.1`  
+Secondary compatibility target: `Blender 4.5.0`
 
 ## Purpose
 
@@ -59,7 +60,22 @@ One Check All action populates these result counts:
 
 Not exposed: Volume/Area statistics, separate Solid/Intersections/Shells buttons, or the original threshold grid.
 
-Result-count parity with Blender's original 3D Print Toolbox must be tested before click-to-select result actions are promoted. Click-to-select parity is a required follow-up because it is part of the user's normal workflow.
+Even though the threshold controls are hidden, Analyze must reproduce Blender's 3D Print Toolbox check semantics using its standard defaults:
+- Degenerate: 0.1 mm (`0.0001` Blender units)
+- Non-Planar: 5 degrees
+- Thickness: 1 mm (`0.001` Blender units)
+- Sharp: 160 degrees
+- Overhang: 45 degrees
+
+Parity-sensitive behavior:
+- Solid/degenerate/shell counts use the untransformed mesh copy, matching Toolbox behavior.
+- Intersect Faces uses Toolbox-style BVH overlap semantics and epsilon.
+- Non-flat Faces uses a world-transformed mesh and loop-normal distortion test.
+- Thin Faces uses the Toolbox world-transformed, triangulated, six-sample backwards-ray test and maps hits back to original faces.
+- Sharp Edges uses a world-transformed mesh and signed manifold-edge face angle.
+- Overhang Faces uses a world-transformed mesh and the Toolbox downward-normal angle test.
+
+Result-count parity with Blender's original 3D Print Toolbox must be established on the same mesh before click-to-select result actions are promoted. Click-to-select parity remains a required follow-up because it is part of the user's normal workflow.
 
 ### Clean & Repair
 
@@ -113,13 +129,14 @@ Topology-changing operations must:
 
 ## Acceptance criteria
 
-The candidate is accepted only when, in Blender 4.5:
-- the add-on registers/unregisters without errors;
+The candidate is accepted only when:
+- Blender 5.0.1 registration and the primary normal-use workflows are tested first;
+- Blender 4.5 compatibility is separately tested for the shared/BG3 workflows that need it;
 - Transform and 3D Print Tools render in the required order without hiding Magic Branch/Edge Doctor features;
 - Advanced Clean section headers visibly provide the Instant Clean-style enable toggle + individual play action and the section bodies retain the specified original-style layouts;
 - the main Clean action runs only enabled sections and each section play action runs only that section;
 - Transform Location edits object and selected-mesh coordinates correctly;
-- Check All counts are compared against the original 3D Print Toolbox on known meshes;
+- Check All counts match the original 3D Print Toolbox on known meshes using the same default thresholds;
 - Make Manifold, Auto Fix, and Advanced Clean complete without unhandled exceptions on valid test meshes;
 - Undo/Redo, mode restoration, normals/winding, material/edge data, manifold safety, and failure behavior are tested for topology-changing actions;
 - STL export succeeds and re-imports as expected.
