@@ -1,5 +1,20 @@
 Date: 2026-08-18
 
+## Dev_v2.11.4 — exact 3D Print Toolbox Analyze bridge
+
+- User retesting in Blender 5.0.1 confirmed the Dev_v2.11.3 STL export hotfix now creates the STL successfully.
+- The same `_CAP 3` retest proved the locally reimplemented Analyze backend still disagreed with the installed original 3D Print Toolbox: Toolbox Non-flat 98 / Overhang 79 versus Witch Tools Non-flat 73 / Overhang 80; the remaining displayed fields matched on that fixture.
+- Removed Witch Tools' parallel Analyze detector instead of attempting another local algorithm rewrite.
+- Witch Tools `Check All` now invokes the installed 3D Print Toolbox `mesh.print3d_check_all` operator directly and mirrors that extension's live report.
+- In Edit Mode, non-empty selectable Witch Tools result buttons invoke the original Toolbox `mesh.print3d_select_report` with the original live report index, restoring the exact Toolbox selection pipeline.
+- Analyze no longer substitutes Witch Tools thresholds, BMesh/BVH checks, normal calculations, thickness rays, or an alternate detector fallback. If the Toolbox backend/report is unavailable, Analyze fails explicitly.
+- Analyze therefore deliberately depends on the 3D Print Toolbox extension being installed/enabled. Transform, STL Export, Clean & Repair, and other Witch Tools functionality remain independent.
+- Added Dev_v2.11.4 version metadata, compatibility/build contracts, project/feature state, roadmaps, UI map, spec, decisions, test plan, and changelogs.
+- Primary runtime target remains Blender 5.0.1; Blender 4.5 remains secondary compatibility.
+- Runtime gate: original Toolbox and Witch Tools must display identical counts on `_CAP 3`, then their Edit Mode result buttons must select the exact same elements.
+
+Date: 2026-08-18
+
 ## Dev_v2.11.3 — STL export reliability hotfix
 
 - Blender 5.0.1 runtime testing exposed that the integrated Export STL button could produce no expected file/result after a folder was selected.
