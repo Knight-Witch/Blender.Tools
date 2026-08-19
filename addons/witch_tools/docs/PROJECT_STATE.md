@@ -14,6 +14,18 @@ Last updated: 2026-08-18
 - Public/release branches modified: no
 - Witch Dock / Quickbar modified: no
 
+## Current artifact
+
+- File: `Witch_Tools_Dev_v2_11_0_3D_Print_Transform_Blender_4_5.zip`
+- Full installable package: yes; not a patch
+- SHA-256: `d15ec5393c82bdf1fa4027fc161edcbda2fb0b426e5802a64b107f37d78e50d7`
+- GitHub Actions validation: passed
+- Python source files parsed: 67
+- Unique UI/operator `bl_idname` values scanned: 145; duplicate count 0
+- Cache/package hygiene: passed
+- ZIP integrity: passed
+- Blender runtime: pending
+
 ## Baseline correction
 
 The first 3D Print/Transform implementation was built from the older Dev_v2.9.0 precision-edit branch. That branch is not the current authoritative Witch Tools baseline. Dev_v2.11.0 instead ports the new modules onto Dev_v2.10.1 so Magic Branch, Edge Doctor, Edit Tools ordering, topology fixes, and the newer registration surface remain present.
@@ -37,7 +49,7 @@ New top-level panel above Edit Tools:
 - Advanced Clean retains Repair, Manifold, Topology, Normals, Dissolve with requested compact/responsive controls.
 - Removed from the integrated UI: Volume/Area, separate Solid/Intersections/Shells controls, Hollow, Bisect, Align XY, Scale To, export options, Instant Clean Object Data, Make Planar.
 
-Analyze result click-to-select behavior is not yet in Dev_v2.11.0. It is now a required follow-up after detector/count parity is validated against Blender's original 3D Print Toolbox.
+Analyze result click-to-select behavior is not yet in Dev_v2.11.0. It is a required follow-up after detector/count parity is validated against Blender's original 3D Print Toolbox.
 
 ## Retained Dev_v2.10.1 baseline
 
@@ -45,17 +57,19 @@ The candidate preserves the current Magic Branch / Inject New / Edge Doctor / Ed
 
 ## Last completed work
 
-- Confirmed current authoritative branch/version before rebuilding the requested feature.
+- Confirmed the current authoritative branch/version before rebuilding the requested feature.
 - Created `feature/witch-tools-3d-print-transform-v2-11` from Dev_v2.10.1.
 - Ported six modular 3D Print/Transform source modules from the isolated earlier feature work.
 - Rewired registration and panel aggregation against the current Dev_v2.10.1 registration surface rather than replacing it with stale Dev_v2.9.0 wiring.
 - Bumped development identity to Dev_v2.11.0 targeting Blender 4.5.
 - Added/updated the 3D Print + Transform specification, state, roadmap, and topology-aware Blender test plan.
-- Added a full-package workflow that performs AST, duplicate-ID, version/order, cache-hygiene, ZIP-integrity, and SHA-256 checks.
+- Built a full installable ZIP through GitHub Actions.
+- Validated 67 Python files, 145 unique UI/operator IDs, package hygiene, version/panel-order contracts, ZIP integrity, and SHA-256.
+- Independently rechecked the downloaded ZIP locally for Python AST parsing, duplicate IDs, required files, cache hygiene, and ZIP integrity.
 
 ## Current known-working state
 
-Inherited runtime results are only those already recorded for Dev_v2.10.0. Dev_v2.11.0 itself has not been run in Blender 4.5 yet. Do not infer runtime success from static packaging validation.
+Inherited runtime results are only those already recorded for Dev_v2.10.0. Dev_v2.11.0 itself has not been run in Blender 4.5 yet. Static/package validation does not establish Blender runtime success.
 
 ## Active problems / limitations
 
@@ -88,17 +102,18 @@ Source integration updates:
 - `state.py`
 - `panels.py`
 - `registration.py`
+- `CHANGELOG.md`
 
 Documentation:
 - project state, roadmap, UI map, latest/full notes;
-- `docs/features/print3d_transform/` spec/state/roadmap/test plan;
-- add-on changelog entry in the packaged build.
+- `docs/features/print3d_transform/` spec/state/roadmap/test plan.
 
 ## Test status
 
 - Current Dev_v2.10.1 baseline confirmed: performed
 - Branch ancestry/source port review: performed
-- Dev_v2.11.0 static package validation: packaging workflow required before delivery
+- GitHub Actions static/package validation: passed
+- Downloaded ZIP independent static/package check: passed
 - Blender 4.5 runtime: not performed
 - Additional Blender versions: not tested
 - Public release branches changed: no
