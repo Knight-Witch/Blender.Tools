@@ -3,6 +3,7 @@ import bmesh
 import math
 import os
 import random
+import struct
 from collections import deque
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
@@ -262,6 +263,117 @@ def _count_overhang_faces(obj, threshold=ANGLE_OVERHANG):
         bm.free()
 
 
+def _try_blender_stl_export(filepath):
+    """Try Blender's native/current STL operator, then the legacy add-on operator."""
+    errors = []
+
+    try:
+        native = getattr(bpy.ops.wm, 'stl_export', None)
+        if native is not None and native.poll():
+            result = native(
+                filepath=filepath,
+                check_existing=False,
+                export_selected_objects=True,
+                apply_modifiers=True,
+            )
+            if 'FINISHED' in result and os.path.isfile(filepath) and os.path.getsize(filepath) >= 84:
+                return True, 'Blender native STL exporter'
+            errors.append(f'native returned {sorted(result)}')
+        else:
+            errors.append('native STL exporter unavailable in current context')
+    except Exception as exc:
+        errors.append(f'native STL exporter: {exc}')
+
+    try:
+        legacy = getattr(bpy.ops.export_mesh, 'stl', None)
+        if legacy is not None and legacy.poll():
+            result = legacy(
+                filepath=filepath,
+                check_existing=False,
+                use_selection=True,
+                use_mesh_modifiers=True,
+            )
+            if 'FINISHED' in result and os.path.isfile(filepath) and os.path.getsize(filepath) >= 84:
+                return True, 'Blender legacy STL exporter'
+            errors.append(f'legacy returned {sorted(result)}')
+        else:
+            errors.append('legacy STL exporter unavailable in current context')
+    except Exception as exc:
+        errors.append(f'legacy STL exporter: {exc}')
+
+    return False, '; '.join(errors)
+
+
+def _write_binary_stl_fallback(context, filepath, selected_objects):
+    """Write selected evaluated meshes directly as one binary STL if Blender's exporter fails."""
+    temp_path = filepath + '.wt_tmp'
+    depsgraph = context.evaluated_depsgraph_get()
+    triangle_count = 0
+
+    try:
+        with open(temp_path, 'wb') as handle:
+            header = b'Witch Tools STL fallback export'
+            handle.write(header[:80].ljust(80, b'\0'))
+            handle.write(struct.pack('<I', 0))
+
+            for obj in selected_objects:
+                if obj.mode == 'EDIT':
+                    obj.update_from_editmode()
+
+                obj_eval = obj.evaluated_get(depsgraph)
+                mesh = None
+                try:
+                    mesh = obj_eval.to_mesh()
+                    if mesh is None:
+                        continue
+                    mesh.calc_loop_triangles()
+                    matrix = obj_eval.matrix_world.copy()
+                    reverse_winding = matrix.is_negative
+                    vertices = mesh.vertices
+
+                    for tri in mesh.loop_triangles:
+                        v0, v1, v2 = (matrix @ vertices[index].co for index in tri.vertices)
+                        if reverse_winding:
+                            v1, v2 = v2, v1
+
+                        normal = (v1 - v0).cross(v2 - v0)
+                        if normal.length_squared:
+                            normal.normalize()
+                        else:
+                            normal = Vector((0.0, 0.0, 0.0))
+
+                        handle.write(struct.pack(
+                            '<12fH',
+                            normal.x, normal.y, normal.z,
+                            v0.x, v0.y, v0.z,
+                            v1.x, v1.y, v1.z,
+                            v2.x, v2.y, v2.z,
+                            0,
+                        ))
+                        triangle_count += 1
+                finally:
+                    if mesh is not None:
+                        obj_eval.to_mesh_clear()
+
+            if triangle_count == 0:
+                raise RuntimeError('Selected mesh objects contain no exportable triangles')
+            if triangle_count >= 2 ** 32:
+                raise RuntimeError('STL triangle count exceeds the binary STL format limit')
+
+            handle.seek(80)
+            handle.write(struct.pack('<I', triangle_count))
+
+        os.replace(temp_path, filepath)
+        return triangle_count
+    except Exception:
+        try:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+        except Exception:
+            pass
+        raise
+
+
 class WT_OT_print3d_analyze(Operator):
     bl_idname = 'witch_tools.print3d_analyze'
     bl_label = 'Check All'
@@ -360,7 +472,11 @@ class WT_OT_print3d_export_stl(Operator):
 
     def execute(self, context):
         props = context.scene.wt_print3d
-        folder = bpy.path.abspath(props.export_directory or '//')
+        folder = bpy.path.abspath(props.export_directory or '//').strip()
+        if not folder:
+            self.report({'ERROR'}, 'Choose an export folder first')
+            return {'CANCELLED'}
+
         try:
             os.makedirs(folder, exist_ok=True)
         except Exception as exc:
@@ -368,18 +484,29 @@ class WT_OT_print3d_export_stl(Operator):
             return {'CANCELLED'}
 
         selected = [obj for obj in context.selected_objects if obj.type == 'MESH']
+        if not selected:
+            self.report({'ERROR'}, 'Select at least one mesh object to export')
+            return {'CANCELLED'}
+
         active = context.active_object if context.active_object in selected else selected[0]
         filename = bpy.path.clean_name(active.name if len(selected) == 1 else f'{active.name}_selection') + '.stl'
         filepath = os.path.join(folder, filename)
+
+        native_ok, native_detail = _try_blender_stl_export(filepath)
+        if native_ok:
+            self.report({'INFO'}, f'Exported STL: {filepath}')
+            return {'FINISHED'}
+
         try:
-            if hasattr(bpy.ops.wm, 'stl_export'):
-                bpy.ops.wm.stl_export(filepath=filepath, export_selected_objects=True)
-            else:
-                bpy.ops.export_mesh.stl(filepath=filepath, use_selection=True)
+            triangle_count = _write_binary_stl_fallback(context, filepath, selected)
         except Exception as exc:
-            self.report({'ERROR'}, f'STL export failed: {exc}')
+            self.report({'ERROR'}, f'STL export failed: {exc}. Blender exporter: {native_detail}')
             return {'CANCELLED'}
-        self.report({'INFO'}, f'Exported {filename}')
+
+        self.report(
+            {'INFO'},
+            f'Exported STL: {filepath} ({triangle_count} triangles; Witch Tools fallback writer)',
+        )
         return {'FINISHED'}
 
 
