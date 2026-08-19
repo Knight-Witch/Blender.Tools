@@ -10,71 +10,60 @@ Last updated: 2026-08-18
 - Parent baseline: `feature/witch-tools-magic-branch` Dev_v2.10.1 packaging head `9ef376505ccf9df3f39720dea630b378470c818b`
 - Primary runtime target: Blender `5.0.1`
 - Secondary compatibility target: Blender `4.5.0`
-- `bl_info` minimum remains Blender `4.5.0`
+- `bl_info` minimum: Blender `4.5.0`
+
+## Artifact
+
+- Full installable ZIP: `Witch_Tools_Dev_v2_11_3_3D_Print_Transform_Blender_5_0_1.zip`
+- SHA-256: `67b884b75bf594273930b016a5d62601e16318b745b568eb13bc9ea6be8b7cf0`
+- GitHub Actions run: `32215145944` — passed
+- Static source/package validation: passed
+- ZIP integrity and independent local SHA verification: passed
+- Blender runtime: pending
 
 ## Analyze Mesh state
 
-Blender 5.0.1 comparison on the same `_CAP 3` object established that Dev_v2.11.1 did not match Blender's original 3D Print Toolbox on four checks:
-- Non-flat: Toolbox 98 / Witch Tools 73
-- Thin: Toolbox 0 / Witch Tools 1
-- Sharp: Toolbox 0 / Witch Tools 1
-- Overhang: Toolbox 79 / Witch Tools 80
+Dev_v2.11.1 Blender 5.0.1 comparison on `_CAP 3` failed parity against the original 3D Print Toolbox on Non-flat/Thin/Sharp/Overhang. Dev_v2.11.2 replaced the approximations with Toolbox-equivalent semantics; Dev_v2.11.3 retains that correction. Corrected runtime parity is still unverified.
 
-The other six displayed counts matched on that fixture.
+Expected `_CAP 3` Toolbox reference: `0 / 0 / 0 / 1 / 0 / 0 / 98 / 0 / 0 / 79`.
 
-Dev_v2.11.2 replaced the simplified analyzer approximations with Toolbox-equivalent check semantics and default thresholds. Runtime retest of the corrected analyzer is still pending and remains part of Dev_v2.11.3 validation.
+## STL Export state
 
-## Dev_v2.11.3 STL Export correction
+User runtime report: in Blender 5.0.1, choosing an export folder and pressing `Export STL` produced no expected output.
 
-User runtime report in Blender 5.0.1: after choosing a folder, pressing Witch Tools `Export STL` did not produce the expected file/result.
+The old integration did not validate the Blender export operator result or output file. Dev_v2.11.3 now validates folder/selection, checks native exporter completion and output, attempts the legacy exporter where available, and has a direct binary STL fallback from selected evaluated meshes.
 
-The previous source invoked Blender's STL exporter but did not inspect the returned operator status and did not verify that a file actually existed before reporting success. This explains how a cancelled/failed exporter path could present as a no-op, but the precise Blender-side reason for the failed runtime call is not yet known.
+Fallback design:
+- evaluated modifiers;
+- world transforms;
+- loop-triangle export;
+- negative-transform winding correction;
+- temporary file + atomic replacement;
+- explicit failure if no exportable triangles or all paths fail.
 
-Dev_v2.11.3 source changes:
-- validate the folder and selected mesh objects;
-- prefer Blender's current `wm.stl_export` path;
-- require a `FINISHED` return and an actual STL output file before accepting success;
-- try the legacy `export_mesh.stl` path when available;
-- if Blender exporters fail/cancel, write a binary STL directly from the selected evaluated meshes;
-- the fallback applies evaluated modifiers, object world transforms, triangulates polygons, and corrects winding for negative transforms;
-- write the fallback through a temporary file and replace the target only after successful completion;
-- report explicit failure details if no path succeeds.
+This implementation is source/static validated but not yet run in Blender.
 
-The UI remains folder + `Export STL`; STL is still the fixed format.
+## Advanced Clean state
 
-## Advanced Clean state retained
-
-- Repair / Manifold / Topology / Normals / Dissolve remain individual collapsible sections.
-- Each header has an enable toggle and individual play button.
-- Main Clean runs enabled sections; each section play button runs only that section.
-- Shift selection-only behavior applies to both paths.
-- Requested compact layout changes remain intact.
+Dev_v2.11.1 Instant Clean-style section structure and execution design remain retained unchanged.
 
 ## Runtime validation status
 
-Performed in Blender 5.0.1 on prior candidates:
-- 3D Print Tools panel rendered;
-- Analyze Mesh executed and exposed the known parity issue;
-- Export STL was attempted and user reported no output.
+Performed on prior candidate(s) in Blender 5.0.1:
+- 3D Print Tools panel rendering;
+- Analyze execution/comparison;
+- prior Export STL attempt, which failed/no-output.
 
 Not yet performed on Dev_v2.11.3:
-- STL export/re-import after the new native-result validation and fallback writer;
-- exact `_CAP 3` Analyze parity retest;
-- offending-element Analyze identity comparison;
-- Advanced Clean section execution/Shift behavior;
-- Transform runtime behavior;
-- Make Manifold / Auto Fix topology safety;
-- Blender 4.5 compatibility regression.
-
-## Known limitations
-
-- The new direct binary STL fallback has not yet been executed in Blender.
-- Analyze click-to-select remains gated on detector/count and offending-element parity.
-- Intersect Volumes remains topology-rebuilding and requires destructive-operation validation.
-- Edit-mode Transform Location remains object-local.
+- STL export/re-import;
+- corrected Analyze parity;
+- Advanced Clean execution/Shift behavior;
+- Transform editing;
+- Make Manifold / Auto Fix safety;
+- Blender 4.5 compatibility.
 
 ## Next exact step
 
-Package and install Dev_v2.11.3 in Blender 5.0.1. Test Export STL first with one selected mesh, then multiple selected meshes, then a mesh with an unapplied modifier. Re-import the resulting STL and compare dimensions/orientation. If export fails, use the new explicit error report to identify the runtime path.
+Install Dev_v2.11.3 in Blender 5.0.1 and test Export STL first on one ordinary mesh into a known writable folder. Confirm the file appears and re-imports correctly. Then test multi-object and unapplied-modifier cases. If export fails, capture the explicit error text now produced.
 
-Then rerun Analyze on `_CAP 3`; expected Toolbox reference values remain `0 / 0 / 0 / 1 / 0 / 0 / 98 / 0 / 0 / 79`.
+Then rerun `_CAP 3` Analyze parity before implementing result click-to-select.
