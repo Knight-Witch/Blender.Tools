@@ -2,7 +2,7 @@
 
 Statuses: `planned`, `active`, `blocked`, `deferred`, `research`, `rejected`, `complete`.
 
-## Current development candidate — Dev_v2.11.0
+## Current development candidate — Dev_v2.11.1
 
 Target Blender: `4.5.0`  
 Branch: `feature/witch-tools-3d-print-transform-v2-11`  
@@ -27,8 +27,10 @@ Runtime validation: pending
 - Status: active candidate.
 - Make Manifold, Auto Fix, Advanced Clean.
 - Global Fix precedes Local Fix.
-- Advanced Clean retains Repair / Manifold / Topology / Normals / Dissolve with condensed responsive UI.
-- Remaining: full topology/attribute/Undo safety validation.
+- Dev_v2.11.1 restores Advanced Clean's Instant Clean-style child-section structure and per-section play actions after user review showed Dev_v2.11.0 had over-condensed the UI.
+- Main Clean runs enabled section toggles; each section play action runs only its own section.
+- Original-style bodies are retained except for the explicitly requested compact Manifold, Topology, and Normals changes; Object Data/Make Planar stay removed and Dissolve stays last.
+- Remaining: custom header rendering, main/individual execution semantics, Shift-selection behavior, and full topology/attribute/Undo safety validation.
 
 ### WT-PRINT-003 — STL Export
 
@@ -65,19 +67,21 @@ Runtime validation: pending
 ### WT-PREC-001 / 002 — Coordinate Copy / Planar Edit
 
 - Status: active retained baseline.
-- Existing Dev_v2.9+ functionality remains canonical and unchanged by Dev_v2.11.0.
+- Existing Dev_v2.9+ functionality remains canonical and unchanged by Dev_v2.11.1.
 
 ## Validation gate
 
 Immediate Blender 4.5 tests:
 1. register/unregister and panel order;
-2. Transform object/edit behavior;
-3. Analyze parity;
-4. Make Manifold;
-5. Auto Fix and Advanced Clean topology safety;
-6. STL export/re-import;
-7. Undo/Redo, mode restoration, normals/winding, materials and edge/custom data, manifold safety, malformed selections, safe failures;
-8. Dev_v2.10.1 Magic Branch/Inject/Edge Doctor/Object Snap/Edit Tools-order regression.
+2. Advanced Clean Instant Clean-style headers/body layout;
+3. main Clean enabled-section execution and per-section play execution, including Shift-selection behavior;
+4. Transform object/edit behavior;
+5. Analyze parity;
+6. Make Manifold;
+7. Auto Fix and Advanced Clean topology safety;
+8. STL export/re-import;
+9. Undo/Redo, mode restoration, normals/winding, materials and edge/custom data, manifold safety, malformed selections, safe failures;
+10. Dev_v2.10.1 Magic Branch/Inject/Edge Doctor/Object Snap/Edit Tools-order regression.
 
 Do not broaden scope before this gate passes.
 
@@ -99,7 +103,7 @@ Do not broaden scope before this gate passes.
 - 3D-print threshold/preferences expansion: deferred until actual workflow need is demonstrated.
 - Transform mesh world/local display switch: research.
 
-## Explicit Dev_v2.11.0 exclusions
+## Explicit Dev_v2.11.x exclusions
 
 - 3D Print Toolbox Volume / Area
 - separate Solid / Intersections / Shells controls
@@ -113,11 +117,11 @@ Do not broaden scope before this gate passes.
 
 ## Baseline preservation
 
-- Dev_v2.11.0 is based on current Dev_v2.10.1, not the stale earlier Dev_v2.9.0 feature baseline.
+- Dev_v2.11.x is based on current Dev_v2.10.1, not the stale earlier Dev_v2.9.0 feature baseline.
 - Current direct source: `addons/witch_tools/dev/Witch_Tools_Dev/`.
 - Public release branches and Witch Dock/Quickbar remain unchanged.
 - Integration into `Blender_Dev` remains planned only after runtime acceptance.
 
 ## Immediate next step
 
-Package and install Dev_v2.11.0 in Blender 4.5. Validate panel rendering and Analyze parity first; fix observed failures before implementing WT-PRINT-004 click-to-select results or other new scope.
+Package and install Dev_v2.11.1. Validate the Advanced Clean layout/execution correction first, then continue Transform and Analyze parity testing. Fix observed failures before implementing WT-PRINT-004 click-to-select results or other new scope.
