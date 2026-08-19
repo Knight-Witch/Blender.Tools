@@ -1,5 +1,17 @@
 # Witch Tools Notes Changelog — Full History
 
+## 2026-08-18 — Dev_v2.10.0 Transform + 3D Print Tools consolidation
+
+- Added top-level Transform directly below Mode Switcher with object Location/Rotation/Scale and Edit Mode selected-vertex local Location editing.
+- Added top-level 3D Print Tools above Edit Tools with simplified STL Export, consolidated Analyze Mesh results, Make Manifold, Auto Fix, and Advanced Clean.
+- Integrated the practical Mesh Repair controls as Auto Fix with Global Fix before Local Fix.
+- Integrated the practical Instant Clean controls as Advanced Clean with Repair / Manifold / Topology / Normals / Dissolve, removing Object Data and Make Planar.
+- Added compact responsive toggle rows for Remove Non-Manifold, Topology Compare, Normals Clear Data, category toggles, and dissolve protection controls.
+- Deliberately omitted 3D Print Toolbox Volume/Area, per-check filters/settings, Hollow, Bisect, Align XY, Scale To, and export options from the integrated UI.
+- Added the `print3d_transform` feature packet with specification, feature state, roadmap, acceptance criteria, and Blender 4.5 test plan.
+- Bumped the source candidate to `Dev_v2.10.0` on `feature/witch-tools-3d-print-transform`, target Blender 4.5.0.
+- Static Python parse/compile was performed; Blender 4.5 registration, UI, operator execution, topology safety, undo/redo, save/reopen, and STL export/re-import remain pending because no Blender executable is available in the implementation environment.
+
 ## 2026-08-07 — Dev_v2.9.0 Precision Edit
 
 - Added Coordinate Copy, Planar Edit, and Inject New source candidate documentation.
