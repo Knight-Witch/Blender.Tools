@@ -1,5 +1,23 @@
 # 3D Print Tools + Transform Decisions
 
+## 2026-08-18 — Analyze uses the installed 3D Print Toolbox as the single source of truth
+
+Decision:
+- Dev_v2.11.4 removes Witch Tools' independently implemented Analyze detector.
+- Witch Tools `Check All` invokes the installed 3D Print Toolbox `mesh.print3d_check_all` operator directly.
+- Witch Tools reads and displays the report produced by that same installed Toolbox instance.
+- In Edit Mode, selectable Witch Tools result buttons invoke the original `mesh.print3d_select_report` operator with the original report index.
+- Witch Tools does not keep an alternate Analyze fallback. If the Toolbox operator/report cannot be resolved, Analyze reports an explicit error.
+- The compact Witch Tools Analyze UI remains; only the backend/report/selection source is delegated.
+
+Reason:
+The user requires exact parity, not approximate semantic equivalence. Dev_v2.11.3 still returned Non-flat 73 vs Toolbox 98 and Overhang 80 vs Toolbox 79 on the same unchanged `_CAP 3` mesh. Maintaining a second implementation creates unnecessary divergence risk. Invoking the installed Toolbox itself makes the version actually running in the user's Blender environment authoritative.
+
+Consequence:
+- 3D Print Toolbox must remain installed/enabled for Witch Tools Analyze in Dev_v2.11.4.
+- This dependency applies only to Analyze/report selection, not Transform, Export, Clean & Repair, or the rest of Witch Tools.
+- If a future self-contained Witch Tools package must eliminate that dependency, first obtain and vendor the exact current Toolbox source package. Do not recreate the detector algorithms by hand again.
+
 ## 2026-08-18 — Preserve Instant Clean section interaction model
 
 Decision:
@@ -28,20 +46,10 @@ Requested changes that remain:
 
 Controls not named above should stay visually/semantically close to Instant Clean.
 
-## 2026-08-18 — Analyze Mesh must reproduce 3D Print Toolbox checks, not approximate them
+## 2026-08-18 — Analyze must never be approximated
 
-Decision:
-Witch Tools Analyze Mesh uses the same check semantics and standard default thresholds as Blender's 3D Print Toolbox rather than simplified geometric approximations. The threshold grid remains hidden.
-
-Defaults:
-- Degenerate: 0.1 mm
-- Non-Planar: 5 degrees
-- Thickness: 1 mm
-- Sharp: 160 degrees
-- Overhang: 45 degrees
-
-Reason:
-Blender 5.0.1 runtime comparison on the same mesh proved the Dev_v2.11.1 approximation was not equivalent.
+Decision history:
+Dev_v2.11.2 attempted to reproduce the original 3D Print Toolbox algorithms/defaults locally after Dev_v2.11.1 approximations failed parity. Dev_v2.11.3 runtime evidence proved that even this locally reconstructed parity implementation still differed from the installed current Toolbox. This decision is superseded by the direct-backend decision above.
 
 ## 2026-08-18 — Blender 5.0.1 is primary, Blender 4.5 is secondary
 
@@ -61,5 +69,5 @@ Decision:
 - The fallback applies evaluated modifiers and world transforms, triangulates geometry, corrects winding for negative transforms, and writes transactionally via a temporary file.
 - If every path fails, report the failure rather than returning an apparent success.
 
-Reason:
-Blender 5.0.1 runtime testing showed the prior integrated Export STL path could produce no expected file/result while the code still unconditionally proceeded to its success report. A print-export button must provide deterministic success/failure behavior and must not depend on one version-sensitive operator path.
+Runtime result:
+The user confirmed Dev_v2.11.3 now produces the STL file in Blender 5.0.1. Broader re-import/transform/fallback testing remains pending.
