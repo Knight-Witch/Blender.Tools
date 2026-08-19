@@ -1,3 +1,11 @@
+## Dev_v2.11.2 — 3D Print Toolbox Analyze parity correction
+
+- Corrected Witch Tools Analyze Mesh after Blender 5.0.1 runtime comparison showed mismatched Non-flat, Thin, Sharp, and Overhang results against the original 3D Print Toolbox.
+- Replaced the simplified analyzer approximations with the original Toolbox check semantics: world-transformed distortion/sharp/overhang checks, signed sharp-edge angle test, original 0.1 mm degenerate threshold, original six-sample backwards-ray thickness test, and Toolbox-style BVH intersection handling.
+- Kept the integrated Analyze UI intentionally compact; the hidden thresholds remain the standard Toolbox defaults shown in the original panel: 0.1 mm degenerate, 5° non-planar, 1 mm thickness, 160° sharp, 45° overhang.
+- Blender 5.0.1 is now the primary Witch Tools development/runtime target. Blender 4.5 remains the secondary compatibility target for BG3 and other workflows that require it. The add-on minimum version remains 4.5 so the same package can still be tested there.
+- Blender 5.0.1 runtime comparison that exposed the mismatch: original Toolbox = Non-flat 98 / Thin 0 / Sharp 0 / Overhang 79; Dev_v2.11.1 Witch Tools = 73 / 1 / 1 / 80. Dev_v2.11.2 parity fix requires runtime retest on the same mesh.
+
 ## Dev_v2.11.1 — Advanced Clean layout/section-run correction
 
 - Restored the Advanced Clean presentation much closer to Instant Clean instead of flattening the section controls into a generic compact toggle strip.
