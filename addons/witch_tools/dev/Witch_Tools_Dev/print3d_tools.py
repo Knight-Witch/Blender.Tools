@@ -1,12 +1,11 @@
 import bpy
 import bmesh
-import math
+import importlib
 import os
-import random
+import re
 import struct
-from collections import deque
+import sys
 from mathutils import Vector
-from mathutils.bvhtree import BVHTree
 from bpy.types import Operator, PropertyGroup
 from bpy.props import IntProperty, StringProperty, PointerProperty
 
@@ -24,12 +23,17 @@ RESULT_FIELDS = (
     ('overhang_faces', 'Overhang Faces'),
 )
 
-# Match the standard 3D Print Toolbox defaults that the integrated UI intentionally hides.
-THRESHOLD_ZERO = 0.0001
-ANGLE_DISTORT = math.radians(5.0)
-THICKNESS_MIN = 0.001
-ANGLE_SHARP = math.radians(160.0)
-ANGLE_OVERHANG = math.radians(45.0)
+RESULT_ICONS = {
+    'non_manifold_edges': 'EDGESEL',
+    'bad_contiguous_edges': 'EDGESEL',
+    'intersect_faces': 'FACESEL',
+    'zero_faces': 'FACESEL',
+    'zero_edges': 'EDGESEL',
+    'non_flat_faces': 'FACESEL',
+    'thin_faces': 'FACESEL',
+    'sharp_edges': 'EDGESEL',
+    'overhang_faces': 'FACESEL',
+}
 
 
 class WTPrint3DProperties(PropertyGroup):
@@ -52,215 +56,105 @@ def _mesh_object(context):
     return obj if obj and obj.type == 'MESH' else None
 
 
-def _bm_from_object(obj, transform=False, triangulate=False):
-    """Copy mesh data using the same object/edit and transform semantics as 3D Print Toolbox."""
-    me = obj.data
-    if obj.mode == 'EDIT':
-        bm = bmesh.from_edit_mesh(me).copy()
-    else:
-        bm = bmesh.new()
-        bm.from_mesh(me)
-
-    if transform:
-        matrix = obj.matrix_world.copy()
-        if not matrix.is_identity:
-            bm.transform(matrix)
-            matrix.translation.zero()
-            if not matrix.is_identity:
-                bm.normal_update()
-
-    if triangulate:
-        bmesh.ops.triangulate(bm, faces=bm.faces[:])
-
-    bm.verts.ensure_lookup_table()
-    bm.edges.ensure_lookup_table()
-    bm.faces.ensure_lookup_table()
-    return bm
-
-
-def _count_shells(bm):
-    if bm.faces:
-        unseen = set(bm.faces)
-        count = 0
-        while unseen:
-            count += 1
-            seed = unseen.pop()
-            queue = deque([seed])
-            while queue:
-                face = queue.popleft()
-                for edge in face.edges:
-                    for other in edge.link_faces:
-                        if other in unseen:
-                            unseen.remove(other)
-                            queue.append(other)
-        return count
-    if bm.edges:
-        unseen = set(bm.verts)
-        count = 0
-        while unseen:
-            count += 1
-            seed = unseen.pop()
-            queue = deque([seed])
-            while queue:
-                vert = queue.popleft()
-                for edge in vert.link_edges:
-                    other = edge.other_vert(vert)
-                    if other in unseen:
-                        unseen.remove(other)
-                        queue.append(other)
-        return count
-    return len(bm.verts)
+def _field_from_report_text(text):
+    text = re.sub(r'[^a-z0-9]+', ' ', str(text).lower()).strip()
+    if 'non manifold' in text:
+        return 'non_manifold_edges'
+    if 'bad contiguous' in text or 'bad contig' in text:
+        return 'bad_contiguous_edges'
+    if 'intersect' in text:
+        return 'intersect_faces'
+    if 'shell' in text:
+        return 'shells'
+    if 'zero face' in text:
+        return 'zero_faces'
+    if 'zero edge' in text:
+        return 'zero_edges'
+    if 'non flat' in text or 'nonflat' in text:
+        return 'non_flat_faces'
+    if 'thin face' in text or text.startswith('thin '):
+        return 'thin_faces'
+    if 'sharp edge' in text or text.startswith('sharp '):
+        return 'sharp_edges'
+    if 'overhang face' in text or text.startswith('overhang '):
+        return 'overhang_faces'
+    return None
 
 
-def _count_intersections(obj):
-    """Match 3D Print Toolbox self-intersection BVH semantics."""
-    if not obj.data.polygons:
-        return 0
-    bm = _bm_from_object(obj, transform=False, triangulate=False)
-    try:
-        tree = BVHTree.FromBMesh(bm, epsilon=0.00001)
-        if tree is None:
-            return 0
-        overlap = tree.overlap(tree)
-        return len({index for pair in overlap for index in pair})
-    finally:
-        bm.free()
-
-
-def _face_is_distorted(face, threshold):
-    normal = face.normal
-    angle_fn = normal.angle
-    for loop in face.loops:
-        loop_normal = loop.calc_normal()
-        if loop_normal.dot(normal) < 0.0:
-            loop_normal.negate()
-        if angle_fn(loop_normal, 1000.0) > threshold:
-            return True
-    return False
-
-
-def _count_nonflat_faces(obj, threshold=ANGLE_DISTORT):
-    bm = _bm_from_object(obj, transform=True, triangulate=False)
-    try:
-        bm.normal_update()
-        return sum(1 for face in bm.faces if _face_is_distorted(face, threshold))
-    finally:
-        bm.free()
-
-
-def _face_points_random(face, num_points=1, margin=0.05):
-    """Deterministic interior samples matching the 3D Print Toolbox thickness check."""
-    rng = random.Random(face.index)
-    uniform_args = (margin, 1.0 - margin)
-    vecs = [vert.co for vert in face.verts]
-    for _ in range(num_points):
-        u1 = rng.uniform(*uniform_args)
-        u2 = rng.uniform(*uniform_args)
-        if u1 + u2 > 1.0:
-            u1 = 1.0 - u1
-            u2 = 1.0 - u2
-        side1 = vecs[1] - vecs[0]
-        side2 = vecs[2] - vecs[0]
-        yield vecs[0] + u1 * side1 + u2 * side2
-
-
-def _count_thin_faces(obj, thickness=THICKNESS_MIN):
-    """Match the 3D Print Toolbox six-sample, backwards ray thickness test."""
-    bm = _bm_from_object(obj, transform=True, triangulate=False)
-    context = bpy.context
-    layer = context.view_layer
-    scene_collection = context.layer_collection.collection
-    me_tmp = None
-    obj_tmp = None
-
-    try:
-        face_index_map_org = {face: index for index, face in enumerate(bm.faces)}
-        result = bmesh.ops.triangulate(bm, faces=bm.faces[:])
-        face_map = result.get('face_map', {})
-        bm.faces.ensure_lookup_table()
-        bm.normal_update()
-
-        me_tmp = bpy.data.meshes.new(name='~wt_print3d_temp~')
-        bm.to_mesh(me_tmp)
-        obj_tmp = bpy.data.objects.new(name=me_tmp.name, object_data=me_tmp)
-        scene_collection.objects.link(obj_tmp)
-        layer.update()
-
-        ray_cast = obj_tmp.ray_cast
-        eps_bias = 0.0001
-        faces_error = set()
-        bm_faces_new = bm.faces[:]
-
-        for face in bm_faces_new:
-            normal = face.normal
-            no_start = normal * eps_bias
-            no_end = normal * thickness
-            for point in _face_points_random(face, num_points=6):
-                point_a = point - no_start
-                point_b = point - no_end
-                direction = point_b - point_a
-                if direction.length == 0.0:
-                    continue
-                hit, _co, _normal, index = ray_cast(point_a, direction, distance=direction.length)
-                if hit and 0 <= index < len(bm_faces_new):
-                    for face_iter in (face, bm_faces_new[index]):
-                        original = face_map.get(face_iter, face_iter)
-                        original_index = face_index_map_org.get(original)
-                        if original_index is not None:
-                            faces_error.add(original_index)
-
-        return len(faces_error)
-    finally:
-        bm.free()
-        if obj_tmp is not None:
-            try:
-                if obj_tmp.name in scene_collection.objects:
-                    scene_collection.objects.unlink(obj_tmp)
-            except Exception:
-                pass
-            try:
-                bpy.data.objects.remove(obj_tmp)
-            except Exception:
-                pass
-        if me_tmp is not None:
-            try:
-                bpy.data.meshes.remove(me_tmp)
-            except Exception:
-                pass
+def _find_toolbox_report_module():
+    """Find the report module belonging to the installed Blender 3D Print Toolbox extension."""
+    candidates = (
+        'bl_ext.blender_org.print3d_toolbox.report',
+        'print3d_toolbox.report',
+        'object_print3d_utils.report',
+    )
+    for name in candidates:
         try:
-            layer.update()
+            module = importlib.import_module(name)
+        except Exception:
+            continue
+        if callable(getattr(module, 'info', None)):
+            return module
+
+    for name, module in tuple(sys.modules.items()):
+        low = name.lower()
+        if 'print3d' not in low or not low.endswith('.report'):
+            continue
+        if module is not None and callable(getattr(module, 'info', None)):
+            return module
+    return None
+
+
+def _toolbox_report_info():
+    module = _find_toolbox_report_module()
+    if module is None:
+        return ()
+    try:
+        return tuple(module.info())
+    except Exception:
+        return ()
+
+
+def get_toolbox_report_entry(field):
+    """Return (report index, text, data) for one live 3D Print Toolbox report field."""
+    for index, item in enumerate(_toolbox_report_info()):
+        if not isinstance(item, (tuple, list)) or len(item) < 2:
+            continue
+        text, data = item[0], item[1]
+        if _field_from_report_text(text) == field:
+            return index, text, data
+    return None
+
+
+def _report_count(text, data):
+    match = re.search(r'(-?\d+)\s*$', str(text).replace(',', ''))
+    if match:
+        return max(0, int(match.group(1)))
+    if data and isinstance(data, (tuple, list)) and len(data) > 1:
+        try:
+            return max(0, len(data[1]))
         except Exception:
             pass
+    return 0
 
 
-def _count_sharp_edges(obj, threshold=ANGLE_SHARP):
-    bm = _bm_from_object(obj, transform=True, triangulate=False)
+def _run_toolbox_check_all(context):
+    """Run Blender's actual installed 3D Print Toolbox analyzer and return its report verbatim."""
     try:
-        bm.normal_update()
-        return sum(
-            1 for edge in bm.edges
-            if edge.is_manifold and edge.calc_face_angle_signed() > threshold
-        )
-    finally:
-        bm.free()
+        op = bpy.ops.mesh.print3d_check_all
+        if not op.poll():
+            return None, '3D Print Toolbox Check All is unavailable in the current context'
+        result = op()
+    except Exception as exc:
+        return None, f'3D Print Toolbox backend is unavailable: {exc}'
 
+    if 'FINISHED' not in result:
+        return None, f'3D Print Toolbox Check All returned {sorted(result)}'
 
-def _count_overhang_faces(obj, threshold=ANGLE_OVERHANG):
-    angle_overhang = (math.pi / 2.0) - threshold
-    if angle_overhang == math.pi:
-        return 0
-
-    bm = _bm_from_object(obj, transform=True, triangulate=False)
-    try:
-        bm.normal_update()
-        z_down = Vector((0.0, 0.0, -1.0))
-        z_down_angle = z_down.angle
-        return sum(
-            1 for face in bm.faces
-            if z_down_angle(face.normal, 4.0) < angle_overhang
-        )
-    finally:
-        bm.free()
+    info = _toolbox_report_info()
+    if not info:
+        return None, '3D Print Toolbox ran, but its report data could not be read'
+    return info, None
 
 
 def _try_blender_stl_export(filepath):
@@ -378,7 +272,7 @@ class WT_OT_print3d_analyze(Operator):
     bl_idname = 'witch_tools.print3d_analyze'
     bl_label = 'Check All'
     bl_options = {'REGISTER'}
-    bl_description = 'Run 3D Print Toolbox-equivalent mesh checks and refresh the Results box'
+    bl_description = 'Run the installed 3D Print Toolbox Check All operator and mirror its exact report'
 
     @classmethod
     def poll(cls, context):
@@ -387,26 +281,30 @@ class WT_OT_print3d_analyze(Operator):
     def execute(self, context):
         obj = _mesh_object(context)
         props = context.scene.wt_print3d
-        if context.mode == 'EDIT_MESH':
-            bmesh.update_edit_mesh(obj.data, loop_triangles=True, destructive=False)
+        info, error = _run_toolbox_check_all(context)
+        if error:
+            self.report({'ERROR'}, error)
+            return {'CANCELLED'}
 
-        bm = _bm_from_object(obj, transform=False, triangulate=False)
-        try:
-            props.non_manifold_edges = sum(1 for edge in bm.edges if not edge.is_manifold)
-            props.bad_contiguous_edges = sum(
-                1 for edge in bm.edges if edge.is_manifold and not edge.is_contiguous
+        found = {}
+        for index, item in enumerate(info):
+            if not isinstance(item, (tuple, list)) or len(item) < 2:
+                continue
+            text, data = item[0], item[1]
+            field = _field_from_report_text(text)
+            if field in dict(RESULT_FIELDS):
+                found[field] = (_report_count(text, data), index, text, data)
+
+        missing = [field for field, _label in RESULT_FIELDS if field not in found]
+        if missing:
+            self.report(
+                {'ERROR'},
+                '3D Print Toolbox report format did not contain: ' + ', '.join(missing),
             )
-            props.shells = _count_shells(bm)
-            props.zero_faces = sum(1 for face in bm.faces if face.calc_area() <= THRESHOLD_ZERO)
-            props.zero_edges = sum(1 for edge in bm.edges if edge.calc_length() <= THRESHOLD_ZERO)
-        finally:
-            bm.free()
+            return {'CANCELLED'}
 
-        props.intersect_faces = _count_intersections(obj)
-        props.non_flat_faces = _count_nonflat_faces(obj, ANGLE_DISTORT)
-        props.thin_faces = _count_thin_faces(obj, THICKNESS_MIN)
-        props.sharp_edges = _count_sharp_edges(obj, ANGLE_SHARP)
-        props.overhang_faces = _count_overhang_faces(obj, ANGLE_OVERHANG)
+        for field, _label in RESULT_FIELDS:
+            setattr(props, field, found[field][0])
         props.last_analyzed_object = obj.name
         return {'FINISHED'}
 
