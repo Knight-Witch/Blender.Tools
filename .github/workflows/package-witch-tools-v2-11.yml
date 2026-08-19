@@ -1,4 +1,4 @@
-name: Package Witch Tools Dev v2.11.1
+name: Package Witch Tools Dev v2.11.2
 
 on:
   pull_request:
@@ -29,6 +29,7 @@ jobs:
           state_path = src / 'state.py'
           panel_path = src / 'panel_print3d.py'
           clean_path = src / 'instant_clean_core.py'
+          print_path = src / 'print3d_tools.py'
           required = [
               'panel_transform.py', 'panel_print3d.py', 'print3d_tools.py',
               'instant_clean_core.py', 'mesh_repair_props.py', 'mesh_repair_backend.py',
@@ -60,10 +61,13 @@ jobs:
           state_text = state_path.read_text(encoding='utf-8')
           panel_text = panel_path.read_text(encoding='utf-8')
           clean_text = clean_path.read_text(encoding='utf-8')
-          if "'version': (2, 11, 1)" not in init_text or "'blender': (4, 5, 0)" not in init_text:
-              raise SystemExit('Unexpected __init__.py version/Blender target')
-          if 'ADDON_VERSION = (2, 11, 1)' not in state_text or "VERSION_LABEL = 'Dev_v2.11.1'" not in state_text:
+          print_text = print_path.read_text(encoding='utf-8')
+          if "'version': (2, 11, 2)" not in init_text or "'blender': (4, 5, 0)" not in init_text:
+              raise SystemExit('Unexpected __init__.py version/minimum Blender target')
+          if 'ADDON_VERSION = (2, 11, 2)' not in state_text or "VERSION_LABEL = 'Dev_v2.11.2'" not in state_text:
               raise SystemExit('Unexpected state.py version metadata')
+          if "BUILD_TARGET_LABEL = 'Blender 5.0.1 primary / 4.5 secondary'" not in state_text:
+              raise SystemExit('Unexpected primary/secondary Blender target label')
           for token in ("'TRANSFORM': 1", "'PRINT3D': 3", "'EDIT_TOOLS': 4"):
               if token not in state_text:
                   raise SystemExit(f'Missing panel-order contract: {token}')
@@ -75,6 +79,21 @@ jobs:
                   raise SystemExit(f'Missing Advanced Clean section target token: {target}')
           if "target: EnumProperty" not in clean_text or "self.target == 'ENABLED'" not in clean_text:
               raise SystemExit('Missing Advanced Clean global/section target routing')
+
+          parity_tokens = (
+              'THRESHOLD_ZERO = 0.0001',
+              'ANGLE_DISTORT = math.radians(5.0)',
+              'THICKNESS_MIN = 0.001',
+              'ANGLE_SHARP = math.radians(160.0)',
+              'ANGLE_OVERHANG = math.radians(45.0)',
+              'calc_face_angle_signed()',
+              '_face_points_random(face, num_points=6)',
+              "BVHTree.FromBMesh(bm, epsilon=0.00001)",
+              '_bm_from_object(obj, transform=True, triangulate=False)',
+          )
+          for token in parity_tokens:
+              if token not in print_text:
+                  raise SystemExit(f'Missing Analyze parity contract: {token}')
 
           forbidden = [p for p in src.rglob('*') if p.is_file() and ('__pycache__' in p.parts or p.suffix in {'.pyc','.pyo'})]
           if forbidden:
@@ -92,32 +111,33 @@ jobs:
           find package_stage -type d -name '__pycache__' -prune -exec rm -rf {} +
           find package_stage -type f \( -name '*.pyc' -o -name '*.pyo' -o -name 'desktop.ini' -o -name '.DS_Store' \) -delete
           cd package_stage
-          zip -r -9 ../Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip Witch_Tools_Dev
+          zip -r -9 ../Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip Witch_Tools_Dev
           cd ..
-          sha256sum Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip | tee Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.sha256
-          unzip -t Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip
-          cat > Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.manifest.txt <<EOF
+          sha256sum Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip | tee Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.sha256
+          unzip -t Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip
+          cat > Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.manifest.txt <<EOF
           Add-on: Witch Tools
-          Version: Dev_v2.11.1
-          Target Blender: 4.5.0
-          Additional Blender versions tested for this candidate: none
-          User reference UI environment: Blender 5.0.1 (reference screenshots only; not a Witch Tools compatibility test)
+          Version: Dev_v2.11.2
+          Primary runtime/development target: Blender 5.0.1
+          Secondary compatibility target: Blender 4.5.0
+          Add-on minimum Blender version: 4.5.0
+          Runtime evidence inherited from Dev_v2.11.1: 3D Print Tools panel and Analyze executed in Blender 5.0.1; direct Toolbox parity comparison failed on Non-flat/Thin/Sharp/Overhang and triggered this fix
+          Dev_v2.11.2 runtime status: parity retest pending
           Source baseline: Dev_v2.10.1 / feature/witch-tools-magic-branch
           Feature branch: feature/witch-tools-3d-print-transform-v2-11
           Commit: ${GITHUB_SHA}
           Package type: full installable ZIP, stable folder Witch_Tools_Dev
-          Static validation: Python AST, duplicate bl_idname scan, version/panel-order contracts, Advanced Clean per-section routing contracts, cache hygiene, ZIP integrity, SHA-256
-          Runtime status: Blender runtime validation pending
-          Known limitations: Advanced Clean custom section headers and section-run behavior are untested; Transform/Analyze/repair/export runtime testing remains pending; no Blender 5.0.1 compatibility claim
+          Static validation: Python AST, duplicate bl_idname scan, version/panel-order contracts, Advanced Clean routing contracts, Analyze parity-source contracts, cache hygiene, ZIP integrity, SHA-256
+          Known limitations: Analyze click-to-select pending detector identity validation; Dev_v2.11.2 runtime not yet tested; Blender 4.5 compatibility requires separate smoke test
           EOF
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5
+          name: Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1
           path: |
-            Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip
-            Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.sha256
-            Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.manifest.txt
+            Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip
+            Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.sha256
+            Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.manifest.txt
           if-no-files-found: error
           retention-days: 14
