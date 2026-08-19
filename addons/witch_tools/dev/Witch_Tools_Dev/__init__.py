@@ -1,7 +1,7 @@
 bl_info = {
-    'name': 'Witch Tools Dev_v2.11.2',
+    'name': 'Witch Tools Dev_v2.11.3',
     'author': 'Knight Witch',
-    'version': (2, 11, 2),
+    'version': (2, 11, 3),
     'blender': (4, 5, 0),
     'location': 'View3D > Sidebar > Witch Tools',
     'description': 'Workflow-organized Blender tools with integrated Transform, 3D-print analysis/repair/cleanup, Magic Branch, BG3, weight, modifier, and modeling workflows',
