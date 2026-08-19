@@ -2,7 +2,7 @@
 
 Statuses: `active`, `planned`, `deferred`, `research`, `rejected`, `complete`.
 
-## Current candidate — Dev_v2.11.0
+## Current candidate — Dev_v2.11.1
 
 Target: Blender 4.5.0  
 Baseline: Dev_v2.10.1 Magic Branch
@@ -27,8 +27,10 @@ Baseline: Dev_v2.10.1 Magic Branch
 - Make Manifold.
 - Auto Fix: Global Fix before Local Fix.
 - Advanced Clean: Repair, Manifold, Topology, Normals, Dissolve.
-- Responsive compact toggle rows implemented for requested controls.
-- Remaining: Blender 4.5 topology safety and attribute-preservation validation.
+- Dev_v2.11.1 restores the Instant Clean-style section layout: each Advanced Clean section is independently collapsible, has its own enable toggle, and has its own play button for running only that section.
+- The main Clean button runs the set of enabled section toggles.
+- Original-style body layout is preserved except for the user-approved compact changes: Manifold Remove Non-Manifold toggle bar, responsive Topology angle/Compare layout, Normals Clear Data toggle bar, removal of Make Planar/Object Data, and Dissolve moved last.
+- Remaining: Blender rendering/interaction test of custom section headers plus topology safety and attribute-preservation validation.
 
 ### WT-PRINT-003 — Simplified STL export
 
@@ -48,13 +50,16 @@ Baseline: Dev_v2.10.1 Magic Branch
 
 - Status: complete at source-integration level.
 - The initial stale Dev_v2.9.0-based feature branch is not the authoritative candidate.
-- Dev_v2.11.0 is based on Dev_v2.10.1 / `feature/witch-tools-magic-branch` and retains Magic Branch, Edge Doctor, Edit Tools ordering, and the current registration surface.
+- Dev_v2.11.x is based on Dev_v2.10.1 / `feature/witch-tools-magic-branch` and retains Magic Branch, Edge Doctor, Edit Tools ordering, and the current registration surface.
 
 ## Validation gate
 
 Before acceptance:
 - register/unregister;
 - required top-level panel order;
+- Advanced Clean header layout and individual section execution;
+- main Clean enabled-section execution;
+- Shift selection-only behavior for both global and individual section actions;
 - Transform editing;
 - Analyze parity;
 - STL export/re-import;
@@ -94,4 +99,4 @@ Before acceptance:
 
 ## Immediate next step
 
-Install Dev_v2.11.0 in Blender 4.5, verify the new panels appear without regressing Dev_v2.10.1 features, then compare Analyze Mesh counts against the original 3D Print Toolbox. Fix observed parity/runtime failures before implementing click-to-select results.
+Package/install Dev_v2.11.1 and verify Advanced Clean visually and behaviorally against the user's Instant Clean reference first. Once that correction is accepted, continue Transform and Analyze parity testing before implementing click-to-select results.
