@@ -10,6 +10,15 @@ Last updated: 2026-08-18
 - Parent baseline: `feature/witch-tools-magic-branch` Dev_v2.10.1 packaging head `9ef376505ccf9df3f39720dea630b378470c818b`
 - Target Blender: `4.5.0`
 
+## Artifact
+
+- Full installable ZIP: `Witch_Tools_Dev_v2_11_1_3D_Print_Transform_Blender_4_5.zip`
+- SHA-256: `d6ecf1b893c1d619fc5974ec0ca1836fe7333abd4b9c5724ff497b63859c2441`
+- GitHub Actions static/package validation: passed
+- Downloaded inner ZIP SHA-256 check: passed
+- ZIP integrity check: passed
+- Blender runtime: pending
+
 ## Current correction
 
 User review of the first Dev_v2.11.0 Advanced Clean UI showed that the Instant Clean layout had been over-condensed. The intended design is to preserve Instant Clean's section structure and per-section execution model except where the user explicitly requested changes.
@@ -17,7 +26,7 @@ User review of the first Dev_v2.11.0 Advanced Clean UI showed that the Instant C
 Dev_v2.11.1 source changes:
 - restored individual collapsible Repair / Manifold / Topology / Normals / Dissolve sections;
 - added an enable toggle and individual play button to each section header;
-- individual play buttons run only their own section;
+- individual play buttons run only their own section, independent of that section's global-enable toggle;
 - main Clean runs whichever section-header toggles are enabled;
 - Shift applies selection-only behavior to both main and individual section actions;
 - restored original-style checkbox/boxed layouts for controls that were not requested to change;
@@ -25,17 +34,16 @@ Dev_v2.11.1 source changes:
 - kept Dissolve last;
 - kept Object Data and Make Planar removed.
 
-## Prior Dev_v2.11.0 integration
+## Prior Dev_v2.11.0 integration retained
 
-- Added top-level Transform directly below Mode Switcher.
-- Added editable object Location / Rotation / Scale.
-- Added Edit Mode selected-vertex local Location median with delta translation.
-- Added top-level 3D Print Tools above Edit Tools.
-- Added simplified STL Export.
-- Added consolidated Analyze Mesh / Check All results.
-- Added Make Manifold.
-- Added Auto Fix with Global Fix before Local Fix.
-- Added Advanced Clean integration.
+- Top-level Transform directly below Mode Switcher.
+- Editable object Location / Rotation / Scale.
+- Edit Mode selected-vertex local Location median with delta translation.
+- Top-level 3D Print Tools above Edit Tools.
+- Simplified STL Export.
+- Consolidated Analyze Mesh / Check All results.
+- Make Manifold.
+- Auto Fix with Global Fix before Local Fix.
 
 ## Source modules changed for Dev_v2.11.1
 
@@ -45,6 +53,18 @@ Dev_v2.11.1 source changes:
 - `state.py`
 - `CHANGELOG.md`
 - packaging/compatibility/documentation files required for the candidate update
+
+## Static/package validation performed
+
+Passed:
+- Python AST parsing;
+- duplicate `bl_idname` scan;
+- Dev_v2.11.1 / Blender 4.5 version metadata checks;
+- top-level panel-order contract checks;
+- Advanced Clean main/individual section-routing source contracts;
+- package cache hygiene;
+- ZIP integrity;
+- generated and independently verified SHA-256.
 
 ## Runtime validation not performed
 
@@ -71,4 +91,4 @@ The user's Instant Clean reference screenshots show Blender 5.0.1. That is usefu
 
 ## Next exact step
 
-Package the full Dev_v2.11.1 candidate and install it in Blender. First verify that Advanced Clean visually matches the intended Instant Clean structure: section toggle in the header, play button in the header, collapsible section body, Dissolve last. Then verify main Clean vs individual section execution before continuing broader 3D Print/Transform testing.
+Install the full Dev_v2.11.1 candidate. First verify that Advanced Clean visually matches the intended Instant Clean structure: section toggle in the header, play button in the header, collapsible section body, Dissolve last. Then verify main Clean vs individual section execution before continuing broader 3D Print/Transform testing.
