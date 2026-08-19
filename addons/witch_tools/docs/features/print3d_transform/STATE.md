@@ -15,14 +15,14 @@ Last updated: 2026-08-18
 ## Artifact
 
 - Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
-- SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`
+- SHA-256: `4cf29f29b87261278bd5aadcf8346a4341fbbbf313db01334e60669487379a48`
 - GitHub Actions static/package validation: passed
 - 67 Python files parsed
 - Analyze parity source-contract checks: passed
 - duplicate `bl_idname` check: passed
 - package hygiene: passed
 - ZIP integrity: passed
-- downloaded inner ZIP SHA verification: passed
+- downloaded inner ZIP SHA/package-document verification: passed
 - Dev_v2.11.2 Blender runtime: pending
 
 ## Blender 5.0.1 runtime result that triggered Dev_v2.11.2
