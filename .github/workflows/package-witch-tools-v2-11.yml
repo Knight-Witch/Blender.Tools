@@ -68,9 +68,11 @@ jobs:
               if token not in state_text:
                   raise SystemExit(f'Missing panel-order contract: {token}')
 
+          if "op.target = target" not in panel_text:
+              raise SystemExit('Missing Advanced Clean header play-target assignment')
           for target in ('REPAIR', 'MANIFOLD', 'TOPOLOGY', 'NORMALS', 'DISSOLVE'):
-              if f"op.target = '{target}'" not in panel_text:
-                  raise SystemExit(f'Missing Advanced Clean section play target: {target}')
+              if f"'{target}'" not in panel_text:
+                  raise SystemExit(f'Missing Advanced Clean section target token: {target}')
           if "target: EnumProperty" not in clean_text or "self.target == 'ENABLED'" not in clean_text:
               raise SystemExit('Missing Advanced Clean global/section target routing')
 
