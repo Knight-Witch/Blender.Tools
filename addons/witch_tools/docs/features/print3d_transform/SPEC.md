@@ -1,7 +1,7 @@
 # Witch Tools — 3D Print Tools + Transform Specification
 
 Status: active development candidate  
-Version: `Dev_v2.11.0`  
+Version: `Dev_v2.11.1`  
 Parent baseline: Witch Tools `Dev_v2.10.1` / `feature/witch-tools-magic-branch`  
 Target Blender: `4.5.0`
 
@@ -73,19 +73,18 @@ Auto Fix:
 - Global controls include Tri Mesh / Quad Mesh, Face Normal, Noise Shells + minimum %, Spikes + angle, Intersect Face + angle, Intersect Volumes, Fill Holes, Auto Fix.
 - Local controls retain Select More/Less, Face Orientation, Unify/Flip, Refine, Remesh, Smooth, Reduce.
 
-Advanced Clean:
-- Clean button remains first.
-- Repair
-- Manifold
-- Topology
-- Normals
-- Dissolve
-- Object Data removed.
-- Make Planar removed.
-- Manifold Remove Non-Manifold uses compact Faces / Vertices / Wire toggle buttons.
-- Topology angle controls share rows when width permits and wrap/split at narrow N-panel widths.
-- Topology Compare uses compact Sharp / Seam / UV / Material / VCol toggles.
-- Normals Clear Data uses Split Normals / Sharp Edges toggles.
+Advanced Clean must preserve the Instant Clean interaction model unless a specific control was deliberately changed:
+- A main Clean button remains at the top and runs every section whose section-header enable toggle is on.
+- Repair, Manifold, Topology, Normals, and Dissolve are individual collapsible child sections.
+- Each child-section header contains an enable toggle labeled with the section name and a play button.
+- A child-section play button runs only that section, independent of the other section enable toggles.
+- Holding Shift while using either the main Clean button or an individual section play button limits cleanup to the current selection.
+- Repair retains the original-style Remove group with Loose/Doubles/Zero Faces/Dispensables checkbox controls and the compact vertex/edge/face loose-geometry buttons.
+- Manifold retains Fill Holes, removes Make Planar, and replaces the original stacked remove checkboxes with `Remove Non-Manifold: [Faces] [Vertices] [Wire]`.
+- Topology retains the original Convert To / Methods structure. When converting to quads, Max Face Angle and Max Shape Angle share one row when width permits and separate at narrow widths; Compare uses the responsive Sharp / Seam / UV / Material / VCol toggle bar.
+- Normals retains original-style Recalculate / Smooth by Angle / Weighted Normals controls; Clear Data uses the compact Split Normals / Sharp Edges toggle bar.
+- Dissolve remains the final section and otherwise keeps its original-style Max Angle / Boundaries / Protect layout.
+- Object Data is removed.
 
 ## Explicitly excluded
 
@@ -117,6 +116,8 @@ Topology-changing operations must:
 The candidate is accepted only when, in Blender 4.5:
 - the add-on registers/unregisters without errors;
 - Transform and 3D Print Tools render in the required order without hiding Magic Branch/Edge Doctor features;
+- Advanced Clean section headers visibly provide the Instant Clean-style enable toggle + individual play action and the section bodies retain the specified original-style layouts;
+- the main Clean action runs only enabled sections and each section play action runs only that section;
 - Transform Location edits object and selected-mesh coordinates correctly;
 - Check All counts are compared against the original 3D Print Toolbox on known meshes;
 - Make Manifold, Auto Fix, and Advanced Clean complete without unhandled exceptions on valid test meshes;
