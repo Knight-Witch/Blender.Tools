@@ -16,6 +16,19 @@ Last updated: 2026-08-18
 - Public/release branches modified: no
 - Witch Dock / Quickbar modified: no
 
+## Current artifact
+
+- Full installable ZIP: `Witch_Tools_Dev_v2_11_2_3D_Print_Transform_Blender_5_0_1.zip`
+- SHA-256: `37493258a6a995b6fd1799e60a56d0a55c4f2afda1a772a0dfecaa13ae90daef`
+- GitHub Actions validation/package run: passed
+- Python files parsed: 67
+- Analyze parity source-contract checks: passed
+- duplicate UI/operator ID check: passed
+- cache/package hygiene: passed
+- ZIP integrity: passed
+- independent downloaded-inner-ZIP SHA-256 verification: passed
+- Dev_v2.11.2 Blender runtime: pending
+
 ## Current development finding
 
 The user tested Dev_v2.11.1 Analyze Mesh in Blender 5.0.1 against Blender's original 3D Print Toolbox on the same `_CAP 3` mesh.
@@ -108,7 +121,7 @@ Not established yet:
 
 ## Next exact implementation step
 
-Package Dev_v2.11.2 as a full installable ZIP and test it in Blender 5.0.1 on the same `_CAP 3` parity fixture. Do not move to Analyze click-to-select until all ten counts match and the actual selected error geometry is compared.
+Install the full Dev_v2.11.2 ZIP in Blender 5.0.1 and rerun Analyze on the same `_CAP 3` parity fixture. Do not move to Analyze click-to-select until all ten counts match and the actual selected error geometry is compared.
 
 After primary 5.0.1 validation, run the explicitly required secondary Blender 4.5 compatibility smoke tests for shared/BG3 workflows.
 
@@ -122,7 +135,7 @@ Source:
 
 Build/compatibility:
 - `.github/workflows/package-witch-tools-v2-11.yml`
-- compatibility documentation
+- `docs/COMPATIBILITY_DEV_v2.11.2.md`
 
 Documentation:
 - `docs/PROJECT_STATE.md`
@@ -141,7 +154,8 @@ Documentation:
 - Dev_v2.11.1 Blender 5.0.1 Analyze execution: user-observed
 - Dev_v2.11.1 direct Toolbox count comparison: performed; parity failed on 4 of 10 fields
 - Dev_v2.11.2 source correction: implemented
-- Dev_v2.11.2 static/package validation: pending packaging run
+- Dev_v2.11.2 static/package validation: passed
+- Dev_v2.11.2 full ZIP integrity/SHA verification: passed
 - Dev_v2.11.2 Blender 5.0.1 runtime: not yet performed
 - Dev_v2.11.2 Blender 4.5 runtime: not performed
 - Public release branches changed: no
